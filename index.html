@@ -1,0 +1,1526 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#002E23" />
+<title>Tipping Desk — NRL 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00733A;
+    --green-dark: #002E23;
+    --green-darker: #001A14;
+    --green-deep: #00140F;
+    --gold: #FFD700;
+    --gold-dark: #ECBE0C;
+    --ink: #0a0a0a;
+    --ink-soft: #333;
+    --g-900: #141718;
+    --g-800: #1f2224;
+    --g-700: #3a3f42;
+    --g-500: #7a8185;
+    --g-400: #a3a9ad;
+    --g-300: #d0d5d8;
+    --g-200: #e6eaec;
+    --g-100: #f2f4f5;
+    --paper: #ffffff;
+    --live: #e53935;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 16px; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--g-100);
+    color: var(--ink);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 400;
+    font-feature-settings: "ss01" on, "cv11" on;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* DISPLAY TYPE SYSTEM - Oswald = broadcast type */
+  .display {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+  .display-heavy {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+  }
+  .mono {
+    font-family: "Roboto Mono", monospace;
+    font-weight: 500;
+  }
+
+  /* STATUS BAR / HEADER */
+  .status-bar {
+    background: var(--green-deep);
+    color: rgba(255,255,255,0.6);
+    padding: 6px 14px;
+    font-family: "Roboto Mono", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .status-bar .live-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--live);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* MAIN NAV - NRL style */
+  .nav {
+    background: var(--green-dark);
+    border-bottom: 3px solid var(--gold);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    background: var(--green);
+    border: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+    letter-spacing: 0.02em;
+  }
+  .logo-text {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: white;
+    line-height: 1.15;
+  }
+  .logo-text small {
+    display: block;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    font-weight: 500;
+  }
+
+  .nav-spacer { flex: 1; }
+  .nav-btn {
+    background: none; border: none;
+    color: rgba(255,255,255,0.5);
+    padding: 6px 10px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .nav-btn:hover { color: white; }
+
+  /* VIEW TABS - under nav, sticky too */
+  .view-tabs {
+    background: var(--green-darker);
+    display: flex;
+    position: sticky;
+    top: 60px;
+    z-index: 99;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .view-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 14px 6px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .view-tab.active {
+    color: white;
+    border-bottom-color: var(--gold);
+    background: linear-gradient(180deg, transparent 0%, rgba(255,215,0,0.08) 100%);
+  }
+
+  /* ROUND BANNER */
+  .round-banner {
+    background: linear-gradient(180deg, var(--green-dark) 0%, var(--green-deep) 100%);
+    color: white;
+    padding: 20px 16px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+  .round-banner::before {
+    content: "";
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 60%;
+    height: 160%;
+    background: radial-gradient(circle at center, rgba(255,215,0,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .round-banner-inner {
+    position: relative;
+  }
+  .round-eyebrow {
+    font-family: "Oswald", sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .round-title {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 42px;
+    line-height: 0.95;
+    letter-spacing: -0.005em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .round-title small {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.1em;
+    margin-left: 8px;
+  }
+  .round-meta {
+    display: flex;
+    gap: 20px;
+    margin-top: 12px;
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+  }
+  .round-meta strong {
+    display: block;
+    font-family: "Oswald", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.02em;
+    margin-bottom: 2px;
+  }
+
+  /* CONTROLS */
+  .controls {
+    background: white;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--g-200);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .controls > div { display: flex; flex-direction: column; gap: 4px; }
+  .controls label {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--g-500);
+  }
+  .controls select {
+    padding: 10px 12px;
+    background: white;
+    border: 1px solid var(--g-300);
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='%23002E23' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px;
+    padding-right: 32px;
+  }
+  .controls select:focus { outline: 2px solid var(--green); outline-offset: -1px; }
+  .controls .action-row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .btn {
+    padding: 11px 14px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:active { background: var(--green-dark); }
+  .btn-secondary { background: var(--g-100); color: var(--ink); border: 1px solid var(--g-300); }
+  .btn-secondary:active { background: var(--g-200); }
+
+  .status {
+    padding: 8px 16px 14px;
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--g-500);
+    background: white;
+  }
+  .status.error { color: var(--live); }
+
+  /* DRAWERS */
+  details.drawer {
+    background: white;
+    margin: 0;
+    border-top: 1px solid var(--g-200);
+  }
+  details.drawer[open] {
+    background: var(--g-100);
+    border-top: 1px solid var(--green);
+  }
+  details.drawer summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 14px 16px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  details.drawer summary::after {
+    content: "+";
+    font-family: "Oswald", sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    color: var(--g-500);
+    transition: transform 0.2s;
+  }
+  details.drawer[open] summary::after { content: "−"; }
+  .drawer-body {
+    padding: 0 16px 18px;
+  }
+
+  /* SECTION HEADER */
+  .section-hdr {
+    padding: 20px 16px 10px;
+    border-bottom: 2px solid var(--green-dark);
+    margin: 0 16px 12px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .section-hdr h2 {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+    margin: 0;
+  }
+  .section-hdr .sub {
+    font-family: "Roboto Mono", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--g-500);
+  }
+
+  /* MAIN CONTAINER */
+  .content { padding: 0 0 40px; }
+
+  /* MATCH CARD - NRL Match Centre style */
+  .match-list { padding: 0 12px; }
+
+  .match-card {
+    background: white;
+    border: 1px solid var(--g-200);
+    border-top: 3px solid var(--green);
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .match-card.top-pick {
+    border-top-color: var(--gold);
+    border-top-width: 4px;
+    box-shadow: 0 2px 12px rgba(236, 190, 12, 0.15);
+  }
+  .match-card.top-pick::before {
+    content: "TOP PICK";
+    position: absolute;
+    top: 0; right: 0;
+    background: var(--gold);
+    color: var(--green-dark);
+    padding: 4px 10px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .match-card-header {
+    background: var(--g-100);
+    padding: 8px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--g-200);
+    font-family: "Roboto Mono", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g-700);
+  }
+  .match-card-header .rank {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--green-dark);
+    letter-spacing: 0.1em;
+  }
+  .match-card.top-pick .match-card-header .rank { color: var(--gold-dark); }
+
+  .match-fixture {
+    padding: 14px 14px 10px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 10px;
+    align-items: center;
+  }
+  .team-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+  .team-side.picked .team-name { color: var(--green-dark); font-weight: 700; }
+  .match-card.top-pick .team-side.picked .team-name { color: var(--gold-dark); }
+  .team-badge {
+    width: 52px; height: 52px;
+    background: white;
+    border: 2px solid var(--g-200);
+    border-radius: 50%;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s;
+  }
+  .team-side.picked .team-badge {
+    border-color: var(--green);
+    border-width: 3px;
+  }
+  .match-card.top-pick .team-side.picked .team-badge {
+    border-color: var(--gold);
+    border-width: 3px;
+  }
+  .team-badge img { width: 100%; height: 100%; object-fit: contain; }
+  .team-name {
+    font-family: "Oswald", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .team-form {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+  }
+  .form-pill {
+    width: 14px; height: 14px;
+    border-radius: 2px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  .form-pill.W { background: var(--green); }
+  .form-pill.L { background: var(--live); }
+  .form-pill.D { background: var(--g-500); }
+
+  .match-vs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 0 4px;
+  }
+  .match-vs .vs {
+    font-family: "Oswald", sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--g-400);
+    text-transform: uppercase;
+  }
+  .match-vs .time {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--green-dark);
+    letter-spacing: 0.03em;
+  }
+  .match-vs .day {
+    font-family: "Roboto Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g-500);
+  }
+
+  .match-confidence {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 14px 14px;
+    border-top: 1px solid var(--g-200);
+  }
+  .pick-label {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--green-dark);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .match-card.top-pick .pick-label { color: var(--gold-dark); }
+  .pick-label small {
+    display: block;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 500;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--g-500);
+    text-transform: uppercase;
+  }
+  .conf-bar {
+    height: 8px;
+    background: var(--g-200);
+    position: relative;
+    overflow: hidden;
+    border-radius: 1px;
+  }
+  .conf-bar-fill {
+    height: 100%;
+    background: var(--green);
+    transition: width 0.4s ease;
+  }
+  .conf-bar-fill.high { background: var(--gold); }
+  .conf-bar-fill.med { background: var(--green); }
+  .conf-num {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--green-dark);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    min-width: 60px;
+    text-align: right;
+  }
+  .conf-num.high { color: var(--gold-dark); }
+  .conf-num small {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--g-400);
+    letter-spacing: 0.02em;
+  }
+
+  /* ODDS DRAWER CONTENT */
+  .drawer-note {
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--g-700);
+    margin: 0 0 14px;
+  }
+  .odds-header {
+    display: grid;
+    grid-template-columns: 1fr 72px 72px;
+    gap: 10px;
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+    border-bottom: 2px solid var(--green-dark);
+  }
+  .odds-header > div {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+  }
+  .odds-row {
+    display: grid;
+    grid-template-columns: 1fr 72px 72px;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--g-200);
+  }
+  .odds-row .label {
+    font-family: "Oswald", sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+  .odds-row input, .injury-row input {
+    font-family: "Roboto Mono", monospace;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 10px;
+    border: 1px solid var(--g-300);
+    background: white;
+    width: 100%;
+    text-align: center;
+  }
+  .odds-row input:focus, .injury-row input:focus {
+    outline: 2px solid var(--green);
+    outline-offset: -1px;
+    border-color: var(--green);
+  }
+
+  .injury-section {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 2px solid var(--green-dark);
+  }
+  .injury-section h4 {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+    margin: 0 0 8px;
+  }
+  .injury-row {
+    display: grid;
+    grid-template-columns: 1fr 64px;
+    gap: 10px;
+    align-items: center;
+    padding: 6px 0;
+  }
+  .injury-row > div {
+    font-family: "Oswald", sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  /* WEIGHTS */
+  .weights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .weight-item {
+    background: white;
+    border: 1px solid var(--g-200);
+    padding: 10px 12px;
+  }
+  .weight-item label {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--g-500);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .weight-item .val {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--green-dark);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .weight-item input[type=range] {
+    width: 100%;
+    accent-color: var(--green);
+    height: 4px;
+  }
+  .weight-note {
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    color: var(--g-500);
+    margin-top: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* TABLE VIEW (analysis) */
+  .table-wrap {
+    margin: 0 12px;
+    background: white;
+    border: 1px solid var(--g-200);
+    overflow-x: auto;
+  }
+  table.ladder {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.ladder thead { background: var(--green-dark); }
+  table.ladder th {
+    padding: 10px 8px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: white;
+    text-align: left;
+    border-bottom: 2px solid var(--gold);
+    white-space: nowrap;
+  }
+  table.ladder th.num { text-align: right; }
+  table.ladder td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--g-200);
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  table.ladder tbody tr:nth-child(odd) { background: var(--g-100); }
+  table.ladder td.fixture {
+    font-family: "Oswald", sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  table.ladder td.fixture img {
+    width: 18px; height: 18px;
+    vertical-align: middle;
+    margin-right: 2px;
+  }
+  table.ladder td.fixture .vs { color: var(--g-400); font-size: 10px; padding: 0 2px; }
+  table.ladder td.pick {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+  }
+  table.ladder td.num {
+    font-family: "Roboto Mono", monospace;
+    font-weight: 500;
+    font-size: 11.5px;
+    text-align: right;
+  }
+  table.ladder td.conf {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: right;
+    color: var(--green-dark);
+  }
+  table.ladder td.conf.high { color: var(--gold-dark); }
+
+  /* CARDS VIEW (rationale) */
+  .cards-wrap { padding: 0 12px; display: flex; flex-direction: column; gap: 10px; }
+  .r-card {
+    background: white;
+    border: 1px solid var(--g-200);
+    border-left: 4px solid var(--green);
+    padding: 14px 16px;
+  }
+  .r-card.high-conf {
+    border-left-color: var(--gold);
+    background: linear-gradient(135deg, #fffbe8 0%, white 50%);
+  }
+  .r-card .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .r-card .match-label {
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g-500);
+  }
+  .r-card .conf-big {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--green-dark);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .r-card.high-conf .conf-big { color: var(--gold-dark); }
+  .r-card .pick-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin: 4px 0 10px;
+    color: var(--ink);
+  }
+  .r-card .pick-name img { width: 32px; height: 32px; object-fit: contain; }
+  .r-card .rationale {
+    font-family: "Inter", sans-serif;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--g-700);
+  }
+
+  /* EMPTY */
+  .empty {
+    background: white;
+    margin: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    font-family: "Oswald", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--g-400);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--green-deep);
+    color: rgba(255,255,255,0.5);
+    padding: 20px 16px 24px;
+    margin-top: 24px;
+    border-top: 3px solid var(--gold);
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.6;
+  }
+  footer strong { color: var(--gold); font-weight: 500; }
+
+  /* DESKTOP ENHANCEMENT */
+  @media (min-width: 768px) {
+    .nav-inner { padding: 14px 24px; max-width: 1200px; margin: 0 auto; }
+    .view-tabs { max-width: 1200px; margin: 0 auto; }
+    .view-tab { flex: 0 0 auto; padding: 14px 24px; font-size: 13px; }
+    .round-banner { padding: 32px 24px; }
+    .round-banner-inner { max-width: 1200px; margin: 0 auto; }
+    .round-title { font-size: 64px; }
+    .round-title small { font-size: 24px; }
+    .controls {
+      max-width: 1200px;
+      margin: 0 auto;
+      grid-template-columns: 200px 200px 1fr 1fr;
+      padding: 16px 24px;
+    }
+    .controls .action-row {
+      grid-column: auto;
+      grid-template-columns: 1fr;
+    }
+    .controls .action-row:last-child { }
+    .status { max-width: 1200px; margin: 0 auto; padding: 10px 24px 16px; }
+    .section-hdr { max-width: 1200px; margin: 0 auto 12px; padding: 24px 24px 12px; }
+    .match-list, .cards-wrap, .table-wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .match-fixture {
+      grid-template-columns: 1fr 160px 1fr;
+      padding: 20px 20px 14px;
+    }
+    .team-badge { width: 64px; height: 64px; }
+    .team-name { font-size: 18px; }
+    .match-vs .time { font-size: 18px; }
+    .conf-num { font-size: 40px; min-width: 80px; }
+    .conf-num small { font-size: 16px; }
+    .cards-wrap { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 14px; }
+    details.drawer summary { max-width: 1200px; margin: 0 auto; padding: 16px 24px; }
+    details.drawer .drawer-body { max-width: 1200px; margin: 0 auto; padding: 0 24px 24px; }
+    footer { padding: 28px 24px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="status-bar">
+  <div><span class="live-dot"></span>2026 Telstra Premiership</div>
+  <div id="heroDate">—</div>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-mark">TD</div>
+      <div class="logo-text">
+        Tipping Desk
+        <small>Round Analysis</small>
+      </div>
+    </a>
+    <div class="nav-spacer"></div>
+    <button class="nav-btn" id="navRefresh">Refresh</button>
+  </div>
+</nav>
+
+<div class="view-tabs">
+  <button class="view-tab active" data-view="ranked">Tips</button>
+  <button class="view-tab" data-view="table">Analysis</button>
+  <button class="view-tab" data-view="cards">Rationale</button>
+</div>
+
+<section class="round-banner">
+  <div class="round-banner-inner">
+    <div class="round-eyebrow">Round Tipping · NRL 2026</div>
+    <h1 class="round-title">Round <span id="heroRound">—</span><small id="heroMatchCount">—</small></h1>
+    <div class="round-meta">
+      <div><strong id="heroTopPick">—</strong>Top pick</div>
+      <div><strong id="heroLocks">—</strong>Lock picks</div>
+      <div><strong id="heroToss">—</strong>Coin flips</div>
+    </div>
+  </div>
+</section>
+
+<div class="controls">
+  <div>
+    <label>Round</label>
+    <select id="roundSelect"></select>
+  </div>
+  <div>
+    <label>Season</label>
+    <select id="seasonSelect">
+      <option value="nrl-2026" selected>2026</option>
+      <option value="nrl-2025">2025</option>
+    </select>
+  </div>
+  <div class="action-row">
+    <button id="refreshBtn" class="btn btn-primary">Refresh Live</button>
+  </div>
+  <div class="action-row">
+    <button id="exportBtn" class="btn btn-secondary">Copy Tips</button>
+  </div>
+</div>
+
+<div class="status" id="status">Loading…</div>
+
+<details class="drawer" id="oddsDrawer">
+  <summary>Market Odds &amp; Injuries <span id="oddsCount" style="color: var(--g-400); font-weight: 500;">— —</span></summary>
+  <div class="drawer-body">
+    <p class="drawer-note">Paste decimal head-to-head odds. Injury impact is 0 (full strength) to 10 (crippling).</p>
+    <div id="oddsInputs"></div>
+  </div>
+</details>
+
+<details class="drawer" id="weightsDrawer">
+  <summary>Confidence Weights</summary>
+  <div class="drawer-body">
+    <div class="weights-grid" id="weightsGrid"></div>
+    <div class="weight-note" id="weightTotal"></div>
+  </div>
+</details>
+
+<div class="section-hdr">
+  <h2>Round <span id="sectionRound">—</span></h2>
+  <div class="sub" id="sectionSub">Ranked by confidence</div>
+</div>
+
+<main class="content">
+  <section id="viewRanked" class="view"></section>
+  <section id="viewTable" class="view" style="display:none;"></section>
+  <section id="viewCards" class="view" style="display:none;"></section>
+</main>
+
+<footer>
+  <strong>Tipping Desk</strong> · Data: fixturedownload.com · Logic: local browser<br>
+  Not affiliated with the NRL · Built for personal use
+</footer>
+
+<script>
+const EMBEDDED_FIXTURES_NRL2026 = [{"MatchNumber":1,"RoundNumber":1,"DateUtc":"2026-03-01 02:15:00Z","Location":"Allegiant Stadium","HomeTeam":"Knights","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":28,"AwayTeamScore":18},{"MatchNumber":2,"RoundNumber":1,"DateUtc":"2026-03-01 04:30:00Z","Location":"Allegiant Stadium","HomeTeam":"Bulldogs","AwayTeam":"Dragons","Group":null,"HomeTeamScore":15,"AwayTeamScore":14},{"MatchNumber":3,"RoundNumber":1,"DateUtc":"2026-03-05 09:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Eels","Group":null,"HomeTeamScore":52,"AwayTeamScore":4},{"MatchNumber":4,"RoundNumber":1,"DateUtc":"2026-03-06 07:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Roosters","Group":null,"HomeTeamScore":42,"AwayTeamScore":18},{"MatchNumber":5,"RoundNumber":1,"DateUtc":"2026-03-06 09:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Panthers","Group":null,"HomeTeamScore":0,"AwayTeamScore":26},{"MatchNumber":6,"RoundNumber":1,"DateUtc":"2026-03-07 06:30:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Titans","Group":null,"HomeTeamScore":50,"AwayTeamScore":10},{"MatchNumber":7,"RoundNumber":1,"DateUtc":"2026-03-07 08:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Raiders","Group":null,"HomeTeamScore":28,"AwayTeamScore":29},{"MatchNumber":8,"RoundNumber":1,"DateUtc":"2026-03-08 05:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":30,"AwayTeamScore":40},{"MatchNumber":9,"RoundNumber":2,"DateUtc":"2026-03-12 09:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Eels","Group":null,"HomeTeamScore":32,"AwayTeamScore":40},{"MatchNumber":10,"RoundNumber":2,"DateUtc":"2026-03-13 07:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Raiders","Group":null,"HomeTeamScore":40,"AwayTeamScore":6},{"MatchNumber":11,"RoundNumber":2,"DateUtc":"2026-03-13 09:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":26,"AwayTeamScore":18},{"MatchNumber":12,"RoundNumber":2,"DateUtc":"2026-03-14 04:00:00Z","Location":"Leichhardt Oval","HomeTeam":"Wests Tigers","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":44,"AwayTeamScore":16},{"MatchNumber":13,"RoundNumber":2,"DateUtc":"2026-03-14 06:30:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Storm","Group":null,"HomeTeamScore":20,"AwayTeamScore":46},{"MatchNumber":14,"RoundNumber":2,"DateUtc":"2026-03-14 08:35:00Z","Location":"Carrington Park","HomeTeam":"Panthers","AwayTeam":"Sharks","Group":null,"HomeTeamScore":26,"AwayTeamScore":6},{"MatchNumber":15,"RoundNumber":2,"DateUtc":"2026-03-15 05:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Knights","Group":null,"HomeTeamScore":16,"AwayTeamScore":36},{"MatchNumber":16,"RoundNumber":2,"DateUtc":"2026-03-15 07:15:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Titans","Group":null,"HomeTeamScore":18,"AwayTeamScore":14},{"MatchNumber":17,"RoundNumber":3,"DateUtc":"2026-03-19 09:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":10,"AwayTeamScore":14},{"MatchNumber":18,"RoundNumber":3,"DateUtc":"2026-03-20 07:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Panthers","Group":null,"HomeTeamScore":4,"AwayTeamScore":40},{"MatchNumber":19,"RoundNumber":3,"DateUtc":"2026-03-20 09:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Broncos","Group":null,"HomeTeamScore":14,"AwayTeamScore":18},{"MatchNumber":20,"RoundNumber":3,"DateUtc":"2026-03-21 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Warriors","Group":null,"HomeTeamScore":12,"AwayTeamScore":38},{"MatchNumber":21,"RoundNumber":3,"DateUtc":"2026-03-21 06:30:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":10,"AwayTeamScore":38},{"MatchNumber":22,"RoundNumber":3,"DateUtc":"2026-03-21 08:35:00Z","Location":"Polytec Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":20,"AwayTeamScore":16},{"MatchNumber":23,"RoundNumber":3,"DateUtc":"2026-03-22 05:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Dragons","Group":null,"HomeTeamScore":30,"AwayTeamScore":20},{"MatchNumber":24,"RoundNumber":3,"DateUtc":"2026-03-22 07:15:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Titans","Group":null,"HomeTeamScore":30,"AwayTeamScore":16},{"MatchNumber":25,"RoundNumber":4,"DateUtc":"2026-03-26 09:00:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Roosters","Group":null,"HomeTeamScore":16,"AwayTeamScore":33},{"MatchNumber":26,"RoundNumber":4,"DateUtc":"2026-03-27 07:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":14,"AwayTeamScore":32},{"MatchNumber":27,"RoundNumber":4,"DateUtc":"2026-03-27 09:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":26,"AwayTeamScore":12},{"MatchNumber":28,"RoundNumber":4,"DateUtc":"2026-03-28 04:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Knights","Group":null,"HomeTeamScore":16,"AwayTeamScore":24},{"MatchNumber":29,"RoundNumber":4,"DateUtc":"2026-03-28 06:30:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Eels","Group":null,"HomeTeamScore":48,"AwayTeamScore":20},{"MatchNumber":30,"RoundNumber":4,"DateUtc":"2026-03-28 08:35:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Storm","Group":null,"HomeTeamScore":28,"AwayTeamScore":24},{"MatchNumber":31,"RoundNumber":4,"DateUtc":"2026-03-29 05:05:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Sharks","Group":null,"HomeTeamScore":22,"AwayTeamScore":34},{"MatchNumber":32,"RoundNumber":4,"DateUtc":"2026-03-29 07:15:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Dragons","Group":null,"HomeTeamScore":22,"AwayTeamScore":14},{"MatchNumber":33,"RoundNumber":5,"DateUtc":"2026-04-02 09:00:00Z","Location":"Kayo Stadium","HomeTeam":"Dolphins","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":18,"AwayTeamScore":52},{"MatchNumber":34,"RoundNumber":5,"DateUtc":"2026-04-03 05:05:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":32,"AwayTeamScore":24},{"MatchNumber":35,"RoundNumber":5,"DateUtc":"2026-04-03 09:00:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Storm","Group":null,"HomeTeamScore":50,"AwayTeamScore":10},{"MatchNumber":36,"RoundNumber":5,"DateUtc":"2026-04-04 06:30:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":0,"AwayTeamScore":32},{"MatchNumber":37,"RoundNumber":5,"DateUtc":"2026-04-04 08:35:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Broncos","Group":null,"HomeTeamScore":12,"AwayTeamScore":26},{"MatchNumber":38,"RoundNumber":5,"DateUtc":"2026-04-05 04:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Warriors","Group":null,"HomeTeamScore":36,"AwayTeamScore":22},{"MatchNumber":39,"RoundNumber":5,"DateUtc":"2026-04-05 06:05:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Raiders","Group":null,"HomeTeamScore":32,"AwayTeamScore":12},{"MatchNumber":40,"RoundNumber":5,"DateUtc":"2026-04-06 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":20,"AwayTeamScore":22},{"MatchNumber":41,"RoundNumber":6,"DateUtc":"2026-04-09 09:50:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Panthers","Group":null,"HomeTeamScore":32,"AwayTeamScore":16},{"MatchNumber":42,"RoundNumber":6,"DateUtc":"2026-04-10 08:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":18,"AwayTeamScore":28},{"MatchNumber":43,"RoundNumber":6,"DateUtc":"2026-04-10 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":31,"AwayTeamScore":35},{"MatchNumber":44,"RoundNumber":6,"DateUtc":"2026-04-11 05:00:00Z","Location":"Optus Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Raiders","Group":null,"HomeTeamScore":34,"AwayTeamScore":36},{"MatchNumber":45,"RoundNumber":6,"DateUtc":"2026-04-11 07:30:00Z","Location":"Optus Stadium","HomeTeam":"Sharks","AwayTeam":"Roosters","Group":null,"HomeTeamScore":22,"AwayTeamScore":34},{"MatchNumber":46,"RoundNumber":6,"DateUtc":"2026-04-11 09:35:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Warriors","Group":null,"HomeTeamScore":14,"AwayTeamScore":38},{"MatchNumber":47,"RoundNumber":6,"DateUtc":"2026-04-12 04:00:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Titans","Group":null,"HomeTeamScore":10,"AwayTeamScore":52},{"MatchNumber":48,"RoundNumber":6,"DateUtc":"2026-04-12 06:05:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Knights","Group":null,"HomeTeamScore":42,"AwayTeamScore":22},{"MatchNumber":49,"RoundNumber":7,"DateUtc":"2026-04-16 09:50:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":6,"AwayTeamScore":38},{"MatchNumber":50,"RoundNumber":7,"DateUtc":"2026-04-17 08:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Storm","Group":null,"HomeTeamScore":26,"AwayTeamScore":22},{"MatchNumber":51,"RoundNumber":7,"DateUtc":"2026-04-17 10:00:00Z","Location":"TIO Stadium","HomeTeam":"Dolphins","AwayTeam":"Panthers","Group":null,"HomeTeamScore":22,"AwayTeamScore":23},{"MatchNumber":52,"RoundNumber":7,"DateUtc":"2026-04-18 05:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Titans","Group":null,"HomeTeamScore":28,"AwayTeamScore":20},{"MatchNumber":53,"RoundNumber":7,"DateUtc":"2026-04-18 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Dragons","Group":null,"HomeTeamScore":30,"AwayTeamScore":12},{"MatchNumber":54,"RoundNumber":7,"DateUtc":"2026-04-18 09:35:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Broncos","Group":null,"HomeTeamScore":20,"AwayTeamScore":21},{"MatchNumber":55,"RoundNumber":7,"DateUtc":"2026-04-19 04:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Knights","Group":null,"HomeTeamScore":38,"AwayTeamScore":24},{"MatchNumber":56,"RoundNumber":7,"DateUtc":"2026-04-19 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":38,"AwayTeamScore":20},{"MatchNumber":57,"RoundNumber":8,"DateUtc":"2026-04-23 09:50:00Z","Location":"Leichhardt Oval","HomeTeam":"Wests Tigers","AwayTeam":"Raiders","Group":null,"HomeTeamScore":33,"AwayTeamScore":14},{"MatchNumber":58,"RoundNumber":8,"DateUtc":"2026-04-24 08:00:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Sharks","Group":null,"HomeTeamScore":46,"AwayTeamScore":34},{"MatchNumber":59,"RoundNumber":8,"DateUtc":"2026-04-24 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":32,"AwayTeamScore":12},{"MatchNumber":60,"RoundNumber":8,"DateUtc":"2026-04-25 06:00:00Z","Location":"Allianz Stadium","HomeTeam":"Dragons","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":61,"RoundNumber":8,"DateUtc":"2026-04-25 08:05:00Z","Location":"Hnry Stadium","HomeTeam":"Warriors","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":62,"RoundNumber":8,"DateUtc":"2026-04-25 10:10:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":63,"RoundNumber":8,"DateUtc":"2026-04-26 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":64,"RoundNumber":8,"DateUtc":"2026-04-26 06:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":65,"RoundNumber":9,"DateUtc":"2026-05-01 08:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":66,"RoundNumber":9,"DateUtc":"2026-05-01 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":67,"RoundNumber":9,"DateUtc":"2026-05-02 05:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":68,"RoundNumber":9,"DateUtc":"2026-05-02 07:30:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":69,"RoundNumber":9,"DateUtc":"2026-05-02 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":70,"RoundNumber":9,"DateUtc":"2026-05-03 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":71,"RoundNumber":9,"DateUtc":"2026-05-03 06:05:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":72,"RoundNumber":9,"DateUtc":"2026-05-03 08:15:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":73,"RoundNumber":10,"DateUtc":"2026-05-07 09:50:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":74,"RoundNumber":10,"DateUtc":"2026-05-08 08:00:00Z","Location":"Polytec Stadium","HomeTeam":"Roosters","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":75,"RoundNumber":10,"DateUtc":"2026-05-08 10:00:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":76,"RoundNumber":10,"DateUtc":"2026-05-09 05:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":77,"RoundNumber":10,"DateUtc":"2026-05-09 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":78,"RoundNumber":10,"DateUtc":"2026-05-09 09:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":79,"RoundNumber":10,"DateUtc":"2026-05-10 04:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":80,"RoundNumber":10,"DateUtc":"2026-05-10 06:05:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":81,"RoundNumber":11,"DateUtc":"2026-05-15 08:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Sharks","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":82,"RoundNumber":11,"DateUtc":"2026-05-15 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":83,"RoundNumber":11,"DateUtc":"2026-05-16 05:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":84,"RoundNumber":11,"DateUtc":"2026-05-16 07:30:00Z","Location":"Suncorp Stadium","HomeTeam":"Roosters","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":85,"RoundNumber":11,"DateUtc":"2026-05-16 09:45:00Z","Location":"Suncorp Stadium","HomeTeam":"Eels","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":86,"RoundNumber":11,"DateUtc":"2026-05-17 04:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Titans","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":87,"RoundNumber":11,"DateUtc":"2026-05-17 06:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Warriors","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":88,"RoundNumber":11,"DateUtc":"2026-05-17 08:25:00Z","Location":"Suncorp Stadium","HomeTeam":"Panthers","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":89,"RoundNumber":12,"DateUtc":"2026-05-21 09:50:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":90,"RoundNumber":12,"DateUtc":"2026-05-22 10:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":91,"RoundNumber":12,"DateUtc":"2026-05-23 07:30:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":92,"RoundNumber":12,"DateUtc":"2026-05-23 09:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":93,"RoundNumber":12,"DateUtc":"2026-05-24 06:05:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":94,"RoundNumber":13,"DateUtc":"2026-05-29 10:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":95,"RoundNumber":13,"DateUtc":"2026-05-30 05:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":96,"RoundNumber":13,"DateUtc":"2026-05-30 07:30:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":97,"RoundNumber":13,"DateUtc":"2026-05-30 09:35:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":98,"RoundNumber":13,"DateUtc":"2026-05-31 04:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":99,"RoundNumber":13,"DateUtc":"2026-05-31 06:05:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":100,"RoundNumber":13,"DateUtc":"2026-05-31 08:15:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":101,"RoundNumber":14,"DateUtc":"2026-06-04 09:50:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":102,"RoundNumber":14,"DateUtc":"2026-06-05 08:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":103,"RoundNumber":14,"DateUtc":"2026-06-05 10:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":104,"RoundNumber":14,"DateUtc":"2026-06-06 07:30:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":105,"RoundNumber":14,"DateUtc":"2026-06-06 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":106,"RoundNumber":14,"DateUtc":"2026-06-07 04:00:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":107,"RoundNumber":14,"DateUtc":"2026-06-07 06:05:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":108,"RoundNumber":14,"DateUtc":"2026-06-08 06:05:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":109,"RoundNumber":15,"DateUtc":"2026-06-11 09:50:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":110,"RoundNumber":15,"DateUtc":"2026-06-12 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":111,"RoundNumber":15,"DateUtc":"2026-06-13 07:35:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":112,"RoundNumber":15,"DateUtc":"2026-06-13 09:35:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":113,"RoundNumber":15,"DateUtc":"2026-06-14 06:05:00Z","Location":"Leichhardt Oval","HomeTeam":"Wests Tigers","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":114,"RoundNumber":16,"DateUtc":"2026-06-19 10:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":115,"RoundNumber":16,"DateUtc":"2026-06-20 05:00:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":116,"RoundNumber":16,"DateUtc":"2026-06-20 07:30:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":117,"RoundNumber":16,"DateUtc":"2026-06-20 09:35:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":118,"RoundNumber":16,"DateUtc":"2026-06-21 04:00:00Z","Location":"One NZ Stadium","HomeTeam":"Warriors","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":119,"RoundNumber":16,"DateUtc":"2026-06-21 06:05:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":120,"RoundNumber":16,"DateUtc":"2026-06-21 08:15:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":121,"RoundNumber":17,"DateUtc":"2026-06-25 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":122,"RoundNumber":17,"DateUtc":"2026-06-26 08:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":123,"RoundNumber":17,"DateUtc":"2026-06-26 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":124,"RoundNumber":17,"DateUtc":"2026-06-27 05:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":125,"RoundNumber":17,"DateUtc":"2026-06-27 07:30:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":126,"RoundNumber":17,"DateUtc":"2026-06-27 09:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":127,"RoundNumber":17,"DateUtc":"2026-06-28 04:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":128,"RoundNumber":17,"DateUtc":"2026-06-28 06:05:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":129,"RoundNumber":18,"DateUtc":"2026-07-03 10:00:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":130,"RoundNumber":18,"DateUtc":"2026-07-04 07:30:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":131,"RoundNumber":18,"DateUtc":"2026-07-04 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":132,"RoundNumber":18,"DateUtc":"2026-07-05 04:00:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":133,"RoundNumber":18,"DateUtc":"2026-07-05 06:05:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":134,"RoundNumber":19,"DateUtc":"2026-07-10 10:00:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":135,"RoundNumber":19,"DateUtc":"2026-07-11 05:00:00Z","Location":"Kayo Stadium","HomeTeam":"Dolphins","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":136,"RoundNumber":19,"DateUtc":"2026-07-11 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":137,"RoundNumber":19,"DateUtc":"2026-07-11 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":138,"RoundNumber":19,"DateUtc":"2026-07-12 04:00:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":139,"RoundNumber":19,"DateUtc":"2026-07-12 06:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":140,"RoundNumber":19,"DateUtc":"2026-07-12 08:15:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":141,"RoundNumber":20,"DateUtc":"2026-07-16 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":142,"RoundNumber":20,"DateUtc":"2026-07-17 08:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":143,"RoundNumber":20,"DateUtc":"2026-07-17 10:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":144,"RoundNumber":20,"DateUtc":"2026-07-18 05:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":145,"RoundNumber":20,"DateUtc":"2026-07-18 07:35:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":146,"RoundNumber":20,"DateUtc":"2026-07-18 09:35:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":147,"RoundNumber":20,"DateUtc":"2026-07-19 04:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":148,"RoundNumber":20,"DateUtc":"2026-07-19 06:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":149,"RoundNumber":21,"DateUtc":"2026-07-23 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":150,"RoundNumber":21,"DateUtc":"2026-07-24 08:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":151,"RoundNumber":21,"DateUtc":"2026-07-24 10:00:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":152,"RoundNumber":21,"DateUtc":"2026-07-25 05:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":153,"RoundNumber":21,"DateUtc":"2026-07-25 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":154,"RoundNumber":21,"DateUtc":"2026-07-25 09:35:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":155,"RoundNumber":21,"DateUtc":"2026-07-26 04:00:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":156,"RoundNumber":21,"DateUtc":"2026-07-26 06:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":157,"RoundNumber":22,"DateUtc":"2026-07-30 09:50:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":158,"RoundNumber":22,"DateUtc":"2026-07-31 08:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":159,"RoundNumber":22,"DateUtc":"2026-07-31 10:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":160,"RoundNumber":22,"DateUtc":"2026-08-01 05:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":161,"RoundNumber":22,"DateUtc":"2026-08-01 07:30:00Z","Location":"Glen Willow Oval","HomeTeam":"Panthers","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":162,"RoundNumber":22,"DateUtc":"2026-08-01 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":163,"RoundNumber":22,"DateUtc":"2026-08-02 04:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":164,"RoundNumber":22,"DateUtc":"2026-08-02 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":165,"RoundNumber":23,"DateUtc":"2026-08-06 09:50:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":166,"RoundNumber":23,"DateUtc":"2026-08-07 08:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":167,"RoundNumber":23,"DateUtc":"2026-08-07 10:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":168,"RoundNumber":23,"DateUtc":"2026-08-08 05:00:00Z","Location":"HBF Park","HomeTeam":"Storm","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":169,"RoundNumber":23,"DateUtc":"2026-08-08 07:30:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":170,"RoundNumber":23,"DateUtc":"2026-08-08 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":171,"RoundNumber":23,"DateUtc":"2026-08-09 04:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":172,"RoundNumber":23,"DateUtc":"2026-08-09 06:05:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":173,"RoundNumber":24,"DateUtc":"2026-08-13 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":174,"RoundNumber":24,"DateUtc":"2026-08-14 08:00:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":175,"RoundNumber":24,"DateUtc":"2026-08-14 10:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":176,"RoundNumber":24,"DateUtc":"2026-08-15 05:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":177,"RoundNumber":24,"DateUtc":"2026-08-15 07:30:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":178,"RoundNumber":24,"DateUtc":"2026-08-15 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":179,"RoundNumber":24,"DateUtc":"2026-08-16 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":180,"RoundNumber":24,"DateUtc":"2026-08-16 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":181,"RoundNumber":25,"DateUtc":"2026-08-20 09:50:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":182,"RoundNumber":25,"DateUtc":"2026-08-21 08:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":183,"RoundNumber":25,"DateUtc":"2026-08-21 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":184,"RoundNumber":25,"DateUtc":"2026-08-22 05:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":185,"RoundNumber":25,"DateUtc":"2026-08-22 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":186,"RoundNumber":25,"DateUtc":"2026-08-22 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Dragons","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":187,"RoundNumber":25,"DateUtc":"2026-08-23 04:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":188,"RoundNumber":25,"DateUtc":"2026-08-23 06:05:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":189,"RoundNumber":26,"DateUtc":"2026-08-27 09:50:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":190,"RoundNumber":26,"DateUtc":"2026-08-28 08:00:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":191,"RoundNumber":26,"DateUtc":"2026-08-28 10:00:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":192,"RoundNumber":26,"DateUtc":"2026-08-29 05:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":193,"RoundNumber":26,"DateUtc":"2026-08-29 07:30:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":194,"RoundNumber":26,"DateUtc":"2026-08-29 09:35:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":195,"RoundNumber":26,"DateUtc":"2026-08-30 04:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":196,"RoundNumber":26,"DateUtc":"2026-08-30 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":197,"RoundNumber":27,"DateUtc":"2026-09-03 09:50:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":198,"RoundNumber":27,"DateUtc":"2026-09-04 08:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":199,"RoundNumber":27,"DateUtc":"2026-09-04 10:00:00Z","Location":"Allianz Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":200,"RoundNumber":27,"DateUtc":"2026-09-05 05:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":201,"RoundNumber":27,"DateUtc":"2026-09-05 07:30:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":202,"RoundNumber":27,"DateUtc":"2026-09-05 09:35:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":203,"RoundNumber":27,"DateUtc":"2026-09-06 04:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":204,"RoundNumber":27,"DateUtc":"2026-09-06 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null}];
+
+// ========== STATE ==========
+const state = {
+  season: "nrl-2026",
+  round: null,
+  fixtures: [],
+  ladder: {},
+  form: {},
+  h2h: {},
+  odds: {},
+  injuries: {},
+  weights: { form: 25, ladder: 20, home: 10, h2h: 10, injury: 10, odds: 25 },
+  view: "ranked",
+  dataSource: ""
+};
+
+const CLUB_BADGES = {
+  "Broncos": "https://www.nrl.com/.theme/broncos/badge-basic24.svg",
+  "Bulldogs": "https://www.nrl.com/.theme/bulldogs/badge-basic24.svg",
+  "Cowboys": "https://www.nrl.com/.theme/cowboys/badge-basic24.svg",
+  "Dolphins": "https://www.nrl.com/.theme/dolphins/badge-basic24.svg",
+  "Dragons": "https://www.nrl.com/.theme/dragons/badge-basic24.svg",
+  "Eels": "https://www.nrl.com/.theme/eels/badge-basic24.svg",
+  "Knights": "https://www.nrl.com/.theme/knights/badge-basic24.svg",
+  "Panthers": "https://www.nrl.com/.theme/panthers/badge-basic24.svg",
+  "Rabbitohs": "https://www.nrl.com/.theme/rabbitohs/badge-basic24.svg",
+  "Raiders": "https://www.nrl.com/.theme/raiders/badge-basic24.svg",
+  "Roosters": "https://www.nrl.com/.theme/roosters/badge-basic24.svg",
+  "Sea Eagles": "https://www.nrl.com/.theme/sea-eagles/badge-basic24.svg",
+  "Sharks": "https://www.nrl.com/.theme/sharks/badge-basic24.svg",
+  "Storm": "https://www.nrl.com/.theme/storm/badge-basic24.svg",
+  "Titans": "https://www.nrl.com/.theme/titans/badge-basic24.svg",
+  "Warriors": "https://www.nrl.com/.theme/warriors/badge-basic24.svg",
+  "Wests Tigers": "https://www.nrl.com/.theme/wests-tigers/badge-basic24.svg"
+};
+
+function badgeUrl(team) { return CLUB_BADGES[team] || ""; }
+function badgeImg(team, size) {
+  const url = badgeUrl(team);
+  return url ? `<img src="${url}" alt="${team}" loading="lazy" onerror="this.style.display='none'">` : "";
+}
+
+// ========== DATA ==========
+const PROXIES = [
+  { name: "allorigins", fn: url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}` },
+  { name: "codetabs", fn: url => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}` },
+  { name: "thingproxy", fn: url => `https://thingproxy.freeboard.io/fetch/${url}` }
+];
+
+async function fetchFixtures(season) {
+  const directUrl = `https://fixturedownload.com/feed/json/${season}`;
+  const errors = [];
+  for (const proxy of PROXIES) {
+    try {
+      const res = await fetch(proxy.fn(directUrl));
+      if (!res.ok) { errors.push(`${proxy.name}:${res.status}`); continue; }
+      const text = await res.text();
+      const data = JSON.parse(text);
+      if (Array.isArray(data) && data.length) {
+        state.dataSource = `live · ${proxy.name}`;
+        return data;
+      }
+      errors.push(`${proxy.name}:empty`);
+    } catch (e) {
+      errors.push(`${proxy.name}:${e.message.slice(0, 20)}`);
+    }
+  }
+  throw new Error(errors.join(" | "));
+}
+
+// ========== STATS ==========
+function computeLadderAndForm(fixtures) {
+  const ladder = {}, form = {}, h2h = {};
+  const ensure = t => {
+    if (!ladder[t]) ladder[t] = { team: t, played: 0, wins: 0, losses: 0, draws: 0, for: 0, against: 0, pts: 0 };
+    if (!form[t]) form[t] = [];
+  };
+  const completed = fixtures
+    .filter(f => f.HomeTeamScore != null && f.AwayTeamScore != null)
+    .sort((a, b) => new Date(a.DateUtc) - new Date(b.DateUtc));
+  for (const m of completed) {
+    const h = m.HomeTeam, a = m.AwayTeam;
+    ensure(h); ensure(a);
+    const hs = m.HomeTeamScore, as = m.AwayTeamScore;
+    ladder[h].played++; ladder[a].played++;
+    ladder[h].for += hs; ladder[h].against += as;
+    ladder[a].for += as; ladder[a].against += hs;
+    let hRes, aRes;
+    if (hs > as) { ladder[h].wins++; ladder[a].losses++; hRes = "W"; aRes = "L"; }
+    else if (as > hs) { ladder[a].wins++; ladder[h].losses++; hRes = "L"; aRes = "W"; }
+    else { ladder[h].draws++; ladder[a].draws++; hRes = "D"; aRes = "D"; }
+    form[h].push(hRes); form[a].push(aRes);
+    const key = [h, a].sort().join("|");
+    if (!h2h[key]) h2h[key] = {};
+    h2h[key][h] = (h2h[key][h] || 0) + (hs > as ? 1 : 0);
+    h2h[key][a] = (h2h[key][a] || 0) + (as > hs ? 1 : 0);
+  }
+  for (const t in ladder) {
+    const l = ladder[t];
+    l.pts = l.wins * 2 + l.draws;
+    l.diff = l.for - l.against;
+  }
+  const sorted = Object.values(ladder).sort((x, y) => y.pts - x.pts || y.diff - x.diff || y.for - x.for);
+  sorted.forEach((t, i) => ladder[t.team].rank = i + 1);
+  for (const t in form) form[t] = form[t].slice(-5);
+  return { ladder, form, h2h };
+}
+
+function formScore(arr) {
+  if (!arr || !arr.length) return 50;
+  const weights = [0.6, 0.7, 0.8, 0.9, 1.0];
+  let sum = 0, tw = 0;
+  const slice = arr.slice(-5);
+  const offset = 5 - slice.length;
+  slice.forEach((r, i) => {
+    const w = weights[i + offset];
+    const pts = r === "W" ? 100 : r === "D" ? 50 : 0;
+    sum += pts * w; tw += w;
+  });
+  return tw ? sum / tw : 50;
+}
+
+function computeConfidence(match) {
+  const { HomeTeam: h, AwayTeam: a } = match;
+  const lh = state.ladder[h], la = state.ladder[a];
+  const fh = state.form[h], fa = state.form[a];
+  const fScoreH = formScore(fh), fScoreA = formScore(fa);
+  const formEdge = 50 + (fScoreH - fScoreA) / 2;
+  let ladderEdge = 50;
+  if (lh && la) {
+    const gap = la.rank - lh.rank;
+    ladderEdge = 50 + Math.max(-40, Math.min(40, gap * 2.8));
+  }
+  let homeEdge = 61;
+  if (/auckland|go media|hnry/i.test(match.Location || "")) homeEdge = 66;
+  if (/suncorp/i.test(match.Location || "") && (h === "Broncos" || h === "Dolphins")) homeEdge = 63;
+  const key = [h, a].sort().join("|");
+  const record = state.h2h[key];
+  let h2hEdge = 50;
+  if (record) {
+    const hw = record[h] || 0, aw = record[a] || 0;
+    const total = hw + aw;
+    if (total > 0) h2hEdge = 50 + ((hw - aw) / total) * 25;
+  }
+  const injH = state.injuries[h] || 0, injA = state.injuries[a] || 0;
+  const injuryEdge = 50 - injH * 2 + injA * 2;
+  let oddsEdge = null;
+  const o = state.odds[match.MatchNumber];
+  if (o && o.home > 1 && o.away > 1) {
+    const impH = 1 / o.home, impA = 1 / o.away;
+    oddsEdge = (impH / (impH + impA)) * 100;
+  }
+  const w = state.weights;
+  let num = formEdge * w.form + ladderEdge * w.ladder + homeEdge * w.home + h2hEdge * w.h2h + injuryEdge * w.injury;
+  let den = w.form + w.ladder + w.home + w.h2h + w.injury;
+  if (oddsEdge !== null) { num += oddsEdge * w.odds; den += w.odds; }
+  const homeConfidence = num / den;
+  const pick = homeConfidence >= 50 ? h : a;
+  const pickConfidence = pick === h ? homeConfidence : 100 - homeConfidence;
+  return {
+    pick,
+    confidence: Math.round(pickConfidence * 10) / 10,
+    factors: {
+      form: { home: Math.round(fScoreH), away: Math.round(fScoreA), edge: Math.round(formEdge) },
+      ladder: { homeRank: lh?.rank || "-", awayRank: la?.rank || "-", edge: Math.round(ladderEdge) },
+      home: { edge: Math.round(homeEdge), location: match.Location },
+      h2h: { record: record ? `${record[h] || 0}-${record[a] || 0}` : "no data", edge: Math.round(h2hEdge) },
+      injury: { homeHit: injH, awayHit: injA, edge: Math.round(injuryEdge) },
+      odds: { home: o?.home, away: o?.away, edge: oddsEdge !== null ? Math.round(oddsEdge) : null }
+    },
+    homeForm: fh || [],
+    awayForm: fa || []
+  };
+}
+
+// ========== RENDER ==========
+function $(id) { return document.getElementById(id); }
+
+function renderRoundSelect() {
+  const sel = $("roundSelect");
+  const rounds = [...new Set(state.fixtures.map(f => f.RoundNumber))].sort((a, b) => a - b);
+  const now = new Date();
+  let nextRound = rounds[0];
+  for (const r of rounds) {
+    const roundMatches = state.fixtures.filter(f => f.RoundNumber === r);
+    const anyFuture = roundMatches.some(m => new Date(m.DateUtc) > now || m.HomeTeamScore == null);
+    if (anyFuture) { nextRound = r; break; }
+  }
+  sel.innerHTML = rounds.map(r => `<option value="${r}">Round ${r}</option>`).join("");
+  sel.value = state.round || nextRound;
+  state.round = parseInt(sel.value);
+}
+
+function renderWeights() {
+  const grid = $("weightsGrid");
+  const keys = [["form", "Form"], ["ladder", "Ladder"], ["home", "Home"], ["h2h", "H2H"], ["injury", "Injury"], ["odds", "Odds"]];
+  grid.innerHTML = keys.map(([k, label]) => `
+    <div class="weight-item">
+      <label>${label}</label>
+      <div class="val"><span id="w-${k}-val">${state.weights[k]}</span>%</div>
+      <input type="range" id="w-${k}" min="0" max="50" value="${state.weights[k]}" />
+    </div>
+  `).join("");
+  keys.forEach(([k]) => {
+    $(`w-${k}`).addEventListener("input", e => {
+      state.weights[k] = parseInt(e.target.value);
+      $(`w-${k}-val`).textContent = e.target.value;
+      updateWeightTotal();
+      renderCurrentView();
+    });
+  });
+  updateWeightTotal();
+}
+function updateWeightTotal() {
+  const total = Object.values(state.weights).reduce((a, b) => a + b, 0);
+  $("weightTotal").textContent = `Weights normalised · total ${total}`;
+}
+
+function currentRoundMatches() {
+  return state.fixtures
+    .filter(f => f.RoundNumber === state.round)
+    .sort((a, b) => new Date(a.DateUtc) - new Date(b.DateUtc));
+}
+
+function renderOddsInputs() {
+  const matches = currentRoundMatches();
+  $("oddsCount").textContent = `(${matches.length})`;
+  const el = $("oddsInputs");
+  el.innerHTML = `
+    <div class="odds-header"><div>Match</div><div>Home</div><div>Away</div></div>
+    ${matches.map(m => {
+      const o = state.odds[m.MatchNumber] || {};
+      return `
+        <div class="odds-row">
+          <div class="label">${m.HomeTeam} <span style="color:var(--g-400);">v</span> ${m.AwayTeam}</div>
+          <input type="number" step="0.01" min="1" placeholder="1.80" value="${o.home || ""}" data-m="${m.MatchNumber}" data-side="home" />
+          <input type="number" step="0.01" min="1" placeholder="2.10" value="${o.away || ""}" data-m="${m.MatchNumber}" data-side="away" />
+        </div>
+      `;
+    }).join("")}
+    <div class="injury-section">
+      <h4>Injury Impact · 0–10</h4>
+      ${[...new Set(matches.flatMap(m => [m.HomeTeam, m.AwayTeam]))].sort().map(t => `
+        <div class="injury-row">
+          <div>${t}</div>
+          <input type="number" min="0" max="10" step="1" value="${state.injuries[t] || 0}" data-team="${t}" class="inj-input" />
+        </div>
+      `).join("")}
+    </div>
+  `;
+  el.querySelectorAll("input[data-m]").forEach(inp => {
+    inp.addEventListener("input", e => {
+      const mn = parseInt(e.target.dataset.m);
+      const side = e.target.dataset.side;
+      if (!state.odds[mn]) state.odds[mn] = {};
+      state.odds[mn][side] = parseFloat(e.target.value) || null;
+      renderCurrentView();
+    });
+  });
+  el.querySelectorAll("input.inj-input").forEach(inp => {
+    inp.addEventListener("input", e => {
+      state.injuries[e.target.dataset.team] = parseInt(e.target.value) || 0;
+      renderCurrentView();
+    });
+  });
+}
+
+function confidenceClass(c) {
+  if (c >= 70) return "high";
+  if (c >= 58) return "med";
+  return "";
+}
+
+function formatMatchTime(iso) {
+  const date = new Date(iso);
+  return {
+    day: date.toLocaleDateString("en-AU", { weekday: "short" }).toUpperCase(),
+    date: date.toLocaleDateString("en-AU", { day: "numeric", month: "short" }),
+    time: date.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Australia/Sydney" }).replace(" ", "")
+  };
+}
+
+function renderRanked() {
+  const matches = currentRoundMatches();
+  if (!matches.length) { $("viewRanked").innerHTML = `<div class="empty">No matches for Round ${state.round}</div>`; return; }
+  const picks = matches.map(m => ({ match: m, ...computeConfidence(m) })).sort((a, b) => b.confidence - a.confidence);
+  const maxConf = Math.max(...picks.map(p => p.confidence));
+  $("viewRanked").innerHTML = `<div class="match-list">${picks.map((p, i) => {
+    const t = formatMatchTime(p.match.DateUtc);
+    const homePicked = p.pick === p.match.HomeTeam;
+    const isTop = i === 0 && p.confidence >= 60;
+    const confCls = confidenceClass(p.confidence);
+    const barCls = isTop ? "high" : confCls;
+    return `
+      <article class="match-card ${isTop ? "top-pick" : ""}">
+        <header class="match-card-header">
+          <span class="rank">Pick ${String(i + 1).padStart(2, "0")}</span>
+          <span>${p.match.Location || "TBD"}</span>
+        </header>
+        <div class="match-fixture">
+          <div class="team-side ${homePicked ? "picked" : ""}">
+            <div class="team-badge">${badgeImg(p.match.HomeTeam)}</div>
+            <div class="team-name">${p.match.HomeTeam}</div>
+            <div class="team-form">${(p.homeForm || []).map(r => `<span class="form-pill ${r}">${r}</span>`).join("")}</div>
+          </div>
+          <div class="match-vs">
+            <span class="day">${t.day} ${t.date}</span>
+            <span class="time">${t.time}</span>
+            <span class="vs">vs</span>
+          </div>
+          <div class="team-side ${!homePicked ? "picked" : ""}">
+            <div class="team-badge">${badgeImg(p.match.AwayTeam)}</div>
+            <div class="team-name">${p.match.AwayTeam}</div>
+            <div class="team-form">${(p.awayForm || []).map(r => `<span class="form-pill ${r}">${r}</span>`).join("")}</div>
+          </div>
+        </div>
+        <div class="match-confidence">
+          <div class="pick-label">${p.pick}<small>${homePicked ? "Home" : "Away"} · ${confCls === "high" ? "Lock" : confCls === "med" ? "Lean" : "Toss-up"}</small></div>
+          <div class="conf-bar"><div class="conf-bar-fill ${barCls}" style="width:${p.confidence}%"></div></div>
+          <div class="conf-num ${barCls}">${p.confidence.toFixed(0)}<small>%</small></div>
+        </div>
+      </article>
+    `;
+  }).join("")}</div>`;
+}
+
+function renderTable() {
+  const matches = currentRoundMatches();
+  if (!matches.length) { $("viewTable").innerHTML = `<div class="empty">No matches for Round ${state.round}</div>`; return; }
+  const picks = matches.map(m => ({ match: m, ...computeConfidence(m) })).sort((a, b) => b.confidence - a.confidence);
+  $("viewTable").innerHTML = `
+    <div class="table-wrap">
+      <table class="ladder">
+        <thead>
+          <tr>
+            <th>Fixture</th>
+            <th>Pick</th>
+            <th class="num">Form H/A</th>
+            <th class="num">Rank H/A</th>
+            <th class="num">Home</th>
+            <th class="num">H2H</th>
+            <th class="num">Inj</th>
+            <th class="num">Odds</th>
+            <th class="num">Conf</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${picks.map(p => {
+            const f = p.factors;
+            return `
+              <tr>
+                <td class="fixture">${badgeImg(p.match.HomeTeam)}${p.match.HomeTeam}<span class="vs">v</span>${badgeImg(p.match.AwayTeam)}${p.match.AwayTeam}</td>
+                <td class="pick">${p.pick}</td>
+                <td class="num">${p.homeForm.join("") || "—"}/${p.awayForm.join("") || "—"}</td>
+                <td class="num">${f.ladder.homeRank}/${f.ladder.awayRank}</td>
+                <td class="num">${f.home.edge}</td>
+                <td class="num">${f.h2h.record}</td>
+                <td class="num">${f.injury.homeHit}/${f.injury.awayHit}</td>
+                <td class="num">${f.odds.home ? f.odds.home.toFixed(2) : "—"}/${f.odds.away ? f.odds.away.toFixed(2) : "—"}</td>
+                <td class="conf ${confidenceClass(p.confidence)}">${p.confidence.toFixed(0)}</td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderCards() {
+  const matches = currentRoundMatches();
+  if (!matches.length) { $("viewCards").innerHTML = `<div class="empty">No matches for Round ${state.round}</div>`; return; }
+  const picks = matches.map(m => ({ match: m, ...computeConfidence(m) })).sort((a, b) => b.confidence - a.confidence);
+  $("viewCards").innerHTML = `<div class="cards-wrap">${picks.map(p => {
+    const other = p.pick === p.match.HomeTeam ? p.match.AwayTeam : p.match.HomeTeam;
+    const f = p.factors;
+    const drivers = [];
+    if (Math.abs(f.form.edge - 50) >= 8) {
+      drivers.push(p.pick === p.match.HomeTeam
+        ? `form leans home (${p.homeForm.join("")} vs ${p.awayForm.join("") || "no data"})`
+        : `away form sharper (${p.awayForm.join("")} vs ${p.homeForm.join("") || "no data"})`);
+    }
+    if (Math.abs(f.ladder.edge - 50) >= 8) drivers.push(`ladder gap of ${Math.abs(f.ladder.homeRank - f.ladder.awayRank)} places`);
+    if (f.odds.edge !== null) drivers.push(`market implies ${Math.round(p.pick === p.match.HomeTeam ? f.odds.edge : 100 - f.odds.edge)}% for ${p.pick}`);
+    if (f.h2h.record !== "no data" && Math.abs(f.h2h.edge - 50) >= 10) drivers.push(`H2H favours pick (${f.h2h.record})`);
+    if (p.pick === p.match.HomeTeam && f.home.edge > 61) drivers.push("strong home venue");
+    if (f.injury.homeHit > 3 || f.injury.awayHit > 3) drivers.push(`injury impact ${f.injury.homeHit}/${f.injury.awayHit}`);
+    const rationale = drivers.length ? drivers.slice(0, 3).join("; ") + "." : "Evenly matched on paper. Narrow aggregate edge only.";
+    const isHighConf = p.confidence >= 65;
+    return `
+      <article class="r-card ${isHighConf ? "high-conf" : ""}">
+        <div class="top">
+          <div class="match-label">${p.match.HomeTeam} v ${p.match.AwayTeam}</div>
+          <div class="conf-big">${p.confidence.toFixed(0)}%</div>
+        </div>
+        <div class="pick-name">${badgeImg(p.pick)}${p.pick}</div>
+        <div class="rationale">${rationale[0].toUpperCase() + rationale.slice(1)}</div>
+      </article>
+    `;
+  }).join("")}</div>`;
+}
+
+function renderHeroMeta() {
+  const matches = currentRoundMatches();
+  const picks = matches.map(m => ({ match: m, ...computeConfidence(m) })).sort((a, b) => b.confidence - a.confidence);
+  $("heroMatchCount").textContent = matches.length ? `/ ${matches.length} games` : "";
+  $("heroTopPick").textContent = picks[0] ? picks[0].pick : "—";
+  $("heroLocks").textContent = picks.filter(p => p.confidence >= 65).length;
+  $("heroToss").textContent = picks.filter(p => p.confidence < 55).length;
+}
+
+function renderCurrentView() {
+  document.querySelectorAll(".view").forEach(v => v.style.display = "none");
+  if (state.view === "ranked") { $("viewRanked").style.display = ""; renderRanked(); }
+  else if (state.view === "table") { $("viewTable").style.display = ""; renderTable(); }
+  else { $("viewCards").style.display = ""; renderCards(); }
+  $("heroRound").textContent = state.round || "—";
+  $("sectionRound").textContent = state.round || "—";
+  const subMap = { ranked: "Ranked by confidence", table: "Factor breakdown", cards: "Pick rationale" };
+  $("sectionSub").textContent = subMap[state.view];
+  renderHeroMeta();
+}
+
+function exportTips() {
+  const matches = currentRoundMatches();
+  if (!matches.length) return;
+  const picks = matches.map(m => ({ match: m, ...computeConfidence(m) })).sort((a, b) => b.confidence - a.confidence);
+  const text = `NRL Round ${state.round} — Tipping picks\n${new Date().toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" })}\n\n` +
+    picks.map((p, i) => `${i + 1}. ${p.pick} (${p.confidence.toFixed(0)}%) over ${p.pick === p.match.HomeTeam ? p.match.AwayTeam : p.match.HomeTeam}`).join("\n");
+  navigator.clipboard.writeText(text).then(() => {
+    const s = $("status");
+    const old = s.textContent;
+    s.textContent = "Tips copied to clipboard";
+    setTimeout(() => s.textContent = old, 2000);
+  });
+}
+
+// ========== LOAD ==========
+function applyFixtures(fixtures, sourceLabel) {
+  state.fixtures = fixtures;
+  const stats = computeLadderAndForm(fixtures);
+  state.ladder = stats.ladder;
+  state.form = stats.form;
+  state.h2h = stats.h2h;
+  const completedCount = fixtures.filter(f => f.HomeTeamScore != null).length;
+  const s = $("status");
+  s.classList.remove("error");
+  s.textContent = `${fixtures.length} matches · ${completedCount} completed · ${sourceLabel}`;
+  renderRoundSelect();
+  renderOddsInputs();
+  renderCurrentView();
+}
+
+function load() {
+  if (state.season === "nrl-2026" && typeof EMBEDDED_FIXTURES_NRL2026 !== "undefined") {
+    applyFixtures(EMBEDDED_FIXTURES_NRL2026, "bundled snapshot");
+  } else {
+    refreshLive();
+  }
+}
+
+async function refreshLive() {
+  const s = $("status");
+  s.classList.remove("error");
+  s.textContent = "Fetching live data…";
+  try {
+    const data = await fetchFixtures(state.season);
+    applyFixtures(data, state.dataSource);
+  } catch (e) {
+    s.classList.add("error");
+    s.textContent = `Live fetch failed. Using bundled data.`;
+    if (state.season === "nrl-2026" && typeof EMBEDDED_FIXTURES_NRL2026 !== "undefined" && !state.fixtures.length) {
+      applyFixtures(EMBEDDED_FIXTURES_NRL2026, "bundled snapshot");
+    }
+  }
+}
+
+function init() {
+  const now = new Date();
+  $("heroDate").textContent = now.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }).toUpperCase();
+  renderWeights();
+  load();
+}
+
+document.querySelectorAll(".view-tab").forEach(t => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".view-tab").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    state.view = t.dataset.view;
+    renderCurrentView();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+$("roundSelect").addEventListener("change", e => {
+  state.round = parseInt(e.target.value);
+  renderOddsInputs();
+  renderCurrentView();
+});
+$("seasonSelect").addEventListener("change", e => {
+  state.season = e.target.value;
+  state.round = null;
+  state.odds = {};
+  state.injuries = {};
+  load();
+});
+$("refreshBtn").addEventListener("click", refreshLive);
+$("navRefresh").addEventListener("click", refreshLive);
+$("exportBtn").addEventListener("click", exportTips);
+
+init();
+</script>
+</body>
+</html>

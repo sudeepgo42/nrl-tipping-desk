@@ -1185,36 +1185,55 @@ const VENUE_COORDS = {
 };
 
 // ========== WEATHER ==========
-async function fetchWeatherForVenue(venue, isoDate) {
-  const v = VENUE_COORDS[venue];
-  if (!v) return null;
-  const d = new Date(isoDate);
-  // Only forecast within Open-Meteo's 16-day window
-  const daysAhead = Math.floor((d - new Date()) / (1000 * 60 * 60 * 24));
-  if (daysAhead < -1 || daysAhead > 14) return null;
-  // Force UTC so timestamps from API match our match dates which are UTC
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${v.lat}&longitude=${v.lng}&hourly=temperature_2m,precipitation_probability,wind_speed_10m,weather_code&timezone=GMT&forecast_days=14`;
+// Pull weather for a list of matches in ONE batched request.
+// Open-Meteo accepts comma-separated lat/lng and returns an array of forecasts
+// in the same order. Reduces 8 calls to 1.
+async function fetchWeatherForMatches(matches) {
+  // Filter to matches within forecast window AND with known venues
+  const eligible = matches.map(m => {
+    const v = VENUE_COORDS[m.Location];
+    if (!v) return null;
+    const d = new Date(m.DateUtc);
+    const daysAhead = Math.floor((d - new Date()) / (1000 * 60 * 60 * 24));
+    if (daysAhead < -1 || daysAhead > 14) return null;
+    return { match: m, venue: v, date: d };
+  }).filter(Boolean);
+
+  if (!eligible.length) return {};
+
+  const lats = eligible.map(e => e.venue.lat).join(",");
+  const lngs = eligible.map(e => e.venue.lng).join(",");
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lngs}&hourly=temperature_2m,precipitation_probability,wind_speed_10m,weather_code&timezone=GMT&forecast_days=14`;
+
   try {
     const res = await fetch(url);
-    if (!res.ok) return null;
+    if (!res.ok) return {};
     const data = await res.json();
-    const times = data.hourly?.time || [];
-    let bestIdx = -1, bestDiff = Infinity;
-    for (let i = 0; i < times.length; i++) {
-      // Open-Meteo returns "2026-04-27T19:00" — append Z to parse as UTC
-      const apiTime = new Date(times[i] + "Z");
-      const diff = Math.abs(apiTime - d);
-      if (diff < bestDiff) { bestDiff = diff; bestIdx = i; }
-    }
-    if (bestIdx < 0) return null;
-    return {
-      temp: Math.round(data.hourly.temperature_2m[bestIdx]),
-      rain: data.hourly.precipitation_probability[bestIdx] || 0,
-      wind: Math.round(data.hourly.wind_speed_10m[bestIdx]),
-      code: data.hourly.weather_code[bestIdx]
-    };
+    // Single-coord responses come back as an object, multi-coord as an array
+    const forecasts = Array.isArray(data) ? data : [data];
+
+    const result = {};
+    eligible.forEach((e, idx) => {
+      const f = forecasts[idx];
+      if (!f?.hourly?.time) return;
+      const times = f.hourly.time;
+      let bestIdx = -1, bestDiff = Infinity;
+      for (let i = 0; i < times.length; i++) {
+        const apiTime = new Date(times[i] + "Z");
+        const diff = Math.abs(apiTime - e.date);
+        if (diff < bestDiff) { bestDiff = diff; bestIdx = i; }
+      }
+      if (bestIdx < 0) return;
+      result[e.match.MatchNumber] = {
+        temp: Math.round(f.hourly.temperature_2m[bestIdx]),
+        rain: f.hourly.precipitation_probability[bestIdx] || 0,
+        wind: Math.round(f.hourly.wind_speed_10m[bestIdx]),
+        code: f.hourly.weather_code[bestIdx]
+      };
+    });
+    return result;
   } catch (e) {
-    return null;
+    return {};
   }
 }
 
@@ -1808,15 +1827,18 @@ function renderNewsTicker() {
 }
 
 async function loadAuxData() {
-  // Run in parallel: news for ticker, weather for current round matches
+  // Two parallel jobs: news (one RSS request) and weather (one batched request for all venues)
   const matches = currentRoundMatches();
-  const weatherJobs = matches.map(async m => {
-    const w = await fetchWeatherForVenue(m.Location, m.DateUtc);
-    if (w) state.weather[m.MatchNumber] = w;
+  const weatherJob = fetchWeatherForMatches(matches).then(weatherMap => {
+    Object.assign(state.weather, weatherMap);
+    renderCurrentView();
   });
-  const newsJob = fetchNews().then(items => { state.news = items; renderNewsTicker(); });
-  await Promise.all([...weatherJobs, newsJob]);
-  renderCurrentView();
+  const newsJob = fetchNews().then(items => {
+    state.news = items;
+    renderNewsTicker();
+    renderCurrentView();  // injury flags depend on news
+  });
+  await Promise.all([weatherJob, newsJob]);
 }
 
 function applyFixtures(fixtures, sourceLabel) {

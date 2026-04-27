@@ -1088,6 +1088,14 @@
     border-radius: 50%;
     background: currentColor;
   }
+  .news-empty {
+    padding: 24px 14px;
+    text-align: center;
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    color: var(--g-500);
+    line-height: 1.5;
+  }
 
 </style>
 </head>
@@ -1319,17 +1327,27 @@ const NEWS_SOURCES = [
 ];
 
 async function fetchFromProxy(url) {
+  // Order matters: try working proxy first. allorigins is unreliable when origin is slow.
   const proxies = [
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-    `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`
+    { name: "codetabs", build: u => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(u)}` },
+    { name: "allorigins", build: u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}` },
+    { name: "corsproxy", build: u => `https://corsproxy.io/?${encodeURIComponent(u)}` }
   ];
-  for (const proxyUrl of proxies) {
+  const errors = [];
+  for (const proxy of proxies) {
     try {
-      const res = await fetch(proxyUrl);
-      if (!res.ok) continue;
-      return await res.text();
-    } catch (e) {}
+      const res = await fetch(proxy.build(url), { cache: "no-store" });
+      if (!res.ok) { errors.push(`${proxy.name}:${res.status}`); continue; }
+      const text = await res.text();
+      // Sanity check: an RSS feed should contain "<item>" or be at least a few KB
+      if (text.length < 200) { errors.push(`${proxy.name}:tiny`); continue; }
+      console.log(`[news] fetched via ${proxy.name}: ${text.length} bytes`);
+      return text;
+    } catch (e) {
+      errors.push(`${proxy.name}:${(e.message || "err").slice(0, 30)}`);
+    }
   }
+  console.warn(`[news] all proxies failed: ${errors.join(" | ")}`);
   return null;
 }
 
@@ -1438,7 +1456,8 @@ const state = {
   sortBy: "confidence",  // "confidence" or "kickoff"
   dataSource: "",
   weather: {},   // matchNumber -> {temp, rain, wind, code}
-  news: []       // RSS items from Zero Tackle
+  news: [],      // RSS items from news sources
+  newsStatus: "idle"  // idle | loading | ok | failed
 };
 
 const CLUB_BADGES = {
@@ -1917,10 +1936,22 @@ function renderBreakingNews() {
   const list = $("breakingNewsList");
   const sources = $("breakingNewsSources");
   const panel = $("breakingNews");
-  if (!state.news || !state.news.length) {
-    panel.style.display = "none";
+
+  // Always show the panel; communicate status inside it
+  panel.style.display = "";
+
+  if (state.newsStatus === "loading") {
+    sources.innerHTML = '<span class="news-source-chip" style="color: rgba(255,255,255,0.5);">Loading…</span>';
+    list.innerHTML = '<div class="news-empty">Fetching latest headlines…</div>';
     return;
   }
+
+  if (state.newsStatus === "failed" || !state.news || !state.news.length) {
+    sources.innerHTML = '<span class="news-source-chip" style="color: rgba(255,255,255,0.5);">Source unavailable</span>';
+    list.innerHTML = `<div class="news-empty">News feed could not load right now. <a href="https://www.zerotackle.com/" target="_blank" rel="noopener" style="color: var(--green); text-decoration: underline;">Visit Zero Tackle directly</a> for the latest.</div>`;
+    return;
+  }
+
   // Sort: injury items first within their pubDate group, otherwise newest first
   const items = [...state.news].sort((a, b) => {
     const aInj = INJURY_KEYWORDS.test(a.title) ? 1 : 0;
@@ -1952,20 +1983,26 @@ function renderBreakingNews() {
       <span class="news-time">${timeAgo(item.pubDate)}</span>
     </a>`;
   }).join("");
-  panel.style.display = "";
 }
 
 async function loadAuxData() {
   // Two parallel jobs: news (one RSS request) and weather (one batched request for all venues)
   const matches = currentRoundMatches();
+  state.newsStatus = "loading";
+  renderBreakingNews();  // show loading state immediately
+
   const weatherJob = fetchWeatherForMatches(matches).then(weatherMap => {
     Object.assign(state.weather, weatherMap);
     renderCurrentView();
   });
   const newsJob = fetchNews().then(items => {
     state.news = items;
+    state.newsStatus = items && items.length ? "ok" : "failed";
     renderBreakingNews();
     renderCurrentView();  // injury flags depend on news
+  }).catch(() => {
+    state.newsStatus = "failed";
+    renderBreakingNews();
   });
   await Promise.all([weatherJob, newsJob]);
 }

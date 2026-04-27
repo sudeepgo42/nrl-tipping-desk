@@ -1179,17 +1179,18 @@ async function fetchWeatherForVenue(venue, isoDate) {
   // Only forecast within Open-Meteo's 16-day window
   const daysAhead = Math.floor((d - new Date()) / (1000 * 60 * 60 * 24));
   if (daysAhead < -1 || daysAhead > 14) return null;
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${v.lat}&longitude=${v.lng}&hourly=temperature_2m,precipitation_probability,wind_speed_10m,weather_code&timezone=auto&forecast_days=14`;
+  // Force UTC so timestamps from API match our match dates which are UTC
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${v.lat}&longitude=${v.lng}&hourly=temperature_2m,precipitation_probability,wind_speed_10m,weather_code&timezone=GMT&forecast_days=14`;
   try {
     const res = await fetch(url);
     if (!res.ok) return null;
     const data = await res.json();
-    // Find the closest hour to kickoff
-    const targetIso = d.toISOString().slice(0, 13); // YYYY-MM-DDTHH
     const times = data.hourly?.time || [];
     let bestIdx = -1, bestDiff = Infinity;
     for (let i = 0; i < times.length; i++) {
-      const diff = Math.abs(new Date(times[i]) - d);
+      // Open-Meteo returns "2026-04-27T19:00" — append Z to parse as UTC
+      const apiTime = new Date(times[i] + "Z");
+      const diff = Math.abs(apiTime - d);
       if (diff < bestDiff) { bestDiff = diff; bestIdx = i; }
     }
     if (bestIdx < 0) return null;

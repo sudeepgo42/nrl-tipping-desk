@@ -204,7 +204,12 @@
   }
   .round-banner-inner {
     position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    align-items: end;
   }
+  .round-banner-main { min-width: 0; }
   .round-eyebrow {
     font-family: "Oswald", sans-serif;
     font-weight: 500;
@@ -249,6 +254,105 @@
     color: white;
     letter-spacing: 0.02em;
     margin-bottom: 2px;
+  }
+
+  /* LADDER SNAPSHOT */
+  .ladder-snapshot {
+    background: rgba(0, 20, 15, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-left: 3px solid var(--gold);
+    border-radius: 3px;
+    padding: 12px 14px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .ladder-snapshot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+  }
+  .ladder-snapshot-title {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .ladder-snapshot-accuracy {
+    font-family: "Roboto Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .ladder-snapshot-accuracy strong {
+    font-family: "Oswald", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.02em;
+    margin-right: 4px;
+  }
+  .ladder-snapshot-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .ladder-row {
+    display: grid;
+    grid-template-columns: 18px 22px 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 2px 0;
+  }
+  .ladder-row .pos {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--gold);
+    text-align: center;
+  }
+  .ladder-row .badge-mini {
+    width: 22px; height: 22px;
+    background: white;
+    border-radius: 50%;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ladder-row .badge-mini img { width: 100%; height: 100%; object-fit: contain; }
+  .ladder-row .team {
+    font-family: "Oswald", sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ladder-row .record {
+    font-family: "Roboto Mono", monospace;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.04em;
+  }
+  .ladder-row .pts {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: white;
+    min-width: 18px;
+    text-align: right;
   }
 
   /* CONTROLS */
@@ -857,7 +961,12 @@
     .view-tabs { max-width: 1200px; margin: 0 auto; }
     .view-tab { flex: 0 0 auto; padding: 14px 24px; font-size: 13px; }
     .round-banner { padding: 32px 24px; }
-    .round-banner-inner { max-width: 1200px; margin: 0 auto; }
+    .round-banner-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      grid-template-columns: 1fr 320px;
+      gap: 32px;
+    }
     .round-title { font-size: 64px; }
     .round-title small { font-size: 24px; }
     .controls {
@@ -959,6 +1068,7 @@
     border-radius: 3px;
     overflow: hidden;
   }
+  .breaking-news[open] { }
   .breaking-news-header {
     background: var(--green-deep);
     color: white;
@@ -968,6 +1078,24 @@
     justify-content: space-between;
     gap: 10px;
     flex-wrap: wrap;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .breaking-news-header::-webkit-details-marker { display: none; }
+  .breaking-news-header:hover { background: var(--green-darker); }
+  .breaking-news-header::after {
+    content: "▾";
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+    margin-left: auto;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .breaking-news[open] .breaking-news-header::after {
+    transform: rotate(180deg);
   }
   .breaking-news-title {
     font-family: "Oswald", sans-serif;
@@ -980,12 +1108,25 @@
     align-items: center;
     gap: 8px;
   }
+  .breaking-news-count {
+    background: var(--gold);
+    color: var(--green-deep);
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    margin-left: 4px;
+  }
+  .breaking-news-count:empty { display: none; }
   .breaking-pulse {
     width: 8px; height: 8px;
     background: var(--live);
     border-radius: 50%;
     animation: pulse 1.5s infinite;
     display: inline-block;
+    flex-shrink: 0;
   }
   .breaking-news-sources {
     font-family: "Roboto Mono", monospace;
@@ -1128,13 +1269,22 @@
 
 <section class="round-banner">
   <div class="round-banner-inner">
-    <div class="round-eyebrow">Round Tipping · NRL 2026</div>
-    <h1 class="round-title">Round <span id="heroRound">—</span><small id="heroMatchCount">—</small></h1>
-    <div class="round-meta">
-      <div><strong id="heroTopPick">—</strong>Top pick</div>
-      <div><strong id="heroLocks">—</strong>Lock picks</div>
-      <div><strong id="heroToss">—</strong>Coin flips</div>
+    <div class="round-banner-main">
+      <div class="round-eyebrow">Round Tipping · NRL 2026</div>
+      <h1 class="round-title">Round <span id="heroRound">—</span><small id="heroMatchCount">—</small></h1>
+      <div class="round-meta">
+        <div><strong id="heroTopPick">—</strong>Top pick</div>
+        <div><strong id="heroLocks">—</strong>Lock picks</div>
+        <div><strong id="heroToss">—</strong>Coin flips</div>
+      </div>
     </div>
+    <aside class="ladder-snapshot" id="ladderSnapshot">
+      <div class="ladder-snapshot-header">
+        <div class="ladder-snapshot-title">Top 4</div>
+        <div class="ladder-snapshot-accuracy" id="ladderAccuracy">—</div>
+      </div>
+      <div class="ladder-snapshot-list" id="ladderSnapshotList"></div>
+    </aside>
   </div>
 </section>
 
@@ -1183,15 +1333,16 @@
   </div>
 </details>
 
-<div id="breakingNews" class="breaking-news" style="display:none;">
-    <header class="breaking-news-header">
+<details id="breakingNews" class="breaking-news" style="display:none;">
+    <summary class="breaking-news-header">
       <div class="breaking-news-title">
         <span class="breaking-pulse"></span>Breaking News
+        <span class="breaking-news-count" id="breakingNewsCount"></span>
       </div>
       <div class="breaking-news-sources" id="breakingNewsSources"></div>
-    </header>
+    </summary>
     <div class="breaking-news-list" id="breakingNewsList"></div>
-  </div>
+  </details>
 
   <div class="section-hdr">
   <h2>Round <span id="sectionRound">—</span></h2>
@@ -1880,6 +2031,58 @@ function renderCards() {
   }).join("")}</div>`;
 }
 
+function computeSeasonAccuracy() {
+  // For every completed match this season, would picking the higher-ranked team have won?
+  // Uses the current ladder as the predictor — answers "does ladder position predict outcomes?"
+  let correct = 0, total = 0;
+  for (const m of state.fixtures) {
+    if (m.HomeTeamScore == null || m.AwayTeamScore == null) continue;
+    if (m.HomeTeamScore === m.AwayTeamScore) continue;  // draws don't count
+    const homeRank = state.ladder[m.HomeTeam]?.rank;
+    const awayRank = state.ladder[m.AwayTeam]?.rank;
+    if (!homeRank || !awayRank) continue;
+    const pickedTeam = homeRank < awayRank ? m.HomeTeam : m.AwayTeam;
+    const winner = m.HomeTeamScore > m.AwayTeamScore ? m.HomeTeam : m.AwayTeam;
+    if (pickedTeam === winner) correct++;
+    total++;
+  }
+  return { correct, total, pct: total ? Math.round((correct / total) * 100) : 0 };
+}
+
+function renderLadderSnapshot() {
+  const list = $("ladderSnapshotList");
+  const accuracy = $("ladderAccuracy");
+  if (!list) return;
+
+  const ranked = Object.values(state.ladder)
+    .filter(t => t.rank)
+    .sort((a, b) => a.rank - b.rank)
+    .slice(0, 4);
+
+  if (!ranked.length) {
+    list.innerHTML = `<div style="color: rgba(255,255,255,0.4); font-family: 'Inter', sans-serif; font-size: 12px; text-align: center; padding: 8px 0;">Ladder building…</div>`;
+    accuracy.textContent = "";
+    return;
+  }
+
+  list.innerHTML = ranked.map(t => `
+    <div class="ladder-row">
+      <span class="pos">${t.rank}</span>
+      <span class="badge-mini">${badgeImg(t.team)}</span>
+      <span class="team">${t.team}</span>
+      <span class="record">${t.wins}-${t.losses}${t.draws ? "-" + t.draws : ""}</span>
+      <span class="pts">${t.pts}</span>
+    </div>
+  `).join("");
+
+  const acc = computeSeasonAccuracy();
+  if (acc.total > 0) {
+    accuracy.innerHTML = `Tips <strong>${acc.pct}%</strong> · ${acc.correct}/${acc.total}`;
+  } else {
+    accuracy.textContent = "";
+  }
+}
+
 function renderHeroMeta() {
   const matches = currentRoundMatches();
   const picks = matches.map(m => ({ match: m, ...computeConfidence(m) })).sort((a, b) => b.confidence - a.confidence);
@@ -1887,6 +2090,7 @@ function renderHeroMeta() {
   $("heroTopPick").textContent = picks[0] ? picks[0].pick : "—";
   $("heroLocks").textContent = picks.filter(p => p.confidence >= 65).length;
   $("heroToss").textContent = picks.filter(p => p.confidence < 55).length;
+  renderLadderSnapshot();
 }
 
 function renderCurrentView() {
@@ -1936,17 +2140,20 @@ function renderBreakingNews() {
   const list = $("breakingNewsList");
   const sources = $("breakingNewsSources");
   const panel = $("breakingNews");
+  const countEl = $("breakingNewsCount");
 
   // Always show the panel; communicate status inside it
   panel.style.display = "";
 
   if (state.newsStatus === "loading") {
+    countEl.textContent = "";
     sources.innerHTML = '<span class="news-source-chip" style="color: rgba(255,255,255,0.5);">Loading…</span>';
     list.innerHTML = '<div class="news-empty">Fetching latest headlines…</div>';
     return;
   }
 
   if (state.newsStatus === "failed" || !state.news || !state.news.length) {
+    countEl.textContent = "";
     sources.innerHTML = '<span class="news-source-chip" style="color: rgba(255,255,255,0.5);">Source unavailable</span>';
     list.innerHTML = `<div class="news-empty">News feed could not load right now. <a href="https://www.zerotackle.com/" target="_blank" rel="noopener" style="color: var(--green); text-decoration: underline;">Visit Zero Tackle directly</a> for the latest.</div>`;
     return;
@@ -1959,6 +2166,10 @@ function renderBreakingNews() {
     if (aInj !== bInj) return bInj - aInj;
     return new Date(b.pubDate) - new Date(a.pubDate);
   }).slice(0, 15);
+
+  // Show count in summary
+  const injuryCount = items.filter(i => INJURY_KEYWORDS.test(i.title)).length;
+  countEl.textContent = injuryCount > 0 ? `${items.length} · ${injuryCount} injury` : `${items.length}`;
 
   // Source chips in header
   const activeSources = [...new Set(state.news.map(n => n.source).filter(Boolean))];

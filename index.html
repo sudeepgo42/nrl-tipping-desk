@@ -1238,6 +1238,291 @@
     line-height: 1.5;
   }
 
+  /* BACKTEST VIEW */
+  .backtest-wrap {
+    padding: 0 12px;
+  }
+  .bt-summary {
+    background: white;
+    border: 1px solid var(--g-200);
+    border-top: 4px solid var(--green);
+    padding: 20px 18px;
+    margin-bottom: 16px;
+    border-radius: 3px;
+  }
+  .bt-headline {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--g-200);
+  }
+  .bt-headline-num {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 0.9;
+    color: var(--green-dark);
+    letter-spacing: -0.02em;
+  }
+  .bt-headline-num small {
+    font-size: 24px;
+    color: var(--g-500);
+    font-weight: 500;
+  }
+  .bt-headline-label {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .bt-headline-label .mono {
+    font-family: "Roboto Mono", monospace;
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--g-500);
+    letter-spacing: 0.05em;
+    text-transform: none;
+  }
+  .bt-verdict {
+    grid-column: 1 / -1;
+    padding: 8px 12px;
+    border-radius: 2px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .bt-verdict.good { background: #e6f4ec; color: var(--green-dark); border-left: 3px solid var(--green); }
+  .bt-verdict.neutral { background: var(--g-100); color: var(--g-700); border-left: 3px solid var(--g-400); }
+  .bt-verdict.warn { background: #fff4e6; color: #c65300; border-left: 3px solid #ff9800; }
+
+  .bt-comparison {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .bt-comp-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 50px;
+    gap: 10px;
+    align-items: center;
+    font-family: "Inter", sans-serif;
+    font-size: 12.5px;
+  }
+  .bt-comp-label {
+    color: var(--g-700);
+  }
+  .bt-comp-bar {
+    height: 12px;
+    background: var(--g-200);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .bt-comp-fill {
+    height: 100%;
+    transition: width 0.4s ease;
+  }
+  .bt-comp-fill.model { background: var(--green); }
+  .bt-comp-fill.ladder { background: var(--gold); }
+  .bt-comp-fill.home { background: var(--g-500); }
+  .bt-comp-val {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--green-dark);
+    text-align: right;
+  }
+  .bt-caveat {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--g-500);
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--g-200);
+  }
+
+  .bt-section-title {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--green-dark);
+  }
+  .bt-rounds {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .bt-round {
+    background: white;
+    border: 1px solid var(--g-200);
+    padding: 8px 4px;
+    border-radius: 2px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+  }
+  .bt-round-num {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--g-700);
+    letter-spacing: 0.08em;
+  }
+  .bt-round-bar {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: var(--g-100);
+    border-radius: 2px;
+  }
+  .bt-round-fill {
+    width: 70%;
+    background: var(--green);
+    transition: height 0.3s;
+    min-height: 4px;
+  }
+  .bt-round.high .bt-round-fill { background: var(--green); }
+  .bt-round.med .bt-round-fill { background: var(--gold); }
+  .bt-round.low .bt-round-fill { background: var(--live); }
+  .bt-round-pct {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--green-dark);
+  }
+  .bt-round-record {
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    color: var(--g-500);
+  }
+
+  .bt-extremes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .bt-extreme {
+    background: white;
+    border: 1px solid var(--g-200);
+    padding: 12px 14px;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .bt-extreme-label {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--g-500);
+  }
+  .bt-extreme strong {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--green-dark);
+    letter-spacing: -0.01em;
+  }
+  .bt-extreme-meta {
+    font-family: "Roboto Mono", monospace;
+    font-size: 11px;
+    color: var(--g-500);
+  }
+
+  .autotune-row {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--g-200);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .autotune-status {
+    font-family: "Inter", sans-serif;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--g-700);
+  }
+  .autotune-status.success {
+    color: var(--green-dark);
+    font-weight: 600;
+  }
+  .autotune-status strong {
+    color: var(--green-dark);
+    font-weight: 700;
+  }
+  .autotune-btn {
+    width: auto;
+    padding: 10px 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .autotune-btn.running {
+    background: var(--g-300);
+    pointer-events: none;
+  }
+  @media (max-width: 600px) {
+    .autotune-row { grid-template-columns: 1fr; }
+    .autotune-btn { width: 100%; }
+  }
+
+  /* SHARE BUTTON ON MATCH CARD */
+  .match-share-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 14px 12px;
+  }
+  .share-btn {
+    background: none;
+    border: 1px solid var(--g-300);
+    color: var(--g-700);
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .share-btn:hover { border-color: var(--green); color: var(--green); }
+  .share-btn.shared {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+  }
+  .share-btn::before {
+    content: "↗";
+    font-size: 11px;
+  }
+
 </style>
 </head>
 <body>
@@ -1265,6 +1550,7 @@
   <button class="view-tab active" data-view="ranked">Tips</button>
   <button class="view-tab" data-view="table">Analysis</button>
   <button class="view-tab" data-view="cards">Rationale</button>
+  <button class="view-tab" data-view="backtest">Backtest</button>
 </div>
 
 <section class="round-banner">
@@ -1330,6 +1616,12 @@
   <div class="drawer-body">
     <div class="weights-grid" id="weightsGrid"></div>
     <div class="weight-note" id="weightTotal"></div>
+    <div class="autotune-row">
+      <div class="autotune-info">
+        <div class="autotune-status" id="autotuneStatus">Auto-tune adjusts weights using historical results.</div>
+      </div>
+      <button id="autotuneBtn" class="btn btn-secondary autotune-btn">Auto-tune</button>
+    </div>
   </div>
 </details>
 
@@ -1353,6 +1645,7 @@
   <section id="viewRanked" class="view"></section>
   <section id="viewTable" class="view" style="display:none;"></section>
   <section id="viewCards" class="view" style="display:none;"></section>
+  <section id="viewBacktest" class="view" style="display:none;"></section>
 </main>
 
 <footer>
@@ -1950,9 +2243,20 @@ function renderRanked() {
           <div class="conf-bar"><div class="conf-bar-fill ${barCls}" style="width:${p.confidence}%"></div></div>
           <div class="conf-num ${barCls}">${p.confidence.toFixed(0)}<small>%</small></div>
         </div>
+        <div class="match-share-row">
+          <button class="share-btn" data-share-match="${p.match.MatchNumber}">Share</button>
+        </div>
       </article>
     `;
   }).join("")}</div>`;
+  // Wire up share buttons
+  document.querySelectorAll("[data-share-match]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.preventDefault();
+      const mn = parseInt(btn.dataset.shareMatch);
+      sharePick(mn, btn);
+    });
+  });
 }
 
 function renderTable() {
@@ -2031,22 +2335,287 @@ function renderCards() {
   }).join("")}</div>`;
 }
 
-function computeSeasonAccuracy() {
-  // For every completed match this season, would picking the higher-ranked team have won?
-  // Uses the current ladder as the predictor — answers "does ladder position predict outcomes?"
-  let correct = 0, total = 0;
-  for (const m of state.fixtures) {
-    if (m.HomeTeamScore == null || m.AwayTeamScore == null) continue;
-    if (m.HomeTeamScore === m.AwayTeamScore) continue;  // draws don't count
-    const homeRank = state.ladder[m.HomeTeam]?.rank;
-    const awayRank = state.ladder[m.AwayTeam]?.rank;
-    if (!homeRank || !awayRank) continue;
-    const pickedTeam = homeRank < awayRank ? m.HomeTeam : m.AwayTeam;
-    const winner = m.HomeTeamScore > m.AwayTeamScore ? m.HomeTeam : m.AwayTeam;
-    if (pickedTeam === winner) correct++;
-    total++;
+// ========== BACKTESTING ==========
+// Replays the season match-by-match, rebuilding state from scratch as if each
+// match were the next to be played. For each match, it computes what the model
+// would have predicted using only data available before kick-off, then compares
+// to the actual result. This is the honest way to measure model performance.
+//
+// Components used (all available historically): ladder, form, head-to-head,
+// home advantage. Components excluded (not stored historically): odds, weather,
+// injuries. So this reflects "structural" model accuracy, not live accuracy.
+function runBacktest(customWeights) {
+  const w = customWeights || state.weights;
+  // Ascending chronological order over completed matches
+  const completed = state.fixtures
+    .filter(f => f.HomeTeamScore != null && f.AwayTeamScore != null)
+    .slice()
+    .sort((a, b) => new Date(a.DateUtc) - new Date(b.DateUtc));
+
+  // Rolling state we rebuild as we walk forward
+  const ladder = {}, form = {}, h2h = {};
+  const ensure = t => {
+    if (!ladder[t]) ladder[t] = { team: t, played: 0, wins: 0, losses: 0, draws: 0, for: 0, against: 0, pts: 0, diff: 0, rank: 0 };
+    if (!form[t]) form[t] = [];
+  };
+  const reRank = () => {
+    const sorted = Object.values(ladder).sort((x, y) => y.pts - x.pts || y.diff - x.diff || y.for - x.for);
+    sorted.forEach((t, i) => ladder[t.team].rank = i + 1);
+  };
+
+  // Per-match prediction record
+  const predictions = [];
+  // Per-round summary
+  const byRound = {};
+  // Baselines for comparison
+  let baselineHomeCorrect = 0;
+  let baselineLadderCorrect = 0;
+
+  for (const m of completed) {
+    const h = m.HomeTeam, a = m.AwayTeam;
+    ensure(h); ensure(a);
+
+    // PREDICT using current rolling state (all data BEFORE this match)
+    const fh = form[h] || [], fa = form[a] || [];
+    const fScoreH = formScore(fh), fScoreA = formScore(fa);
+    const formEdge = 50 + (fScoreH - fScoreA) / 2;
+
+    let ladderEdge = 50;
+    if (ladder[h].rank && ladder[a].rank) {
+      const gap = ladder[a].rank - ladder[h].rank;
+      ladderEdge = 50 + Math.max(-40, Math.min(40, gap * 2.8));
+    }
+
+    let homeEdge = 61;
+    if (/auckland|go media|hnry/i.test(m.Location || "")) homeEdge = 66;
+    if (/suncorp/i.test(m.Location || "") && (h === "Broncos" || h === "Dolphins")) homeEdge = 63;
+
+    const key = [h, a].sort().join("|");
+    const record = h2h[key];
+    let h2hEdge = 50;
+    if (record) {
+      const hw = record[h] || 0, aw = record[a] || 0;
+      const total = hw + aw;
+      if (total > 0) h2hEdge = 50 + ((hw - aw) / total) * 25;
+    }
+
+    // Use weights passed in (or live state by default), minus odds/weather/injury
+    const num = formEdge * w.form + ladderEdge * w.ladder + homeEdge * w.home + h2hEdge * w.h2h;
+    const den = w.form + w.ladder + w.home + w.h2h;
+    const homeProb = num / den;
+    const modelPick = homeProb >= 50 ? h : a;
+    const confidence = modelPick === h ? homeProb : 100 - homeProb;
+
+    // Baseline picks for comparison
+    const homePickAlways = h;  // always tip home
+    const ladderPick = ladder[h].rank && ladder[a].rank
+      ? (ladder[h].rank <= ladder[a].rank ? h : a)
+      : h;  // ladder-only (tiebreak: home)
+
+    // ACTUAL outcome
+    const hs = m.HomeTeamScore, as = m.AwayTeamScore;
+    const winner = hs > as ? h : (as > hs ? a : null);  // null = draw
+    const isDraw = winner === null;
+
+    if (!isDraw) {
+      const modelCorrect = modelPick === winner;
+      const homeCorrect = homePickAlways === winner;
+      const ladderCorrect = ladderPick === winner;
+      if (homeCorrect) baselineHomeCorrect++;
+      if (ladderCorrect) baselineLadderCorrect++;
+
+      predictions.push({
+        round: m.RoundNumber,
+        match: m,
+        modelPick,
+        modelConfidence: Math.round(confidence * 10) / 10,
+        winner,
+        modelCorrect,
+        homeCorrect,
+        ladderCorrect
+      });
+
+      if (!byRound[m.RoundNumber]) byRound[m.RoundNumber] = { round: m.RoundNumber, played: 0, modelCorrect: 0 };
+      byRound[m.RoundNumber].played++;
+      if (modelCorrect) byRound[m.RoundNumber].modelCorrect++;
+    }
+
+    // Now UPDATE the rolling state with this match's actual outcome
+    ladder[h].played++; ladder[a].played++;
+    ladder[h].for += hs; ladder[h].against += as;
+    ladder[a].for += as; ladder[a].against += hs;
+    let hRes, aRes;
+    if (hs > as) { ladder[h].wins++; ladder[a].losses++; hRes = "W"; aRes = "L"; }
+    else if (as > hs) { ladder[a].wins++; ladder[h].losses++; hRes = "L"; aRes = "W"; }
+    else { ladder[h].draws++; ladder[a].draws++; hRes = "D"; aRes = "D"; }
+    form[h].push(hRes); form[a].push(aRes);
+    if (form[h].length > 5) form[h] = form[h].slice(-5);
+    if (form[a].length > 5) form[a] = form[a].slice(-5);
+
+    if (!h2h[key]) h2h[key] = {};
+    h2h[key][h] = (h2h[key][h] || 0) + (hs > as ? 1 : 0);
+    h2h[key][a] = (h2h[key][a] || 0) + (as > hs ? 1 : 0);
+
+    ladder[h].pts = ladder[h].wins * 2 + ladder[h].draws;
+    ladder[h].diff = ladder[h].for - ladder[h].against;
+    ladder[a].pts = ladder[a].wins * 2 + ladder[a].draws;
+    ladder[a].diff = ladder[a].for - ladder[a].against;
+    reRank();
   }
-  return { correct, total, pct: total ? Math.round((correct / total) * 100) : 0 };
+
+  const total = predictions.length;
+  const modelCorrect = predictions.filter(p => p.modelCorrect).length;
+
+  return {
+    total,
+    modelCorrect,
+    modelPct: total ? Math.round((modelCorrect / total) * 100) : 0,
+    homePct: total ? Math.round((baselineHomeCorrect / total) * 100) : 0,
+    ladderPct: total ? Math.round((baselineLadderCorrect / total) * 100) : 0,
+    byRound: Object.values(byRound).sort((a, b) => a.round - b.round),
+    predictions
+  };
+}
+
+// Cache backtest result so we don't recompute every render
+let backtestCache = null;
+function getBacktest() {
+  if (!backtestCache) backtestCache = runBacktest();
+  return backtestCache;
+}
+function invalidateBacktest() { backtestCache = null; }
+
+// ========== AUTO-TUNE: WEIGHT OPTIMISER ==========
+// Grid-searches the four backtest-eligible weights (form, ladder, home, h2h)
+// to find the combination that maximises historical accuracy. The odds and
+// weather weights are preserved as-is because the backtest does not include them.
+// Uses two passes: coarse (5x5x5x5 = 625 combos) then fine-tune around the winner.
+function optimiseWeights() {
+  const completed = state.fixtures.filter(f => f.HomeTeamScore != null && f.AwayTeamScore != null);
+  if (completed.length < 30) {
+    // Need at least ~4 rounds before tuning makes sense
+    return { ok: false, reason: "not enough data", samplesNeeded: 30, samplesHave: completed.length };
+  }
+
+  const formValues = [10, 20, 30, 40, 50];
+  const ladderValues = [10, 20, 30, 40, 50];
+  const homeValues = [5, 10, 15, 20, 30];
+  const h2hValues = [0, 10, 20, 30];
+
+  let best = { weights: null, pct: -1, correct: 0, total: 0 };
+  let evaluated = 0;
+
+  // Coarse grid search
+  for (const form of formValues) {
+    for (const ladder of ladderValues) {
+      for (const home of homeValues) {
+        for (const h2h of h2hValues) {
+          const candidate = {
+            ...state.weights,
+            form, ladder, home, h2h
+          };
+          const r = runBacktest(candidate);
+          evaluated++;
+          if (r.modelPct > best.pct) {
+            best = { weights: { form, ladder, home, h2h }, pct: r.modelPct, correct: r.modelCorrect, total: r.total };
+          }
+        }
+      }
+    }
+  }
+
+  // Fine tune around the winner: ±5 increments on each weight
+  const fine = { ...best.weights };
+  for (const key of ["form", "ladder", "home", "h2h"]) {
+    const center = fine[key];
+    for (const delta of [-5, -3, 3, 5]) {
+      const v = Math.max(0, center + delta);
+      const candidate = { ...state.weights, ...fine, [key]: v };
+      const r = runBacktest(candidate);
+      evaluated++;
+      if (r.modelPct > best.pct) {
+        best = { weights: { ...fine, [key]: v }, pct: r.modelPct, correct: r.modelCorrect, total: r.total };
+      }
+    }
+    fine[key] = best.weights[key];
+  }
+
+  return {
+    ok: true,
+    weights: best.weights,
+    pct: best.pct,
+    correct: best.correct,
+    total: best.total,
+    evaluated
+  };
+}
+
+// Apply tuned weights to live state and re-render
+function applyOptimisedWeights(result) {
+  if (!result.ok) return;
+  state.weights = { ...state.weights, ...result.weights };
+  invalidateBacktest();
+  // Update slider UI to reflect new values
+  for (const key of ["form", "ladder", "home", "h2h"]) {
+    const slider = document.getElementById(`w-${key}`);
+    const valSpan = document.getElementById(`w-${key}-val`);
+    if (slider) slider.value = state.weights[key];
+    if (valSpan) valSpan.textContent = state.weights[key];
+  }
+  if (typeof updateWeightTotal === "function") updateWeightTotal();
+  renderCurrentView();
+}
+
+// Wrapper that runs the optimiser, updates the UI, and shows feedback.
+// silent=true means run on load without flashing the user.
+function runAutoTune({ silent }) {
+  const btn = document.getElementById("autotuneBtn");
+  const statusEl = document.getElementById("autotuneStatus");
+  if (!btn || !statusEl) return;
+
+  if (!silent) {
+    btn.classList.add("running");
+    btn.textContent = "Tuning…";
+    statusEl.textContent = "Running grid search across weight combinations…";
+  }
+
+  // setTimeout 0 lets the browser repaint before the heavy compute
+  setTimeout(() => {
+    const before = runBacktest(state.weights);
+    const result = optimiseWeights();
+
+    if (!result.ok) {
+      if (!silent) {
+        statusEl.textContent = `Need at least ${result.samplesNeeded} completed matches to auto-tune. Currently ${result.samplesHave}.`;
+        btn.classList.remove("running");
+        btn.textContent = "Auto-tune";
+      }
+      return;
+    }
+
+    const improvement = result.pct - before.modelPct;
+    applyOptimisedWeights(result);
+
+    if (improvement > 0) {
+      statusEl.innerHTML = `Tuned: <strong>${result.pct}%</strong> accuracy (was ${before.modelPct}%). Tested ${result.evaluated} combinations.`;
+      statusEl.className = "autotune-status success";
+    } else if (improvement === 0) {
+      statusEl.innerHTML = `Already optimal at <strong>${result.pct}%</strong>. No change.`;
+      statusEl.className = "autotune-status";
+    } else {
+      // Should not happen since optimiser searches more combinations than current
+      statusEl.innerHTML = `Best found: <strong>${result.pct}%</strong> (current ${before.modelPct}%).`;
+      statusEl.className = "autotune-status";
+    }
+
+    btn.classList.remove("running");
+    btn.textContent = "Re-tune";
+  }, silent ? 50 : 50);
+}
+
+function computeSeasonAccuracy() {
+  const bt = getBacktest();
+  return { correct: bt.modelCorrect, total: bt.total, pct: bt.modelPct };
 }
 
 function renderLadderSnapshot() {
@@ -2083,6 +2652,96 @@ function renderLadderSnapshot() {
   }
 }
 
+function renderBacktest() {
+  const bt = getBacktest();
+  const el = $("viewBacktest");
+
+  if (!bt.total) {
+    el.innerHTML = `<div class="empty">No completed matches yet to backtest</div>`;
+    return;
+  }
+
+  const modelEdgeVsHome = bt.modelPct - bt.homePct;
+  const modelEdgeVsLadder = bt.modelPct - bt.ladderPct;
+  const modelVerdict =
+    bt.modelPct - bt.ladderPct >= 2 ? { text: "Model adds value", class: "good" }
+    : Math.abs(bt.modelPct - bt.ladderPct) < 2 ? { text: "Roughly matches ladder baseline", class: "neutral" }
+    : { text: "Model underperforms ladder baseline", class: "warn" };
+
+  // Round-by-round chart data
+  const maxRound = Math.max(...bt.byRound.map(r => r.round));
+  const minRound = Math.min(...bt.byRound.map(r => r.round));
+
+  // Find best/worst round
+  const sortedRounds = [...bt.byRound].sort((a, b) => (b.modelCorrect / b.played) - (a.modelCorrect / a.played));
+  const bestRound = sortedRounds[0];
+  const worstRound = sortedRounds[sortedRounds.length - 1];
+
+  el.innerHTML = `
+    <div class="backtest-wrap">
+      <div class="bt-summary">
+        <div class="bt-headline">
+          <div class="bt-headline-num">${bt.modelPct}<small>%</small></div>
+          <div class="bt-headline-label">
+            Model accuracy<br>
+            <span class="mono">${bt.modelCorrect}/${bt.total} matches</span>
+          </div>
+          <div class="bt-verdict ${modelVerdict.class}">${modelVerdict.text}</div>
+        </div>
+
+        <div class="bt-comparison">
+          <div class="bt-comp-row">
+            <span class="bt-comp-label">Full structural model</span>
+            <div class="bt-comp-bar"><div class="bt-comp-fill model" style="width: ${bt.modelPct}%"></div></div>
+            <span class="bt-comp-val">${bt.modelPct}%</span>
+          </div>
+          <div class="bt-comp-row">
+            <span class="bt-comp-label">Ladder-only baseline</span>
+            <div class="bt-comp-bar"><div class="bt-comp-fill ladder" style="width: ${bt.ladderPct}%"></div></div>
+            <span class="bt-comp-val">${bt.ladderPct}%</span>
+          </div>
+          <div class="bt-comp-row">
+            <span class="bt-comp-label">Always tip home</span>
+            <div class="bt-comp-bar"><div class="bt-comp-fill home" style="width: ${bt.homePct}%"></div></div>
+            <span class="bt-comp-val">${bt.homePct}%</span>
+          </div>
+        </div>
+
+        <p class="bt-caveat">
+          Point-in-time backtest. For each match, the model used only data available before kick-off — no look-ahead. Includes form, ladder, head-to-head, home advantage. Excludes odds, weather, and injury data because these are not stored historically.
+        </p>
+      </div>
+
+      <div class="bt-section-title">By round</div>
+      <div class="bt-rounds">
+        ${bt.byRound.map(r => {
+          const pct = Math.round((r.modelCorrect / r.played) * 100);
+          const cls = pct >= 70 ? "high" : pct >= 50 ? "med" : "low";
+          return `<div class="bt-round ${cls}">
+            <div class="bt-round-num">R${r.round}</div>
+            <div class="bt-round-bar"><div class="bt-round-fill" style="height: ${Math.max(8, pct)}%"></div></div>
+            <div class="bt-round-pct">${pct}%</div>
+            <div class="bt-round-record">${r.modelCorrect}/${r.played}</div>
+          </div>`;
+        }).join("")}
+      </div>
+
+      ${bestRound && worstRound ? `<div class="bt-extremes">
+        <div class="bt-extreme">
+          <span class="bt-extreme-label">Best round</span>
+          <strong>R${bestRound.round}</strong>
+          <span class="bt-extreme-meta">${bestRound.modelCorrect}/${bestRound.played}</span>
+        </div>
+        <div class="bt-extreme">
+          <span class="bt-extreme-label">Worst round</span>
+          <strong>R${worstRound.round}</strong>
+          <span class="bt-extreme-meta">${worstRound.modelCorrect}/${worstRound.played}</span>
+        </div>
+      </div>` : ""}
+    </div>
+  `;
+}
+
 function renderHeroMeta() {
   const matches = currentRoundMatches();
   const picks = matches.map(m => ({ match: m, ...computeConfidence(m) })).sort((a, b) => b.confidence - a.confidence);
@@ -2097,13 +2756,48 @@ function renderCurrentView() {
   document.querySelectorAll(".view").forEach(v => v.style.display = "none");
   if (state.view === "ranked") { $("viewRanked").style.display = ""; renderRanked(); }
   else if (state.view === "table") { $("viewTable").style.display = ""; renderTable(); }
-  else { $("viewCards").style.display = ""; renderCards(); }
+  else if (state.view === "cards") { $("viewCards").style.display = ""; renderCards(); }
+  else { $("viewBacktest").style.display = ""; renderBacktest(); }
   $("heroRound").textContent = state.round || "—";
   $("sectionRound").textContent = state.round || "—";
   const rankedSub = state.sortBy === "kickoff" ? "Sorted by kick-off time" : "Sorted by confidence";
-  const subMap = { ranked: rankedSub, table: "Factor breakdown", cards: "Pick rationale" };
+  const subMap = { ranked: rankedSub, table: "Factor breakdown", cards: "Pick rationale", backtest: "Season-wide model performance" };
   $("sectionSub").textContent = subMap[state.view];
   renderHeroMeta();
+}
+
+function sharePick(matchNumber, btn) {
+  const match = state.fixtures.find(m => m.MatchNumber === matchNumber);
+  if (!match) return;
+  const pred = computeConfidence(match);
+  const other = pred.pick === match.HomeTeam ? match.AwayTeam : match.HomeTeam;
+  const date = new Date(match.DateUtc);
+  const when = date.toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" }) +
+    ", " + date.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Australia/Sydney" });
+  const text = `${pred.pick} to beat ${other} (${pred.confidence.toFixed(0)}% confidence)\nNRL Round ${match.RoundNumber} · ${when}\n\nvia Tipping Desk`;
+
+  // Try native Web Share API (mobile), fall back to clipboard
+  if (navigator.share) {
+    navigator.share({ text, title: `${pred.pick} v ${other}` })
+      .then(() => flashShared(btn))
+      .catch(() => copyToClipboard(text, btn));
+  } else {
+    copyToClipboard(text, btn);
+  }
+}
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => flashShared(btn)).catch(() => {});
+}
+
+function flashShared(btn) {
+  const original = btn.textContent;
+  btn.classList.add("shared");
+  btn.textContent = "Copied";
+  setTimeout(() => {
+    btn.classList.remove("shared");
+    btn.textContent = original;
+  }, 1800);
 }
 
 function exportTips() {
@@ -2220,6 +2914,7 @@ async function loadAuxData() {
 
 function applyFixtures(fixtures, sourceLabel) {
   state.fixtures = fixtures;
+  invalidateBacktest();
   const stats = computeLadderAndForm(fixtures);
   state.ladder = stats.ladder;
   state.form = stats.form;
@@ -2232,6 +2927,8 @@ function applyFixtures(fixtures, sourceLabel) {
   renderOddsInputs();
   renderCurrentView();
   loadAuxData();  // fetch weather + news in background, re-render when ready
+  // Auto-tune on load: silently improve weights using historical results
+  setTimeout(() => runAutoTune({ silent: true }), 250);
 }
 
 function load() {
@@ -2293,6 +2990,7 @@ $("sortSelect").addEventListener("change", e => {
 $("refreshBtn").addEventListener("click", refreshLive);
 $("navRefresh").addEventListener("click", refreshLive);
 $("exportBtn").addEventListener("click", exportTips);
+$("autotuneBtn").addEventListener("click", () => runAutoTune({ silent: false }));
 
 init();
 </script>

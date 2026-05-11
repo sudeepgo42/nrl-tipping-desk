@@ -355,6 +355,188 @@
     text-align: right;
   }
 
+  /* SPARKLINE */
+  .sparkline-wrap {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,215,0,0.12);
+  }
+  .sparkline-label {
+    font-family: "Roboto Mono", monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 4px;
+  }
+  .sparkline-svg { display: block; width: 100%; overflow: visible; }
+
+  /* ROUND RECAP */
+  .recap-panel {
+    background: linear-gradient(135deg, rgba(0,115,58,0.12) 0%, rgba(0,46,35,0.25) 100%);
+    border: 1px solid rgba(255,215,0,0.25);
+    border-left: 3px solid var(--gold);
+    border-radius: 3px;
+    margin: 0 0 16px;
+    overflow: hidden;
+  }
+  .recap-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(0,20,15,0.4);
+    cursor: pointer;
+    user-select: none;
+  }
+  .recap-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .recap-title {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .recap-badge {
+    font-family: "Roboto Mono", monospace;
+    font-size: 11px;
+    color: white;
+    background: rgba(0,115,58,0.4);
+    border: 1px solid rgba(0,115,58,0.6);
+    border-radius: 3px;
+    padding: 2px 7px;
+    letter-spacing: 0.04em;
+  }
+  .recap-badge.warn { background: rgba(229,57,53,0.2); border-color: rgba(229,57,53,0.4); }
+  .recap-toggle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.4);
+    transition: transform 0.2s;
+  }
+  .recap-toggle.open { transform: rotate(180deg); }
+  .recap-body {
+    padding: 10px 14px 14px;
+    display: none;
+  }
+  .recap-body.open { display: block; }
+  .recap-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 12px;
+  }
+  .recap-stat {
+    text-align: center;
+  }
+  .recap-stat-num {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: white;
+    line-height: 1;
+  }
+  .recap-stat-num.green { color: #4caf50; }
+  .recap-stat-num.red { color: #ef5350; }
+  .recap-stat-label {
+    font-family: "Roboto Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-top: 2px;
+  }
+  .recap-divider { width: 1px; background: rgba(255,255,255,0.12); margin: 0; }
+  .recap-matches {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .recap-match {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 12px;
+  }
+  .recap-match:last-child { border-bottom: none; }
+  .recap-fixture {
+    font-family: "Inter", sans-serif;
+    color: rgba(255,255,255,0.75);
+  }
+  .recap-fixture strong { color: white; }
+  .recap-pick {
+    font-family: "Oswald", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .recap-pick.correct { color: #4caf50; }
+  .recap-pick.wrong { color: #ef5350; }
+  .recap-result {
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    min-width: 36px;
+    text-align: right;
+  }
+  .recap-result.correct { color: rgba(76,175,80,0.7); }
+  .recap-result.wrong { color: rgba(239,83,80,0.6); }
+
+  /* ODDS API */
+  .odds-api-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .odds-api-row label {
+    font-family: "Oswald", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g-500);
+    white-space: nowrap;
+  }
+  .odds-api-row input[type="text"] {
+    flex: 1;
+    font-family: "Roboto Mono", monospace;
+    font-size: 11px;
+    padding: 5px 8px;
+    border: 1px solid var(--g-300);
+    border-radius: 3px;
+    background: var(--g-100);
+    color: var(--ink);
+    min-width: 0;
+  }
+  .odds-api-row input[type="text"]::placeholder { color: var(--g-400); }
+  .odds-api-status {
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    padding: 3px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .odds-api-status.ok { background: rgba(76,175,80,0.15); color: #2e7d32; }
+  .odds-api-status.fail { background: rgba(239,83,80,0.12); color: #c62828; }
+  .odds-api-status.loading { background: rgba(0,0,0,0.06); color: var(--g-500); }
+  .odds-api-note {
+    font-size: 10px;
+    color: var(--g-500);
+    font-family: "Inter", sans-serif;
+    margin: -4px 0 8px;
+  }
+  .odds-api-note a { color: var(--green); }
+
   /* CONTROLS */
   .controls {
     background: white;
@@ -1002,7 +1184,135 @@
     border-bottom: 1px solid #ffd089;
     padding: 6px 14px;
     text-align: center;
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
   }
+
+  /* INJURY FLAG BUTTON */
+  .injury-flag {
+    background: white;
+    border: 1px solid #ff9800;
+    color: #c65300;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .injury-flag:hover {
+    background: #fff4e6;
+    border-color: #c65300;
+  }
+  .injury-flag.has-value {
+    background: #ff9800;
+    color: white;
+    border-color: #c65300;
+  }
+  .injury-flag strong {
+    font-weight: 700;
+    font-size: 12px;
+    margin-left: 2px;
+  }
+
+  /* INJURY PANEL (expanded slider on match card) */
+  .injury-panel {
+    background: #fffbf2;
+    border-bottom: 1px solid #ffd089;
+    padding: 14px 16px;
+    animation: slideDown 0.2s ease-out;
+  }
+  .injury-panel[hidden] { display: none; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .injury-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .injury-panel-team {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c65300;
+  }
+  .injury-panel-close {
+    background: none;
+    border: none;
+    color: var(--g-500);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+  }
+  .injury-panel-close:hover { color: var(--ink); }
+  .injury-panel-headline {
+    display: block;
+    font-family: "Inter", sans-serif;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--g-700);
+    text-decoration: none;
+    padding: 8px 10px;
+    background: white;
+    border: 1px solid var(--g-200);
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+  .injury-panel-headline:hover {
+    border-color: #ff9800;
+    color: #c65300;
+  }
+  .injury-panel-slider {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+  .injury-panel-label {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g-700);
+  }
+  .injury-panel-slider input[type=range] {
+    width: 100%;
+    accent-color: #ff9800;
+  }
+  .injury-panel-value {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: #c65300;
+    line-height: 1;
+    min-width: 28px;
+    text-align: right;
+  }
+  .injury-panel-legend {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    color: var(--g-500);
+    letter-spacing: 0.04em;
+  }
+
   .venue-line {
     display: inline-flex;
     align-items: center;
@@ -1570,6 +1880,10 @@
         <div class="ladder-snapshot-accuracy" id="ladderAccuracy">—</div>
       </div>
       <div class="ladder-snapshot-list" id="ladderSnapshotList"></div>
+      <div class="sparkline-wrap" id="sparklineWrap" style="display:none;">
+        <div class="sparkline-label">Model accuracy by round</div>
+        <svg class="sparkline-svg" id="sparklineSvg" height="32" viewBox="0 0 100 32" preserveAspectRatio="none"></svg>
+      </div>
     </aside>
   </div>
 </section>
@@ -1606,7 +1920,13 @@
 <details class="drawer" id="oddsDrawer">
   <summary>Market Odds &amp; Injuries <span id="oddsCount" style="color: var(--g-400); font-weight: 500;">— —</span></summary>
   <div class="drawer-body">
-    <p class="drawer-note">Paste decimal head-to-head odds. Injury impact is 0 (full strength) to 10 (crippling).</p>
+    <div class="odds-api-row">
+      <label>Odds API Key</label>
+      <input type="text" id="oddsApiKeyInput" placeholder="Paste key from the-odds-api.com…" autocomplete="off" spellcheck="false" />
+      <span class="odds-api-status" id="oddsApiStatus" style="display:none;"></span>
+    </div>
+    <p class="odds-api-note">Free key from <a href="https://the-odds-api.com" target="_blank" rel="noopener">the-odds-api.com</a> · 500 req/month · auto-fills odds below · key stored in session only.</p>
+    <p class="drawer-note">Or paste decimal head-to-head odds manually. Injury impact is 0 (full strength) to 10 (crippling).</p>
     <div id="oddsInputs"></div>
   </div>
 </details>
@@ -1635,6 +1955,8 @@
     </summary>
     <div class="breaking-news-list" id="breakingNewsList"></div>
   </details>
+
+  <div id="recapPanel"></div>
 
   <div class="section-hdr">
   <h2>Round <span id="sectionRound">—</span></h2>
@@ -1686,6 +2008,101 @@ const VENUE_COORDS = {
   "TIO Stadium": { lat: -12.3987, lng: 130.8838, city: "Darwin" },
   "WIN Stadium": { lat: -34.4290, lng: 150.8930, city: "Wollongong" }
 };
+
+// Each team's primary home base (used to compute travel distance for away games).
+// Derived from actual 2026 NRL fixture data - most frequent home venue per club.
+const TEAM_HOME_VENUE = {
+  "Broncos": "Suncorp Stadium",
+  "Bulldogs": "Accor Stadium",
+  "Cowboys": "Queensland Country Bank Stadium",
+  "Dolphins": "Suncorp Stadium",
+  "Dragons": "WIN Stadium",
+  "Eels": "CommBank Stadium",
+  "Knights": "McDonald Jones Stadium",
+  "Panthers": "CommBank Stadium",
+  "Rabbitohs": "Accor Stadium",
+  "Raiders": "GIO Stadium",
+  "Roosters": "Allianz Stadium",
+  "Sea Eagles": "4 Pines Park",
+  "Sharks": "Ocean Protect Stadium",
+  "Storm": "AAMI Park",
+  "Titans": "Cbus Super Stadium",
+  "Warriors": "Go Media Stadium",
+  "Wests Tigers": "Campbelltown Sports Stadium"
+};
+
+// Venue intensity multiplier — relative crowd/atmosphere effect on home advantage.
+// 1.0 = baseline. Higher = stronger home advantage. Tuned by capacity, rivalry vibe,
+// and known traveller-hostile venues (Suncorp, Auckland).
+const VENUE_INTENSITY = {
+  "Suncorp Stadium": 1.20,        // 52k capacity, famously hostile for visitors
+  "Go Media Stadium": 1.18,        // Auckland traveler tax
+  "Hnry Stadium": 1.18,
+  "One NZ Stadium": 1.18,
+  "Accor Stadium": 1.10,           // big Sydney stadium, atmosphere depends on crowd
+  "Allianz Stadium": 1.05,
+  "AAMI Park": 1.10,               // Storm fortress
+  "GIO Stadium": 1.10,             // Raiders cold-weather edge
+  "Queensland Country Bank Stadium": 1.10,  // Townsville heat/distance
+  "CommBank Stadium": 1.05,
+  "McDonald Jones Stadium": 1.08,
+  "Cbus Super Stadium": 1.00,
+  "Allegiant Stadium": 0.90,       // Las Vegas neutral-ish
+  "WIN Stadium": 1.05,
+  "4 Pines Park": 1.05,
+  "Ocean Protect Stadium": 1.05,
+  "Polytec Stadium": 1.00,
+  "Campbelltown Sports Stadium": 1.00,
+  "Leichhardt Oval": 1.00,
+  "Optus Stadium": 0.95,           // Perth neutral
+  "HBF Park": 0.95,
+  "TIO Stadium": 0.95,             // Darwin neutral
+  "Carrington Park": 1.00,
+  "Glen Willow Oval": 1.00,
+  "Kayo Stadium": 1.00,
+  "St George Venues Jubilee Stadium": 1.05
+};
+
+function venueIntensity(venue) {
+  return VENUE_INTENSITY[venue] || 1.0;
+}
+
+// Haversine: great-circle distance between two lat/lng points, in km
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371;  // Earth radius km
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+// Distance a team has to travel to reach a match venue.
+// Returns 0 if playing at their home venue, otherwise km from their home base.
+function travelDistance(team, matchVenue) {
+  const homeVenue = TEAM_HOME_VENUE[team];
+  if (!homeVenue || homeVenue === matchVenue) return 0;
+  const home = VENUE_COORDS[homeVenue];
+  const away = VENUE_COORDS[matchVenue];
+  if (!home || !away) return 0;
+  return Math.round(haversine(home.lat, home.lng, away.lat, away.lng));
+}
+
+// Find a team's previous match before the given match, return days of rest.
+// Returns null if no previous match found.
+function restDays(team, currentMatch) {
+  const currentDate = new Date(currentMatch.DateUtc);
+  const prior = state.fixtures
+    .filter(m => m.MatchNumber !== currentMatch.MatchNumber)
+    .filter(m => m.HomeTeam === team || m.AwayTeam === team)
+    .filter(m => new Date(m.DateUtc) < currentDate)
+    .sort((a, b) => new Date(b.DateUtc) - new Date(a.DateUtc));
+  if (!prior.length) return null;
+  const prev = new Date(prior[0].DateUtc);
+  return Math.round((currentDate - prev) / (1000 * 60 * 60 * 24));
+}
 
 // ========== WEATHER ==========
 // Pull weather for a list of matches in ONE batched request.
@@ -1761,6 +2178,88 @@ function weatherImpact(weather) {
   if (galeWind) return { adj: -2, label: "Strong wind" };
   if (weather.rain >= 50) return { adj: -1, label: "Likely rain" };
   return { adj: 0, label: "" };
+}
+
+// ========== ODDS API ==========
+// Fetches NRL h2h odds from the-odds-api.com using a user-supplied key.
+// Key is held in sessionStorage only (never persisted to localStorage or the file).
+// Called from loadAuxData if a key is present.
+let oddsApiStatus = "idle"; // idle | loading | ok | failed
+
+function normaliseTeamForOdds(name) {
+  // The Odds API uses full club names; fixturedownload uses short names.
+  return (name || "")
+    .replace(/^(Sydney |Brisbane |New Zealand |North Queensland |South Sydney |Manly[-\s]Warringah Sea |Cronulla-Sutherland |Penrith |Parramatta |Newcastle |Canberra |Canterbury-Bankstown |Gold Coast |St\.?\s*George Illawarra |Wests |Melbourne |Dolphins|The )/i, "")
+    .replace(/Sea Eagles/i, "Sea Eagles")
+    .trim();
+}
+
+async function fetchOddsFromAPI(apiKey) {
+  if (!apiKey) return;
+  oddsApiStatus = "loading";
+  renderOddsApiStatus();
+  try {
+    const url = `https://api.the-odds-api.com/v4/sports/rugbyleague_nrl/odds?regions=au&markets=h2h&apiKey=${encodeURIComponent(apiKey)}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      oddsApiStatus = res.status === 401 ? "bad-key" : "failed";
+      renderOddsApiStatus();
+      return;
+    }
+    const data = await res.json();
+    let matched = 0;
+    for (const event of data) {
+      const homeNorm = normaliseTeamForOdds(event.home_team);
+      const awayNorm = normaliseTeamForOdds(event.away_team);
+      const fixture = state.fixtures.find(f => {
+        const fh = normaliseTeamForOdds(f.HomeTeam);
+        const fa = normaliseTeamForOdds(f.AwayTeam);
+        return (fh === homeNorm && fa === awayNorm) || (fh === awayNorm && fa === homeNorm);
+      });
+      if (!fixture) continue;
+      // Average across all bookmakers for best price
+      const allPrices = { home: [], away: [] };
+      for (const bm of (event.bookmakers || [])) {
+        const market = bm.markets?.find(m => m.key === "h2h");
+        if (!market) continue;
+        for (const outcome of market.outcomes) {
+          const norm = normaliseTeamForOdds(outcome.name);
+          if (norm === normaliseTeamForOdds(fixture.HomeTeam)) allPrices.home.push(outcome.price);
+          else if (norm === normaliseTeamForOdds(fixture.AwayTeam)) allPrices.away.push(outcome.price);
+        }
+      }
+      const avg = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+      const homePrice = avg(allPrices.home);
+      const awayPrice = avg(allPrices.away);
+      if (homePrice && awayPrice) {
+        state.odds[fixture.MatchNumber] = { home: Math.round(homePrice * 100) / 100, away: Math.round(awayPrice * 100) / 100 };
+        matched++;
+      }
+    }
+    oddsApiStatus = matched > 0 ? "ok" : "no-matches";
+    renderOddsApiStatus();
+    renderCurrentView();
+    renderOddsInputs(); // refresh odds input fields to show new values
+  } catch (e) {
+    console.warn("[odds]", e.message);
+    oddsApiStatus = "failed";
+    renderOddsApiStatus();
+  }
+}
+
+function renderOddsApiStatus() {
+  const el = $("oddsApiStatus");
+  if (!el) return;
+  const msgs = {
+    idle: null, loading: ["loading", "Fetching…"],
+    ok: ["ok", "Loaded ✓"], "no-matches": ["ok", "No upcoming ✓"],
+    "bad-key": ["fail", "Bad key"], failed: ["fail", "Error"]
+  };
+  const entry = msgs[oddsApiStatus];
+  if (!entry) { el.style.display = "none"; return; }
+  el.style.display = "";
+  el.className = `odds-api-status ${entry[0]}`;
+  el.textContent = entry[1];
 }
 
 // ========== NEWS (multi-source aggregation) ==========
@@ -1895,7 +2394,7 @@ const state = {
   h2h: {},
   odds: {},
   injuries: {},
-  weights: { form: 25, ladder: 20, home: 10, h2h: 10, injury: 10, odds: 25, weather: 5 },
+  weights: { form: 25, ladder: 20, home: 10, h2h: 10, injury: 10, odds: 25, weather: 5, travel: 8 },
   view: "ranked",
   sortBy: "confidence",  // "confidence" or "kickoff"
   dataSource: "",
@@ -2021,14 +2520,38 @@ function computeConfidence(match) {
     const gap = la.rank - lh.rank;
     ladderEdge = 50 + Math.max(-40, Math.min(40, gap * 2.8));
   }
-  let homeEdge = 61;
-  if (/auckland|go media|hnry/i.test(match.Location || "")) homeEdge = 66;
-  if (/suncorp/i.test(match.Location || "") && (h === "Broncos" || h === "Dolphins")) homeEdge = 63;
+  // Home edge: baseline 61% (NRL average), modulated by venue intensity.
+  // Intensity captures: stadium size, crowd hostility, geographic isolation.
+  const baseHome = 61;
+  const intensity = venueIntensity(match.Location);
+  // Map intensity 1.0 → 61, 1.2 → 67 (cap at reasonable bounds)
+  let homeEdge = 50 + (baseHome - 50) * intensity;
+  homeEdge = Math.max(52, Math.min(70, homeEdge));
 
   // Weather impact: bad weather slightly favours the underdog by reducing home advantage
   const weather = state.weather[match.MatchNumber];
   const wImpact = weatherImpact(weather);
   homeEdge += wImpact.adj;
+
+  // Travel + rest differential: away team penalty for long flights and short turnaround.
+  // Home team almost never travels for their home game (small fluctuations for "alternate" home venues).
+  const homeTravel = travelDistance(h, match.Location);
+  const awayTravel = travelDistance(a, match.Location);
+  const homeRest = restDays(h, match);
+  const awayRest = restDays(a, match);
+
+  // Travel cost: each 1000km of travel for the away team beyond what the home team did
+  // reduces away chances by ~1.5 percentage points. Cross-Tasman trips are the biggest hit.
+  const travelDiff = awayTravel - homeTravel;  // km the away team travelled more
+  let travelEdge = 50 + Math.min(15, Math.max(0, travelDiff / 1000) * 1.5);
+
+  // Rest differential: a team with 7+ days rest playing one with 4 or fewer days rest
+  // gets a small but real boost. Map difference of 0 days → 50, 3+ days → up to 55.
+  if (homeRest !== null && awayRest !== null) {
+    const restDiff = homeRest - awayRest;  // positive = home is fresher
+    travelEdge += Math.max(-5, Math.min(5, restDiff * 1.5));
+  }
+  travelEdge = Math.max(35, Math.min(65, travelEdge));
   const key = [h, a].sort().join("|");
   const record = state.h2h[key];
   let h2hEdge = 50;
@@ -2046,8 +2569,8 @@ function computeConfidence(match) {
     oddsEdge = (impH / (impH + impA)) * 100;
   }
   const w = state.weights;
-  let num = formEdge * w.form + ladderEdge * w.ladder + homeEdge * w.home + h2hEdge * w.h2h + injuryEdge * w.injury;
-  let den = w.form + w.ladder + w.home + w.h2h + w.injury;
+  let num = formEdge * w.form + ladderEdge * w.ladder + homeEdge * w.home + h2hEdge * w.h2h + injuryEdge * w.injury + travelEdge * (w.travel || 0);
+  let den = w.form + w.ladder + w.home + w.h2h + w.injury + (w.travel || 0);
   if (oddsEdge !== null) { num += oddsEdge * w.odds; den += w.odds; }
   const homeConfidence = num / den;
   const pick = homeConfidence >= 50 ? h : a;
@@ -2058,10 +2581,11 @@ function computeConfidence(match) {
     factors: {
       form: { home: Math.round(fScoreH), away: Math.round(fScoreA), edge: Math.round(formEdge) },
       ladder: { homeRank: lh?.rank || "-", awayRank: la?.rank || "-", edge: Math.round(ladderEdge) },
-      home: { edge: Math.round(homeEdge), location: match.Location },
+      home: { edge: Math.round(homeEdge), location: match.Location, intensity: intensity },
       h2h: { record: record ? `${record[h] || 0}-${record[a] || 0}` : "no data", edge: Math.round(h2hEdge) },
       injury: { homeHit: injH, awayHit: injA, edge: Math.round(injuryEdge) },
-      odds: { home: o?.home, away: o?.away, edge: oddsEdge !== null ? Math.round(oddsEdge) : null }
+      odds: { home: o?.home, away: o?.away, edge: oddsEdge !== null ? Math.round(oddsEdge) : null },
+      travel: { homeKm: homeTravel, awayKm: awayTravel, homeRest, awayRest, edge: Math.round(travelEdge) }
     },
     homeForm: fh || [],
     awayForm: fa || []
@@ -2083,9 +2607,13 @@ function weatherChip(matchNumber) {
 
 function newsFlags(homeTeam, awayTeam) {
   const flags = [];
-  if (injuryFlagForTeam(homeTeam)) flags.push(`<span class="news-flag" title="Recent availability news for ${homeTeam}">⚠ ${homeTeam}</span>`);
-  if (injuryFlagForTeam(awayTeam)) flags.push(`<span class="news-flag" title="Recent availability news for ${awayTeam}">⚠ ${awayTeam}</span>`);
-  return flags.length ? " " + flags.join(" ") : "";
+  for (const team of [homeTeam, awayTeam]) {
+    if (!injuryFlagForTeam(team)) continue;
+    const sev = state.injuries[team] || 0;
+    const headline = newsForTeam(team).find(item => INJURY_KEYWORDS.test(item.title));
+    flags.push(`<button type="button" class="injury-flag ${sev > 0 ? "has-value" : ""}" data-injury-team="${team}" data-headline-link="${headline ? headline.link.replace(/"/g, '&quot;') : ''}" title="${headline ? headline.title.replace(/"/g, '&quot;') : 'Recent availability news'}">⚠ ${team}${sev > 0 ? ` · <strong>${sev}</strong>` : ""}</button>`);
+  }
+  return flags.length ? flags.join(" ") : "";
 }
 
 function renderRoundSelect() {
@@ -2099,7 +2627,7 @@ function renderRoundSelect() {
 
 function renderWeights() {
   const grid = $("weightsGrid");
-  const keys = [["form", "Form"], ["ladder", "Ladder"], ["home", "Home"], ["h2h", "H2H"], ["injury", "Injury"], ["odds", "Odds"], ["weather", "Weather"]];
+  const keys = [["form", "Form"], ["ladder", "Ladder"], ["home", "Home"], ["h2h", "H2H"], ["injury", "Injury"], ["odds", "Odds"], ["weather", "Weather"], ["travel", "Travel"]];
   grid.innerHTML = keys.map(([k, label]) => `
     <div class="weight-item">
       <label>${label}</label>
@@ -2214,7 +2742,10 @@ function renderRanked() {
           <span class="rank">${rankLabel}</span>
           <span class="venue-line"><span class="venue-text">${p.match.Location || "TBD"}</span>${weatherChip(p.match.MatchNumber)}</span>
         </header>
-        ${(injuryFlagForTeam(p.match.HomeTeam) || injuryFlagForTeam(p.match.AwayTeam)) ? `<div class="news-flags-row">${newsFlags(p.match.HomeTeam, p.match.AwayTeam)}</div>` : ""}
+        ${(injuryFlagForTeam(p.match.HomeTeam) || injuryFlagForTeam(p.match.AwayTeam)) ? `
+        <div class="news-flags-row">${newsFlags(p.match.HomeTeam, p.match.AwayTeam)}</div>
+        <div class="injury-panel" data-match-injury="${p.match.MatchNumber}" hidden></div>
+        ` : ""}
         <div class="match-fixture">
           <div class="team-side ${homePicked ? "picked" : ""}">
             <div class="team-badge">${badgeImg(p.match.HomeTeam)}</div>
@@ -2251,6 +2782,106 @@ function renderRanked() {
       sharePick(mn, btn);
     });
   });
+  // Wire up injury flag buttons → toggle slider panel
+  document.querySelectorAll("[data-injury-team]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.preventDefault();
+      const team = btn.dataset.injuryTeam;
+      const panel = btn.closest(".match-card").querySelector(".injury-panel");
+      if (!panel) return;
+      // If already showing this team's slider, hide it
+      if (!panel.hidden && panel.dataset.activeTeam === team) {
+        panel.hidden = true;
+        panel.dataset.activeTeam = "";
+        return;
+      }
+      // Otherwise show panel for this team
+      const sev = state.injuries[team] || 0;
+      const headlineLink = btn.dataset.headlineLink;
+      const headlineTitle = btn.title;
+      panel.dataset.activeTeam = team;
+      panel.innerHTML = `
+        <div class="injury-panel-header">
+          <span class="injury-panel-team">${team}</span>
+          <button class="injury-panel-close" type="button" aria-label="Close">×</button>
+        </div>
+        ${headlineLink ? `<a class="injury-panel-headline" href="${headlineLink}" target="_blank" rel="noopener">${headlineTitle} ↗</a>` : ""}
+        <div class="injury-panel-slider">
+          <span class="injury-panel-label">Impact</span>
+          <input type="range" min="0" max="10" step="1" value="${sev}" class="injury-slider" data-injury-slider-team="${team}" />
+          <span class="injury-panel-value" data-injury-value="${team}">${sev}</span>
+        </div>
+        <div class="injury-panel-legend">
+          <span>0 — Full strength</span>
+          <span>10 — Crippling</span>
+        </div>
+      `;
+      panel.hidden = false;
+      // Wire slider
+      const slider = panel.querySelector(".injury-slider");
+      const valueDisplay = panel.querySelector(`[data-injury-value="${team}"]`);
+      slider.addEventListener("input", ev => {
+        const v = parseInt(ev.target.value) || 0;
+        state.injuries[team] = v;
+        valueDisplay.textContent = v;
+        // Update the flag badge text
+        btn.classList.toggle("has-value", v > 0);
+        btn.innerHTML = `⚠ ${team}${v > 0 ? ` · <strong>${v}</strong>` : ""}`;
+        // Update only the confidence display on this card (no full re-render)
+        updateMatchCardConfidence(panel.closest(".match-card"));
+        // Keep the drawer in sync if it is also showing
+        const drawerInput = document.querySelector(`input.inj-input[data-team="${team}"]`);
+        if (drawerInput) drawerInput.value = v;
+      });
+      // Close button
+      panel.querySelector(".injury-panel-close").addEventListener("click", () => {
+        panel.hidden = true;
+        panel.dataset.activeTeam = "";
+      });
+    });
+  });
+}
+
+// Update only the confidence display on one card without re-rendering everything
+function updateMatchCardConfidence(card) {
+  if (!card) return;
+  // The match's order in the rendered list maps to a position;
+  // we look up its match number from the share button.
+  const shareBtn = card.querySelector("[data-share-match]");
+  if (!shareBtn) return;
+  const matchNumber = parseInt(shareBtn.dataset.shareMatch);
+  const match = state.fixtures.find(m => m.MatchNumber === matchNumber);
+  if (!match) return;
+  const p = computeConfidence(match);
+  const confCls = p.confidence >= 70 ? "high" : p.confidence >= 58 ? "med" : "";
+
+  // Update conf bar and number
+  const fill = card.querySelector(".conf-bar-fill");
+  if (fill) {
+    fill.style.width = p.confidence + "%";
+    fill.className = "conf-bar-fill " + confCls;
+  }
+  const num = card.querySelector(".conf-num");
+  if (num) {
+    num.className = "conf-num " + confCls;
+    num.innerHTML = `${p.confidence.toFixed(0)}<small>%</small>`;
+  }
+  // Update pick label
+  const pickLabel = card.querySelector(".pick-label");
+  if (pickLabel) {
+    const homePicked = p.pick === match.HomeTeam;
+    const tier = confCls === "high" ? "Lock" : confCls === "med" ? "Lean" : "Toss-up";
+    pickLabel.innerHTML = `${p.pick}<small>${homePicked ? "Home" : "Away"} · ${tier}</small>`;
+  }
+  // Highlight pick team
+  const sides = card.querySelectorAll(".team-side");
+  if (sides.length === 2) {
+    const homeIsFirst = card.querySelector(".team-name")?.textContent.trim() === match.HomeTeam;
+    const homeSide = homeIsFirst ? sides[0] : sides[1];
+    const awaySide = homeIsFirst ? sides[1] : sides[0];
+    homeSide.classList.toggle("picked", p.pick === match.HomeTeam);
+    awaySide.classList.toggle("picked", p.pick === match.AwayTeam);
+  }
 }
 
 function renderTable() {
@@ -2267,6 +2898,7 @@ function renderTable() {
             <th class="num">Form H/A</th>
             <th class="num">Rank H/A</th>
             <th class="num">Home</th>
+            <th class="num">Travel</th>
             <th class="num">H2H</th>
             <th class="num">Inj</th>
             <th class="num">Odds</th>
@@ -2283,6 +2915,7 @@ function renderTable() {
                 <td class="num">${p.homeForm.join("") || "—"}/${p.awayForm.join("") || "—"}</td>
                 <td class="num">${f.ladder.homeRank}/${f.ladder.awayRank}</td>
                 <td class="num">${f.home.edge}</td>
+                <td class="num">${f.travel.awayKm > 100 ? f.travel.awayKm + "km" : "—"}</td>
                 <td class="num">${f.h2h.record}</td>
                 <td class="num">${f.injury.homeHit}/${f.injury.awayHit}</td>
                 <td class="num">${f.odds.home ? f.odds.home.toFixed(2) : "—"}/${f.odds.away ? f.odds.away.toFixed(2) : "—"}</td>
@@ -2380,9 +3013,10 @@ function runBacktest(customWeights) {
       ladderEdge = 50 + Math.max(-40, Math.min(40, gap * 2.8));
     }
 
-    let homeEdge = 61;
-    if (/auckland|go media|hnry/i.test(m.Location || "")) homeEdge = 66;
-    if (/suncorp/i.test(m.Location || "") && (h === "Broncos" || h === "Dolphins")) homeEdge = 63;
+    // Home edge using venue intensity (same logic as live model)
+    const intensity = venueIntensity(m.Location);
+    let homeEdge = 50 + (61 - 50) * intensity;
+    homeEdge = Math.max(52, Math.min(70, homeEdge));
 
     const key = [h, a].sort().join("|");
     const record = h2h[key];
@@ -2393,9 +3027,22 @@ function runBacktest(customWeights) {
       if (total > 0) h2hEdge = 50 + ((hw - aw) / total) * 25;
     }
 
+    // Travel + rest (same logic as live model — uses match fixture data which is historical-safe)
+    const homeTravel = travelDistance(h, m.Location);
+    const awayTravel = travelDistance(a, m.Location);
+    const homeRest = restDays(h, m);
+    const awayRest = restDays(a, m);
+    const travelDiff = awayTravel - homeTravel;
+    let travelEdge = 50 + Math.min(15, Math.max(0, travelDiff / 1000) * 1.5);
+    if (homeRest !== null && awayRest !== null) {
+      const restDiff = homeRest - awayRest;
+      travelEdge += Math.max(-5, Math.min(5, restDiff * 1.5));
+    }
+    travelEdge = Math.max(35, Math.min(65, travelEdge));
+
     // Use weights passed in (or live state by default), minus odds/weather/injury
-    const num = formEdge * w.form + ladderEdge * w.ladder + homeEdge * w.home + h2hEdge * w.h2h;
-    const den = w.form + w.ladder + w.home + w.h2h;
+    const num = formEdge * w.form + ladderEdge * w.ladder + homeEdge * w.home + h2hEdge * w.h2h + travelEdge * (w.travel || 0);
+    const den = w.form + w.ladder + w.home + w.h2h + (w.travel || 0);
     const homeProb = num / den;
     const modelPick = homeProb >= 50 ? h : a;
     const confidence = modelPick === h ? homeProb : 100 - homeProb;
@@ -2495,6 +3142,7 @@ function optimiseWeights() {
   const ladderValues = [10, 20, 30, 40, 50];
   const homeValues = [5, 10, 15, 20, 30];
   const h2hValues = [0, 10, 20, 30];
+  const travelValues = [0, 5, 10, 20];
 
   let best = { weights: null, pct: -1, correct: 0, total: 0 };
   let evaluated = 0;
@@ -2504,14 +3152,16 @@ function optimiseWeights() {
     for (const ladder of ladderValues) {
       for (const home of homeValues) {
         for (const h2h of h2hValues) {
-          const candidate = {
-            ...state.weights,
-            form, ladder, home, h2h
-          };
-          const r = runBacktest(candidate);
-          evaluated++;
-          if (r.modelPct > best.pct) {
-            best = { weights: { form, ladder, home, h2h }, pct: r.modelPct, correct: r.modelCorrect, total: r.total };
+          for (const travel of travelValues) {
+            const candidate = {
+              ...state.weights,
+              form, ladder, home, h2h, travel
+            };
+            const r = runBacktest(candidate);
+            evaluated++;
+            if (r.modelPct > best.pct) {
+              best = { weights: { form, ladder, home, h2h, travel }, pct: r.modelPct, correct: r.modelCorrect, total: r.total };
+            }
           }
         }
       }
@@ -2520,7 +3170,7 @@ function optimiseWeights() {
 
   // Fine tune around the winner: ±5 increments on each weight
   const fine = { ...best.weights };
-  for (const key of ["form", "ladder", "home", "h2h"]) {
+  for (const key of ["form", "ladder", "home", "h2h", "travel"]) {
     const center = fine[key];
     for (const delta of [-5, -3, 3, 5]) {
       const v = Math.max(0, center + delta);
@@ -2550,7 +3200,7 @@ function applyOptimisedWeights(result) {
   state.weights = { ...state.weights, ...result.weights };
   invalidateBacktest();
   // Update slider UI to reflect new values
-  for (const key of ["form", "ladder", "home", "h2h"]) {
+  for (const key of ["form", "ladder", "home", "h2h", "travel"]) {
     const slider = document.getElementById(`w-${key}`);
     const valSpan = document.getElementById(`w-${key}-val`);
     if (slider) slider.value = state.weights[key];
@@ -2612,6 +3262,123 @@ function computeSeasonAccuracy() {
   return { correct: bt.modelCorrect, total: bt.total, pct: bt.modelPct };
 }
 
+function renderSparkline(byRound) {
+  const wrap = $("sparklineWrap");
+  const svg = $("sparklineSvg");
+  if (!wrap || !svg || !byRound || byRound.length < 2) {
+    if (wrap) wrap.style.display = "none";
+    return;
+  }
+  wrap.style.display = "";
+  const rounds = byRound.map(r => ({ r: r.round, pct: Math.round((r.modelCorrect / r.played) * 100) }));
+  const W = 100, H = 32, pad = 4;
+  const xStep = (W - pad * 2) / (rounds.length - 1);
+  const yMin = 30, yMax = 90;
+  const yScale = v => H - pad - ((Math.min(yMax, Math.max(yMin, v)) - yMin) / (yMax - yMin)) * (H - pad * 2);
+  const points = rounds.map((d, i) => `${pad + i * xStep},${yScale(d.pct)}`);
+  // Area fill
+  const areaPath = `M ${points.join(" L ")} L ${pad + (rounds.length - 1) * xStep},${H} L ${pad},${H} Z`;
+  // Colour of last point
+  const lastPct = rounds[rounds.length - 1].pct;
+  const lineColor = lastPct >= 60 ? "#4caf50" : lastPct >= 50 ? "#FFD700" : "#ef5350";
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="spkGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${lineColor}" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="${lineColor}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaPath}" fill="url(#spkGrad)" />
+    <polyline points="${points.join(" ")}" fill="none" stroke="${lineColor}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" />
+    <circle cx="${pad + (rounds.length - 1) * xStep}" cy="${yScale(lastPct)}" r="2.5" fill="${lineColor}" vector-effect="non-scaling-stroke" />
+  `;
+}
+
+function renderRoundRecap() {
+  const el = $("recapPanel");
+  if (!el) return;
+
+  // Find the most recently completed round (all matches have scores)
+  const rounds = [...new Set(state.fixtures.map(f => f.RoundNumber))].sort((a, b) => a - b);
+  let recapRound = null;
+  for (let i = rounds.length - 1; i >= 0; i--) {
+    const rm = state.fixtures.filter(f => f.RoundNumber === rounds[i]);
+    if (rm.every(m => m.HomeTeamScore != null)) { recapRound = rounds[i]; break; }
+  }
+
+  // Only show recap if the selected round is the one AFTER the last completed round
+  // (i.e. you've just switched to the upcoming round and can see how last round went)
+  const nextRound = state.round;
+  if (!recapRound || nextRound <= recapRound || nextRound !== recapRound + 1) {
+    el.innerHTML = "";
+    return;
+  }
+
+  // Pull backtest predictions for that round
+  const bt = getBacktest();
+  const roundPreds = bt.predictions.filter(p => p.round === recapRound);
+  if (!roundPreds.length) { el.innerHTML = ""; return; }
+
+  const correct = roundPreds.filter(p => p.modelCorrect).length;
+  const total = roundPreds.length;
+  const pct = Math.round((correct / total) * 100);
+  const isGood = pct >= 60;
+
+  const isOpen = el.dataset.open === "1";
+
+  el.innerHTML = `
+    <div class="recap-panel">
+      <div class="recap-header" id="recapHeaderToggle">
+        <div class="recap-header-left">
+          <div class="recap-title">Round ${recapRound} Review</div>
+          <div class="recap-badge ${isGood ? "" : "warn"}">${correct}/${total} · ${pct}%</div>
+        </div>
+        <div class="recap-toggle ${isOpen ? "open" : ""}" id="recapToggleIcon">▾</div>
+      </div>
+      <div class="recap-body ${isOpen ? "open" : ""}" id="recapBody">
+        <div class="recap-stats">
+          <div class="recap-stat">
+            <div class="recap-stat-num green">${correct}</div>
+            <div class="recap-stat-label">Correct</div>
+          </div>
+          <div class="recap-divider"></div>
+          <div class="recap-stat">
+            <div class="recap-stat-num red">${total - correct}</div>
+            <div class="recap-stat-label">Wrong</div>
+          </div>
+          <div class="recap-divider"></div>
+          <div class="recap-stat">
+            <div class="recap-stat-num">${pct}%</div>
+            <div class="recap-stat-label">Hit rate</div>
+          </div>
+        </div>
+        <div class="recap-matches">
+          ${roundPreds.map(p => {
+            const cls = p.modelCorrect ? "correct" : "wrong";
+            const icon = p.modelCorrect ? "✓" : "✗";
+            const hs = p.match.HomeTeamScore, as = p.match.AwayTeamScore;
+            return `<div class="recap-match">
+              <div class="recap-fixture">${p.match.HomeTeam} <span style="color:rgba(255,255,255,0.35)">v</span> ${p.match.AwayTeam}</div>
+              <div class="recap-pick ${cls}">${icon} ${p.modelPick}</div>
+              <div class="recap-result ${cls}">${hs}–${as}</div>
+            </div>`;
+          }).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Wire toggle
+  $("recapHeaderToggle").addEventListener("click", () => {
+    const body = $("recapBody");
+    const icon = $("recapToggleIcon");
+    const opening = !body.classList.contains("open");
+    body.classList.toggle("open", opening);
+    icon.classList.toggle("open", opening);
+    el.dataset.open = opening ? "1" : "0";
+  });
+}
+
 function renderLadderSnapshot() {
   const list = $("ladderSnapshotList");
   const accuracy = $("ladderAccuracy");
@@ -2644,6 +3411,10 @@ function renderLadderSnapshot() {
   } else {
     accuracy.textContent = "";
   }
+
+  // Sparkline — round-by-round accuracy trend
+  const bt = getBacktest();
+  renderSparkline(bt.byRound);
 }
 
 function renderBacktest() {
@@ -2758,6 +3529,7 @@ function renderCurrentView() {
   const subMap = { ranked: rankedSub, table: "Factor breakdown", cards: "Pick rationale", backtest: "Season-wide model performance" };
   $("sectionSub").textContent = subMap[state.view];
   renderHeroMeta();
+  renderRoundRecap();
 }
 
 function sharePick(matchNumber, btn) {
@@ -2904,6 +3676,9 @@ async function loadAuxData() {
     renderBreakingNews();
   });
   await Promise.all([weatherJob, newsJob]);
+  // Odds API — runs after other jobs; key from session input
+  const oddsKey = sessionStorage.getItem("oddsApiKey") || "";
+  if (oddsKey) fetchOddsFromAPI(oddsKey);
 }
 
 function applyFixtures(fixtures, sourceLabel) {
@@ -3039,6 +3814,26 @@ $("refreshBtn").addEventListener("click", refreshLive);
 $("navRefresh").addEventListener("click", refreshLive);
 $("exportBtn").addEventListener("click", exportTips);
 $("autotuneBtn").addEventListener("click", () => runAutoTune({ silent: false }));
+
+// Odds API key input — save to sessionStorage and auto-fetch when key is entered
+document.getElementById("oddsApiKeyInput").addEventListener("change", function(e) {
+  const key = e.target.value.trim();
+  if (key) {
+    sessionStorage.setItem("oddsApiKey", key);
+    fetchOddsFromAPI(key);
+  } else {
+    sessionStorage.removeItem("oddsApiKey");
+    oddsApiStatus = "idle";
+    renderOddsApiStatus();
+  }
+});
+
+// Restore saved key from session on load (without re-fetching — loadAuxData handles that)
+(function restoreOddsKey() {
+  const saved = sessionStorage.getItem("oddsApiKey");
+  const inp = document.getElementById("oddsApiKeyInput");
+  if (saved && inp) inp.value = saved;
+})();
 
 init();
 </script>

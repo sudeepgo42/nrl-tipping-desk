@@ -2188,11 +2188,34 @@ const ODDS_API_KEY = "fd513be1db425a8080f6df2ea6f37568"; // hardcoded key
 let oddsApiStatus = "idle"; // idle | loading | ok | failed
 
 function normaliseTeamForOdds(name) {
-  // The Odds API uses full club names; fixturedownload uses short names.
-  return (name || "")
-    .replace(/^(Sydney |Brisbane |New Zealand |North Queensland |South Sydney |Manly[-\s]Warringah Sea |Cronulla-Sutherland |Penrith |Parramatta |Newcastle |Canberra |Canterbury-Bankstown |Gold Coast |St\.?\s*George Illawarra |Wests |Melbourne |Dolphins|The )/i, "")
-    .replace(/Sea Eagles/i, "Sea Eagles")
-    .trim();
+  // Map every known Odds API full name → fixture short name.
+  // Exact-match first, then fall back to stripping known prefixes.
+  const LOOKUP = {
+    "sydney roosters":             "Roosters",
+    "brisbane broncos":            "Broncos",
+    "new zealand warriors":        "Warriors",
+    "north queensland cowboys":    "Cowboys",
+    "south sydney rabbitohs":      "Rabbitohs",
+    "manly-warringah sea eagles":  "Sea Eagles",
+    "manly warringah sea eagles":  "Sea Eagles",
+    "cronulla-sutherland sharks":  "Sharks",
+    "cronulla sutherland sharks":  "Sharks",
+    "penrith panthers":            "Panthers",
+    "parramatta eels":             "Eels",
+    "newcastle knights":           "Knights",
+    "canberra raiders":            "Raiders",
+    "canterbury-bankstown bulldogs": "Bulldogs",
+    "canterbury bankstown bulldogs": "Bulldogs",
+    "gold coast titans":           "Titans",
+    "st george illawarra dragons": "Dragons",
+    "wests tigers":                "Wests Tigers",
+    "melbourne storm":             "Storm",
+    "dolphins":                    "Dolphins",
+    "the dolphins":                "Dolphins",
+    "dolhpins":                    "Dolphins",  // common API typo guard
+  };
+  const key = (name || "").toLowerCase().trim();
+  return LOOKUP[key] || (name || "").trim();
 }
 
 async function fetchOddsFromAPI(apiKey) {

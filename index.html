@@ -1922,10 +1922,10 @@
   <div class="drawer-body">
     <div class="odds-api-row">
       <label>Odds API Key</label>
-      <input type="text" id="oddsApiKeyInput" placeholder="Paste key from the-odds-api.com…" autocomplete="off" spellcheck="false" />
+      <input type="text" id="oddsApiKeyInput" placeholder="Override key (optional — default key is set)" autocomplete="off" spellcheck="false" />
       <span class="odds-api-status" id="oddsApiStatus" style="display:none;"></span>
     </div>
-    <p class="odds-api-note">Free key from <a href="https://the-odds-api.com" target="_blank" rel="noopener">the-odds-api.com</a> · 500 req/month · auto-fills odds below · key stored in session only.</p>
+    <p class="odds-api-note">Odds auto-loaded on startup · <a href="https://the-odds-api.com" target="_blank" rel="noopener">the-odds-api.com</a> · 500 req/month · paste a different key above to override.</p>
     <p class="drawer-note">Or paste decimal head-to-head odds manually. Injury impact is 0 (full strength) to 10 (crippling).</p>
     <div id="oddsInputs"></div>
   </div>
@@ -2182,8 +2182,9 @@ function weatherImpact(weather) {
 
 // ========== ODDS API ==========
 // Fetches NRL h2h odds from the-odds-api.com using a user-supplied key.
-// Key is held in sessionStorage only (never persisted to localStorage or the file).
+// Key is hardcoded as ODDS_API_KEY. The UI input allows override (stored in sessionStorage).
 // Called from loadAuxData if a key is present.
+const ODDS_API_KEY = "fd513be1db425a8080f6df2ea6f37568"; // hardcoded key
 let oddsApiStatus = "idle"; // idle | loading | ok | failed
 
 function normaliseTeamForOdds(name) {
@@ -3677,7 +3678,7 @@ async function loadAuxData() {
   });
   await Promise.all([weatherJob, newsJob]);
   // Odds API — runs after other jobs; key from session input
-  const oddsKey = sessionStorage.getItem("oddsApiKey") || "";
+  const oddsKey = ODDS_API_KEY || sessionStorage.getItem("oddsApiKey") || "";
   if (oddsKey) fetchOddsFromAPI(oddsKey);
 }
 

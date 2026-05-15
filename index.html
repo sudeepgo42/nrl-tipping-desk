@@ -2233,11 +2233,12 @@ async function fetchOddsFromAPI(apiKey) {
     }
     const data = await res.json();
     // DEBUG: log every event so we can see exact API team name strings
+    const upcomingForDebug = state.fixtures.filter(f => f.HomeTeamScore == null);
     console.group("[odds] API returned " + data.length + " events");
     for (const ev of data) {
       const hn = normaliseTeamForOdds(ev.home_team);
       const an = normaliseTeamForOdds(ev.away_team);
-      const hit = state.fixtures.find(f => {
+      const hit = upcomingForDebug.find(f => {
         const fh = normaliseTeamForOdds(f.HomeTeam);
         const fa = normaliseTeamForOdds(f.AwayTeam);
         return (fh === hn && fa === an) || (fh === an && fa === hn);
@@ -2249,21 +2250,43 @@ async function fetchOddsFromAPI(apiKey) {
     for (const event of data) {
       const homeNorm = normaliseTeamForOdds(event.home_team);
       const awayNorm = normaliseTeamForOdds(event.away_team);
-      const fixture = state.fixtures.find(f => {
+      // Prefer unplayed fixtures — the Odds API only returns upcoming games,
+      // so matching against completed fixtures (same teams, earlier round) would
+      // store odds under the wrong MatchNumber and they'd never appear in tips.
+      const upcoming = state.fixtures.filter(f => f.HomeTeamScore == null);
+      let fixture = upcoming.find(f => {
         const fh = normaliseTeamForOdds(f.HomeTeam);
         const fa = normaliseTeamForOdds(f.AwayTeam);
         return (fh === homeNorm && fa === awayNorm) || (fh === awayNorm && fa === homeNorm);
       });
+      // Fall back to any fixture (shouldn't normally be needed)
+      if (!fixture) {
+        fixture = state.fixtures.find(f => {
+          const fh = normaliseTeamForOdds(f.HomeTeam);
+          const fa = normaliseTeamForOdds(f.AwayTeam);
+          return (fh === homeNorm && fa === awayNorm) || (fh === awayNorm && fa === homeNorm);
+        });
+      }
       if (!fixture) continue;
       // Average across all bookmakers for best price
       const allPrices = { home: [], away: [] };
+      // Determine if the API event has the same home/away orientation as the fixture
+      const fixtureHomeNorm = normaliseTeamForOdds(fixture.HomeTeam);
+      const apiSameOrientation = fixtureHomeNorm === homeNorm;
       for (const bm of (event.bookmakers || [])) {
         const market = bm.markets?.find(m => m.key === "h2h");
         if (!market) continue;
         for (const outcome of market.outcomes) {
           const norm = normaliseTeamForOdds(outcome.name);
-          if (norm === normaliseTeamForOdds(fixture.HomeTeam)) allPrices.home.push(outcome.price);
-          else if (norm === normaliseTeamForOdds(fixture.AwayTeam)) allPrices.away.push(outcome.price);
+          // Map to fixture home/away regardless of API orientation
+          if (apiSameOrientation) {
+            if (norm === homeNorm) allPrices.home.push(outcome.price);
+            else if (norm === awayNorm) allPrices.away.push(outcome.price);
+          } else {
+            // API has teams swapped relative to fixture — swap prices accordingly
+            if (norm === awayNorm) allPrices.home.push(outcome.price);
+            else if (norm === homeNorm) allPrices.away.push(outcome.price);
+          }
         }
       }
       const avg = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;

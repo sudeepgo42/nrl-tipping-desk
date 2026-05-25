@@ -5,7 +5,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#002E23" />
-<title>Tipping Desk — NRL 2026</title>
+<title>The NRL Oracle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -111,22 +111,17 @@
     flex-shrink: 0;
   }
   .logo-mark {
-    width: 36px; height: 36px;
-    background: var(--green);
-    border: 2px solid var(--gold);
+    width: 42px; height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: "Oswald", sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    color: white;
-    letter-spacing: 0.02em;
+    flex-shrink: 0;
   }
+  .logo-mark svg { width: 42px; height: 42px; }
   .logo-text {
     font-family: "Oswald", sans-serif;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 15px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: white;
@@ -1846,9 +1841,36 @@
 <nav class="nav">
   <div class="nav-inner">
     <a href="#" class="logo">
-      <div class="logo-mark">TD</div>
+      <div class="logo-mark">
+        <!-- NRL Oracle Logo: eye/rugby-ball motif -->
+        <svg viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+          <!-- Outer ring with solid gold fill ring -->
+          <circle cx="21" cy="21" r="20" fill="#1e4030" stroke="#e8b82a" stroke-width="2.5"/>
+          <circle cx="21" cy="21" r="17" fill="none" stroke="#e8b82a" stroke-width="0.7" opacity="0.4"/>
+          <!-- Rugby ball shape - thicker, brighter -->
+          <ellipse cx="21" cy="21" rx="10" ry="14.5" fill="#c9a227" opacity="0.12"/>
+          <ellipse cx="21" cy="21" rx="10" ry="14.5" fill="none" stroke="#e8b82a" stroke-width="2.2"/>
+          <!-- Eye iris rings -->
+          <circle cx="21" cy="21" r="5.8" fill="#e8b82a" opacity="0.25"/>
+          <circle cx="21" cy="21" r="4" fill="#e8b82a" opacity="0.6"/>
+          <!-- Eye pupil solid -->
+          <circle cx="21" cy="21" r="2.2" fill="#e8b82a"/>
+          <!-- Ball lace lines - bolder -->
+          <line x1="21" y1="7" x2="21" y2="35" stroke="#e8b82a" stroke-width="1.6" opacity="0.7"/>
+          <line x1="18" y1="15.5" x2="24" y2="15.5" stroke="#e8b82a" stroke-width="1.4" opacity="0.8"/>
+          <line x1="17.2" y1="21" x2="24.8" y2="21" stroke="#e8b82a" stroke-width="1.4" opacity="0.8"/>
+          <line x1="18" y1="26.5" x2="24" y2="26.5" stroke="#e8b82a" stroke-width="1.4" opacity="0.8"/>
+          <!-- Star sparkle top-right -->
+          <g transform="translate(32,10)">
+            <line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#e8b82a" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#e8b82a" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="-2.2" y1="-2.2" x2="2.2" y2="2.2" stroke="#e8b82a" stroke-width="1" stroke-linecap="round"/>
+            <line x1="2.2" y1="-2.2" x2="-2.2" y2="2.2" stroke="#e8b82a" stroke-width="1" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
       <div class="logo-text">
-        Tipping Desk
+        The NRL Oracle
         <small>Round Analysis</small>
       </div>
     </a>
@@ -1867,7 +1889,7 @@
 <section class="round-banner">
   <div class="round-banner-inner">
     <div class="round-banner-main">
-      <div class="round-eyebrow">Round Tipping · NRL 2026</div>
+      <div class="round-eyebrow">The NRL Oracle · NRL 2026</div>
       <h1 class="round-title">Round <span id="heroRound">—</span><small id="heroMatchCount">—</small></h1>
       <div class="round-meta">
         <div><strong id="heroTopPick">—</strong>Top pick</div>
@@ -1972,7 +1994,7 @@
 </main>
 
 <footer>
-  <strong>Tipping Desk</strong> · Data: fixturedownload.com · Logic: local browser<br>
+  <strong>The NRL Oracle</strong> · Data: fixturedownload.com · Logic: local browser<br>
   Not affiliated with the NRL · Built for personal use
 </footer>
 
@@ -3601,7 +3623,7 @@ function sharePick(matchNumber, btn) {
   const date = new Date(match.DateUtc);
   const when = date.toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" }) +
     ", " + date.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Australia/Sydney" });
-  const text = `${pred.pick} to beat ${other} (${pred.confidence.toFixed(0)}% confidence)\nNRL Round ${match.RoundNumber} · ${when}\n\nvia Tipping Desk`;
+  const text = `${pred.pick} to beat ${other} (${pred.confidence.toFixed(0)}% confidence)\nNRL Round ${match.RoundNumber} · ${when}\n\nvia The NRL Oracle`;
 
   // Try native Web Share API (mobile), fall back to clipboard
   if (navigator.share) {

@@ -2367,6 +2367,7 @@ function loadCachedOdds() {
     if (!raw) return null;
     const cached = JSON.parse(raw);
     if (!cached || !cached.fetchedAt || !cached.odds) return null;
+    if (!Object.keys(cached.odds).length) return null;  // empty cache is not a hit
     if (Date.now() - cached.fetchedAt > ODDS_TTL_MS) return { ...cached, stale: true };
     return { ...cached, stale: false };
   } catch (e) {
@@ -2435,20 +2436,27 @@ async function fetchOddsFromAPI(apiKey, opts = {}) {
       : null;
 
     let res = null;
+    let ownFailure = null;
     try {
       const viaOwn = await fetchWithTimeout(ownRoute, 10000);
       // A 404 means the function is not deployed; anything else is a real answer.
-      if (viaOwn.status !== 404) res = viaOwn;
-    } catch (e) { /* own route unreachable, try the direct call */ }
+      if (viaOwn.status === 404) ownFailure = "missing";
+      else res = viaOwn;
+    } catch (e) {
+      ownFailure = "unreachable";
+    }
 
     if ((!res || !res.ok) && directUrl) {
       const viaDirect = await fetchWithTimeout(directUrl, 10000);
       if (!res || viaDirect.ok) res = viaDirect;
     }
     if (!res) {
-      oddsApiStatus = "no-key";
+      // Report the actual cause. This used to say "No key", which was wrong and
+      // sent debugging in the wrong direction: the key is held server side, so a
+      // missing /api/odds route has nothing to do with the key at all.
+      oddsApiStatus = ownFailure === "missing" ? "route-missing" : "route-unreachable";
       renderOddsApiStatus();
-      return { ok: false, reason: "no-source" };
+      return { ok: false, reason: ownFailure || "no-source" };
     }
 
     oddsMeta.quotaRemaining = res.headers.get("x-requests-remaining");
@@ -2501,6 +2509,8 @@ async function fetchOddsFromAPI(apiKey, opts = {}) {
       const avg = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
       const homePrice = avg(allPrices.home);
       const awayPrice = avg(allPrices.away);
+      const existing = state.odds[fixture.MatchNumber];
+      if (existing && existing.manual) continue;  // user's own price wins
       if (homePrice && awayPrice) {
         state.odds[fixture.MatchNumber] = {
           home: Math.round(homePrice * 100) / 100,
@@ -2515,7 +2525,10 @@ async function fetchOddsFromAPI(apiKey, opts = {}) {
     oddsMeta.fetchedAt = Date.now();
     oddsMeta.source = "live";
     oddsMeta.matched = matched;
-    saveCachedOdds();
+    // Only cache a result that actually produced prices. Caching a zero-match
+    // response treats a failure as a success and starves the next 15 minutes of
+    // reloads, while the status badge cheerfully reports "ok".
+    if (matched > 0) saveCachedOdds();
     oddsApiStatus = matched > 0 ? "ok" : "no-matches";
     renderOddsApiStatus();
     renderCurrentView();
@@ -2586,6 +2599,8 @@ function renderOddsApiStatus() {
     ok: ["ok", `Market ${age}`],
     stale: ["fail", `Stale ${age}`],
     "no-matches": ["fail", "No market found"],
+    "route-missing": ["fail", "/api/odds not found"],
+    "route-unreachable": ["fail", "/api/odds unreachable"],
     "no-key": ["fail", "No key"],
     "bad-key": ["fail", "Bad key"],
     quota: ["fail", "Quota spent"],
@@ -2625,6 +2640,14 @@ function renderMarketBanner() {
     return;
   }
   const playedNote = cov.played > 0 ? ` · ${cov.played} already played` : "";
+  if (cov.covered === 0 && (oddsApiStatus === "route-missing" || oddsApiStatus === "route-unreachable")) {
+    el.className = "market-banner warn";
+    el.innerHTML = `<strong>Odds service not reachable.</strong> <code>/api/odds</code> `
+      + `${oddsApiStatus === "route-missing" ? "returned 404, so the function is not deployed" : "could not be reached"}. `
+      + `Tips are running without the market signal.`;
+    el.style.display = "";
+    return;
+  }
   if (cov.covered === 0) {
     el.className = "market-banner warn";
     el.innerHTML = `<strong>No market prices for the ${cov.total} match${cov.total === 1 ? "" : "es"} still to come.</strong> Those tips run on form, ladder, home ground and travel only.${cov.played > 0 ? ` The other ${cov.played} have been played.` : ""}`;
@@ -3105,7 +3128,7 @@ function renderOddsInputs() {
       const o = state.odds[m.MatchNumber] || {};
       return `
         <div class="odds-row">
-          <div class="label">${m.HomeTeam} <span style="color:var(--g-400);">v</span> ${m.AwayTeam}${o.home ? ' <span style="color:var(--green);font-size:9px;font-weight:600;letter-spacing:.04em;font-family:\'Roboto Mono\',monospace;">API</span>' : ' <span style="color:var(--g-400);font-size:9px;font-family:\'Roboto Mono\',monospace;" title="No odds from API yet — enter manually or check back closer to kickoff">PENDING</span>'}</div>
+          <div class="label">${m.HomeTeam} <span style="color:var(--g-400);">v</span> ${m.AwayTeam}${o.home ? ` <span style="color:${o.manual ? "var(--gold-dark)" : "var(--green)"};font-size:9px;font-weight:600;letter-spacing:.04em;font-family:'Roboto Mono',monospace;">${o.manual ? "MANUAL" : "API"}</span>` : ' <span style="color:var(--g-400);font-size:9px;font-family:\'Roboto Mono\',monospace;" title="No odds from API yet — enter manually or check back closer to kickoff">PENDING</span>'}</div>
           <input type="number" step="0.01" min="1" placeholder="1.80" value="${o.home || ""}" data-m="${m.MatchNumber}" data-side="home" />
           <input type="number" step="0.01" min="1" placeholder="2.10" value="${o.away || ""}" data-m="${m.MatchNumber}" data-side="away" />
         </div>
@@ -3127,6 +3150,8 @@ function renderOddsInputs() {
       const side = e.target.dataset.side;
       if (!state.odds[mn]) state.odds[mn] = {};
       state.odds[mn][side] = parseFloat(e.target.value) || null;
+      state.odds[mn].manual = true;  // flag so a later fetch does not overwrite it
+      saveCachedOdds();              // persist: manual entry used to vanish on reload
       renderCurrentView();
     });
   });

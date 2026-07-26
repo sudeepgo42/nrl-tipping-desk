@@ -667,6 +667,73 @@
     color: var(--g-500);
   }
 
+  /* BANNERS - data provenance warnings above the tips */
+  .banner-stack { margin: 0 12px; display: flex; flex-direction: column; gap: 6px; }
+  .banner-stack:not(:empty) { margin-bottom: 12px; }
+  .market-banner, .stale-banner {
+    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    line-height: 1.45;
+    padding: 9px 12px;
+    border-radius: 2px;
+    border-left: 3px solid var(--g-400);
+    background: var(--g-100);
+    color: var(--ink-soft);
+  }
+  .market-banner strong, .stale-banner strong {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 11.5px;
+    color: var(--ink);
+    margin-right: 4px;
+  }
+  .market-banner.ok {
+    border-left-color: var(--green);
+    background: rgba(0, 115, 58, 0.06);
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--g-500);
+  }
+  .market-banner.pending {
+    border-left-color: var(--gold-dark);
+    background: rgba(236, 190, 12, 0.1);
+  }
+  .market-banner.warn, .stale-banner {
+    border-left-color: var(--live);
+    background: rgba(229, 57, 53, 0.07);
+  }
+  .stale-banner button {
+    margin-left: 8px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--green);
+    color: white;
+    border: none;
+    padding: 4px 9px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  /* Pending / unpriced markers on individual tips */
+  .tips-pending { opacity: 0.55; transition: opacity 0.2s; }
+  .no-market-flag {
+    font-family: "Roboto Mono", monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--live);
+    border: 1px solid rgba(229, 57, 53, 0.35);
+    border-radius: 2px;
+    padding: 1px 5px;
+    white-space: nowrap;
+  }
+
   /* MAIN CONTAINER */
   .content { padding: 0 0 40px; }
 
@@ -1934,6 +2001,9 @@
     <button id="refreshBtn" class="btn btn-primary">Refresh Live</button>
   </div>
   <div class="action-row">
+    <button id="refreshOddsBtn" class="btn btn-secondary">Refresh Odds</button>
+  </div>
+  <div class="action-row">
     <button id="exportBtn" class="btn btn-secondary">Copy Tips</button>
   </div>
 </div>
@@ -1945,10 +2015,10 @@
   <div class="drawer-body">
     <div class="odds-api-row">
       <label>Odds API Key</label>
-      <input type="text" id="oddsApiKeyInput" placeholder="Override key (optional — default key is set)" autocomplete="off" spellcheck="false" />
+      <input type="text" id="oddsApiKeyInput" placeholder="Optional: paste a key to override the server key" autocomplete="off" spellcheck="false" />
       <span class="odds-api-status" id="oddsApiStatus" style="display:none;"></span>
     </div>
-    <p class="odds-api-note">Odds auto-loaded on startup · <a href="https://the-odds-api.com" target="_blank" rel="noopener">the-odds-api.com</a> · 500 req/month · paste a different key above to override.</p>
+    <p class="odds-api-note">Odds load on startup via <code>/api/odds</code>, which reads the key from the server environment · <a href="https://the-odds-api.com" target="_blank" rel="noopener">the-odds-api.com</a> · 500 requests a month · prices cached locally for 15 minutes so a reload costs nothing.</p>
     <p class="drawer-note">Or paste decimal head-to-head odds manually. Injury impact is 0 (full strength) to 10 (crippling).</p>
     <div id="oddsInputs"></div>
   </div>
@@ -1986,6 +2056,11 @@
   <div class="sub" id="sectionSub">Ranked by confidence</div>
 </div>
 
+<div class="banner-stack">
+  <div class="stale-banner" id="staleBanner" style="display:none;"></div>
+  <div class="market-banner" id="marketBanner" style="display:none;"></div>
+</div>
+
 <main class="content">
   <section id="viewRanked" class="view"></section>
   <section id="viewTable" class="view" style="display:none;"></section>
@@ -1999,7 +2074,8 @@
 </footer>
 
 <script>
-const EMBEDDED_FIXTURES_NRL2026 = [{"MatchNumber":1,"RoundNumber":1,"DateUtc":"2026-03-01 02:15:00Z","Location":"Allegiant Stadium","HomeTeam":"Knights","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":28,"AwayTeamScore":18},{"MatchNumber":2,"RoundNumber":1,"DateUtc":"2026-03-01 04:30:00Z","Location":"Allegiant Stadium","HomeTeam":"Bulldogs","AwayTeam":"Dragons","Group":null,"HomeTeamScore":15,"AwayTeamScore":14},{"MatchNumber":3,"RoundNumber":1,"DateUtc":"2026-03-05 09:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Eels","Group":null,"HomeTeamScore":52,"AwayTeamScore":4},{"MatchNumber":4,"RoundNumber":1,"DateUtc":"2026-03-06 07:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Roosters","Group":null,"HomeTeamScore":42,"AwayTeamScore":18},{"MatchNumber":5,"RoundNumber":1,"DateUtc":"2026-03-06 09:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Panthers","Group":null,"HomeTeamScore":0,"AwayTeamScore":26},{"MatchNumber":6,"RoundNumber":1,"DateUtc":"2026-03-07 06:30:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Titans","Group":null,"HomeTeamScore":50,"AwayTeamScore":10},{"MatchNumber":7,"RoundNumber":1,"DateUtc":"2026-03-07 08:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Raiders","Group":null,"HomeTeamScore":28,"AwayTeamScore":29},{"MatchNumber":8,"RoundNumber":1,"DateUtc":"2026-03-08 05:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":30,"AwayTeamScore":40},{"MatchNumber":9,"RoundNumber":2,"DateUtc":"2026-03-12 09:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Eels","Group":null,"HomeTeamScore":32,"AwayTeamScore":40},{"MatchNumber":10,"RoundNumber":2,"DateUtc":"2026-03-13 07:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Raiders","Group":null,"HomeTeamScore":40,"AwayTeamScore":6},{"MatchNumber":11,"RoundNumber":2,"DateUtc":"2026-03-13 09:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":26,"AwayTeamScore":18},{"MatchNumber":12,"RoundNumber":2,"DateUtc":"2026-03-14 04:00:00Z","Location":"Leichhardt Oval","HomeTeam":"Wests Tigers","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":44,"AwayTeamScore":16},{"MatchNumber":13,"RoundNumber":2,"DateUtc":"2026-03-14 06:30:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Storm","Group":null,"HomeTeamScore":20,"AwayTeamScore":46},{"MatchNumber":14,"RoundNumber":2,"DateUtc":"2026-03-14 08:35:00Z","Location":"Carrington Park","HomeTeam":"Panthers","AwayTeam":"Sharks","Group":null,"HomeTeamScore":26,"AwayTeamScore":6},{"MatchNumber":15,"RoundNumber":2,"DateUtc":"2026-03-15 05:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Knights","Group":null,"HomeTeamScore":16,"AwayTeamScore":36},{"MatchNumber":16,"RoundNumber":2,"DateUtc":"2026-03-15 07:15:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Titans","Group":null,"HomeTeamScore":18,"AwayTeamScore":14},{"MatchNumber":17,"RoundNumber":3,"DateUtc":"2026-03-19 09:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":10,"AwayTeamScore":14},{"MatchNumber":18,"RoundNumber":3,"DateUtc":"2026-03-20 07:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Panthers","Group":null,"HomeTeamScore":4,"AwayTeamScore":40},{"MatchNumber":19,"RoundNumber":3,"DateUtc":"2026-03-20 09:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Broncos","Group":null,"HomeTeamScore":14,"AwayTeamScore":18},{"MatchNumber":20,"RoundNumber":3,"DateUtc":"2026-03-21 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Warriors","Group":null,"HomeTeamScore":12,"AwayTeamScore":38},{"MatchNumber":21,"RoundNumber":3,"DateUtc":"2026-03-21 06:30:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":10,"AwayTeamScore":38},{"MatchNumber":22,"RoundNumber":3,"DateUtc":"2026-03-21 08:35:00Z","Location":"Polytec Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":20,"AwayTeamScore":16},{"MatchNumber":23,"RoundNumber":3,"DateUtc":"2026-03-22 05:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Dragons","Group":null,"HomeTeamScore":30,"AwayTeamScore":20},{"MatchNumber":24,"RoundNumber":3,"DateUtc":"2026-03-22 07:15:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Titans","Group":null,"HomeTeamScore":30,"AwayTeamScore":16},{"MatchNumber":25,"RoundNumber":4,"DateUtc":"2026-03-26 09:00:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Roosters","Group":null,"HomeTeamScore":16,"AwayTeamScore":33},{"MatchNumber":26,"RoundNumber":4,"DateUtc":"2026-03-27 07:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":14,"AwayTeamScore":32},{"MatchNumber":27,"RoundNumber":4,"DateUtc":"2026-03-27 09:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":26,"AwayTeamScore":12},{"MatchNumber":28,"RoundNumber":4,"DateUtc":"2026-03-28 04:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Knights","Group":null,"HomeTeamScore":16,"AwayTeamScore":24},{"MatchNumber":29,"RoundNumber":4,"DateUtc":"2026-03-28 06:30:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Eels","Group":null,"HomeTeamScore":48,"AwayTeamScore":20},{"MatchNumber":30,"RoundNumber":4,"DateUtc":"2026-03-28 08:35:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Storm","Group":null,"HomeTeamScore":28,"AwayTeamScore":24},{"MatchNumber":31,"RoundNumber":4,"DateUtc":"2026-03-29 05:05:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Sharks","Group":null,"HomeTeamScore":22,"AwayTeamScore":34},{"MatchNumber":32,"RoundNumber":4,"DateUtc":"2026-03-29 07:15:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Dragons","Group":null,"HomeTeamScore":22,"AwayTeamScore":14},{"MatchNumber":33,"RoundNumber":5,"DateUtc":"2026-04-02 09:00:00Z","Location":"Kayo Stadium","HomeTeam":"Dolphins","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":18,"AwayTeamScore":52},{"MatchNumber":34,"RoundNumber":5,"DateUtc":"2026-04-03 05:05:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":32,"AwayTeamScore":24},{"MatchNumber":35,"RoundNumber":5,"DateUtc":"2026-04-03 09:00:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Storm","Group":null,"HomeTeamScore":50,"AwayTeamScore":10},{"MatchNumber":36,"RoundNumber":5,"DateUtc":"2026-04-04 06:30:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":0,"AwayTeamScore":32},{"MatchNumber":37,"RoundNumber":5,"DateUtc":"2026-04-04 08:35:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Broncos","Group":null,"HomeTeamScore":12,"AwayTeamScore":26},{"MatchNumber":38,"RoundNumber":5,"DateUtc":"2026-04-05 04:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Warriors","Group":null,"HomeTeamScore":36,"AwayTeamScore":22},{"MatchNumber":39,"RoundNumber":5,"DateUtc":"2026-04-05 06:05:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Raiders","Group":null,"HomeTeamScore":32,"AwayTeamScore":12},{"MatchNumber":40,"RoundNumber":5,"DateUtc":"2026-04-06 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":20,"AwayTeamScore":22},{"MatchNumber":41,"RoundNumber":6,"DateUtc":"2026-04-09 09:50:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Panthers","Group":null,"HomeTeamScore":32,"AwayTeamScore":16},{"MatchNumber":42,"RoundNumber":6,"DateUtc":"2026-04-10 08:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":18,"AwayTeamScore":28},{"MatchNumber":43,"RoundNumber":6,"DateUtc":"2026-04-10 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":31,"AwayTeamScore":35},{"MatchNumber":44,"RoundNumber":6,"DateUtc":"2026-04-11 05:00:00Z","Location":"Optus Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Raiders","Group":null,"HomeTeamScore":34,"AwayTeamScore":36},{"MatchNumber":45,"RoundNumber":6,"DateUtc":"2026-04-11 07:30:00Z","Location":"Optus Stadium","HomeTeam":"Sharks","AwayTeam":"Roosters","Group":null,"HomeTeamScore":22,"AwayTeamScore":34},{"MatchNumber":46,"RoundNumber":6,"DateUtc":"2026-04-11 09:35:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Warriors","Group":null,"HomeTeamScore":14,"AwayTeamScore":38},{"MatchNumber":47,"RoundNumber":6,"DateUtc":"2026-04-12 04:00:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Titans","Group":null,"HomeTeamScore":10,"AwayTeamScore":52},{"MatchNumber":48,"RoundNumber":6,"DateUtc":"2026-04-12 06:05:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Knights","Group":null,"HomeTeamScore":42,"AwayTeamScore":22},{"MatchNumber":49,"RoundNumber":7,"DateUtc":"2026-04-16 09:50:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":6,"AwayTeamScore":38},{"MatchNumber":50,"RoundNumber":7,"DateUtc":"2026-04-17 08:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Storm","Group":null,"HomeTeamScore":26,"AwayTeamScore":22},{"MatchNumber":51,"RoundNumber":7,"DateUtc":"2026-04-17 10:00:00Z","Location":"TIO Stadium","HomeTeam":"Dolphins","AwayTeam":"Panthers","Group":null,"HomeTeamScore":22,"AwayTeamScore":23},{"MatchNumber":52,"RoundNumber":7,"DateUtc":"2026-04-18 05:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Titans","Group":null,"HomeTeamScore":28,"AwayTeamScore":20},{"MatchNumber":53,"RoundNumber":7,"DateUtc":"2026-04-18 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Dragons","Group":null,"HomeTeamScore":30,"AwayTeamScore":12},{"MatchNumber":54,"RoundNumber":7,"DateUtc":"2026-04-18 09:35:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Broncos","Group":null,"HomeTeamScore":20,"AwayTeamScore":21},{"MatchNumber":55,"RoundNumber":7,"DateUtc":"2026-04-19 04:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Knights","Group":null,"HomeTeamScore":38,"AwayTeamScore":24},{"MatchNumber":56,"RoundNumber":7,"DateUtc":"2026-04-19 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":38,"AwayTeamScore":20},{"MatchNumber":57,"RoundNumber":8,"DateUtc":"2026-04-23 09:50:00Z","Location":"Leichhardt Oval","HomeTeam":"Wests Tigers","AwayTeam":"Raiders","Group":null,"HomeTeamScore":33,"AwayTeamScore":14},{"MatchNumber":58,"RoundNumber":8,"DateUtc":"2026-04-24 08:00:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Sharks","Group":null,"HomeTeamScore":46,"AwayTeamScore":34},{"MatchNumber":59,"RoundNumber":8,"DateUtc":"2026-04-24 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":32,"AwayTeamScore":12},{"MatchNumber":60,"RoundNumber":8,"DateUtc":"2026-04-25 06:00:00Z","Location":"Allianz Stadium","HomeTeam":"Dragons","AwayTeam":"Roosters","Group":null,"HomeTeamScore":16,"AwayTeamScore":62},{"MatchNumber":61,"RoundNumber":8,"DateUtc":"2026-04-25 08:05:00Z","Location":"Hnry Stadium","HomeTeam":"Warriors","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":20,"AwayTeamScore":18},{"MatchNumber":62,"RoundNumber":8,"DateUtc":"2026-04-25 10:10:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":6,"AwayTeamScore":48},{"MatchNumber":63,"RoundNumber":8,"DateUtc":"2026-04-26 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Panthers","Group":null,"HomeTeamScore":12,"AwayTeamScore":44},{"MatchNumber":64,"RoundNumber":8,"DateUtc":"2026-04-26 06:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Eels","Group":null,"HomeTeamScore":33,"AwayTeamScore":18},{"MatchNumber":65,"RoundNumber":9,"DateUtc":"2026-05-01 08:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":12,"AwayTeamScore":28},{"MatchNumber":66,"RoundNumber":9,"DateUtc":"2026-05-01 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Storm","Group":null,"HomeTeamScore":28,"AwayTeamScore":10},{"MatchNumber":67,"RoundNumber":9,"DateUtc":"2026-05-02 05:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Raiders","Group":null,"HomeTeamScore":12,"AwayTeamScore":28},{"MatchNumber":68,"RoundNumber":9,"DateUtc":"2026-05-02 07:30:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Warriors","Group":null,"HomeTeamScore":14,"AwayTeamScore":36},{"MatchNumber":69,"RoundNumber":9,"DateUtc":"2026-05-02 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Broncos","Group":null,"HomeTeamScore":38,"AwayTeamScore":24},{"MatchNumber":70,"RoundNumber":9,"DateUtc":"2026-05-03 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":42,"AwayTeamScore":38},{"MatchNumber":71,"RoundNumber":9,"DateUtc":"2026-05-03 06:05:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":52,"AwayTeamScore":10},{"MatchNumber":72,"RoundNumber":9,"DateUtc":"2026-05-03 08:15:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":18,"AwayTeamScore":16},{"MatchNumber":73,"RoundNumber":10,"DateUtc":"2026-05-07 09:50:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":44,"AwayTeamScore":12},{"MatchNumber":74,"RoundNumber":10,"DateUtc":"2026-05-08 08:00:00Z","Location":"Polytec Stadium","HomeTeam":"Roosters","AwayTeam":"Titans","Group":null,"HomeTeamScore":28,"AwayTeamScore":12},{"MatchNumber":75,"RoundNumber":10,"DateUtc":"2026-05-08 10:00:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Eels","Group":null,"HomeTeamScore":30,"AwayTeamScore":33},{"MatchNumber":76,"RoundNumber":10,"DateUtc":"2026-05-09 05:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Knights","Group":null,"HomeTeamScore":10,"AwayTeamScore":44},{"MatchNumber":77,"RoundNumber":10,"DateUtc":"2026-05-09 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Sharks","Group":null,"HomeTeamScore":36,"AwayTeamScore":12},{"MatchNumber":78,"RoundNumber":10,"DateUtc":"2026-05-09 09:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Broncos","Group":null,"HomeTeamScore":32,"AwayTeamScore":4},{"MatchNumber":79,"RoundNumber":10,"DateUtc":"2026-05-10 04:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":44,"AwayTeamScore":16},{"MatchNumber":80,"RoundNumber":10,"DateUtc":"2026-05-10 06:05:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Panthers","Group":null,"HomeTeamScore":18,"AwayTeamScore":30},{"MatchNumber":81,"RoundNumber":11,"DateUtc":"2026-05-15 08:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Sharks","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":82,"RoundNumber":11,"DateUtc":"2026-05-15 10:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":83,"RoundNumber":11,"DateUtc":"2026-05-16 05:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":84,"RoundNumber":11,"DateUtc":"2026-05-16 07:30:00Z","Location":"Suncorp Stadium","HomeTeam":"Roosters","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":85,"RoundNumber":11,"DateUtc":"2026-05-16 09:45:00Z","Location":"Suncorp Stadium","HomeTeam":"Eels","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":86,"RoundNumber":11,"DateUtc":"2026-05-17 04:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Titans","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":87,"RoundNumber":11,"DateUtc":"2026-05-17 06:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Warriors","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":88,"RoundNumber":11,"DateUtc":"2026-05-17 08:25:00Z","Location":"Suncorp Stadium","HomeTeam":"Panthers","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":89,"RoundNumber":12,"DateUtc":"2026-05-21 09:50:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":90,"RoundNumber":12,"DateUtc":"2026-05-22 10:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":91,"RoundNumber":12,"DateUtc":"2026-05-23 07:30:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":92,"RoundNumber":12,"DateUtc":"2026-05-23 09:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":93,"RoundNumber":12,"DateUtc":"2026-05-24 06:05:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":94,"RoundNumber":13,"DateUtc":"2026-05-29 10:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":95,"RoundNumber":13,"DateUtc":"2026-05-30 05:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":96,"RoundNumber":13,"DateUtc":"2026-05-30 07:30:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":97,"RoundNumber":13,"DateUtc":"2026-05-30 09:35:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":98,"RoundNumber":13,"DateUtc":"2026-05-31 04:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":99,"RoundNumber":13,"DateUtc":"2026-05-31 06:05:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":100,"RoundNumber":13,"DateUtc":"2026-05-31 08:15:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":101,"RoundNumber":14,"DateUtc":"2026-06-04 09:50:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":102,"RoundNumber":14,"DateUtc":"2026-06-05 08:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":103,"RoundNumber":14,"DateUtc":"2026-06-05 10:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":104,"RoundNumber":14,"DateUtc":"2026-06-06 07:30:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":105,"RoundNumber":14,"DateUtc":"2026-06-06 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":106,"RoundNumber":14,"DateUtc":"2026-06-07 04:00:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":107,"RoundNumber":14,"DateUtc":"2026-06-07 06:05:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":108,"RoundNumber":14,"DateUtc":"2026-06-08 06:05:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":109,"RoundNumber":15,"DateUtc":"2026-06-11 09:50:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":110,"RoundNumber":15,"DateUtc":"2026-06-12 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":111,"RoundNumber":15,"DateUtc":"2026-06-13 07:35:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":112,"RoundNumber":15,"DateUtc":"2026-06-13 09:35:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":113,"RoundNumber":15,"DateUtc":"2026-06-14 06:05:00Z","Location":"Leichhardt Oval","HomeTeam":"Wests Tigers","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":114,"RoundNumber":16,"DateUtc":"2026-06-19 10:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":115,"RoundNumber":16,"DateUtc":"2026-06-20 05:00:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":116,"RoundNumber":16,"DateUtc":"2026-06-20 07:30:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":117,"RoundNumber":16,"DateUtc":"2026-06-20 09:35:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":118,"RoundNumber":16,"DateUtc":"2026-06-21 04:00:00Z","Location":"One NZ Stadium","HomeTeam":"Warriors","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":119,"RoundNumber":16,"DateUtc":"2026-06-21 06:05:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":120,"RoundNumber":16,"DateUtc":"2026-06-21 08:15:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":121,"RoundNumber":17,"DateUtc":"2026-06-25 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":122,"RoundNumber":17,"DateUtc":"2026-06-26 08:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":123,"RoundNumber":17,"DateUtc":"2026-06-26 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":124,"RoundNumber":17,"DateUtc":"2026-06-27 05:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":125,"RoundNumber":17,"DateUtc":"2026-06-27 07:30:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":126,"RoundNumber":17,"DateUtc":"2026-06-27 09:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":127,"RoundNumber":17,"DateUtc":"2026-06-28 04:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":128,"RoundNumber":17,"DateUtc":"2026-06-28 06:05:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":129,"RoundNumber":18,"DateUtc":"2026-07-03 10:00:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":130,"RoundNumber":18,"DateUtc":"2026-07-04 07:30:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":131,"RoundNumber":18,"DateUtc":"2026-07-04 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":132,"RoundNumber":18,"DateUtc":"2026-07-05 04:00:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":133,"RoundNumber":18,"DateUtc":"2026-07-05 06:05:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":134,"RoundNumber":19,"DateUtc":"2026-07-10 10:00:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":135,"RoundNumber":19,"DateUtc":"2026-07-11 05:00:00Z","Location":"Kayo Stadium","HomeTeam":"Dolphins","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":136,"RoundNumber":19,"DateUtc":"2026-07-11 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":137,"RoundNumber":19,"DateUtc":"2026-07-11 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":138,"RoundNumber":19,"DateUtc":"2026-07-12 04:00:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":139,"RoundNumber":19,"DateUtc":"2026-07-12 06:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":140,"RoundNumber":19,"DateUtc":"2026-07-12 08:15:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":141,"RoundNumber":20,"DateUtc":"2026-07-16 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":142,"RoundNumber":20,"DateUtc":"2026-07-17 08:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":143,"RoundNumber":20,"DateUtc":"2026-07-17 10:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":144,"RoundNumber":20,"DateUtc":"2026-07-18 05:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":145,"RoundNumber":20,"DateUtc":"2026-07-18 07:35:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":146,"RoundNumber":20,"DateUtc":"2026-07-18 09:35:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":147,"RoundNumber":20,"DateUtc":"2026-07-19 04:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":148,"RoundNumber":20,"DateUtc":"2026-07-19 06:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":149,"RoundNumber":21,"DateUtc":"2026-07-23 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":150,"RoundNumber":21,"DateUtc":"2026-07-24 08:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":151,"RoundNumber":21,"DateUtc":"2026-07-24 10:00:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":152,"RoundNumber":21,"DateUtc":"2026-07-25 05:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":153,"RoundNumber":21,"DateUtc":"2026-07-25 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":154,"RoundNumber":21,"DateUtc":"2026-07-25 09:35:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":155,"RoundNumber":21,"DateUtc":"2026-07-26 04:00:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":156,"RoundNumber":21,"DateUtc":"2026-07-26 06:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":157,"RoundNumber":22,"DateUtc":"2026-07-30 09:50:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":158,"RoundNumber":22,"DateUtc":"2026-07-31 08:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":159,"RoundNumber":22,"DateUtc":"2026-07-31 10:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":160,"RoundNumber":22,"DateUtc":"2026-08-01 05:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":161,"RoundNumber":22,"DateUtc":"2026-08-01 07:30:00Z","Location":"Glen Willow Oval","HomeTeam":"Panthers","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":162,"RoundNumber":22,"DateUtc":"2026-08-01 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":163,"RoundNumber":22,"DateUtc":"2026-08-02 04:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":164,"RoundNumber":22,"DateUtc":"2026-08-02 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":165,"RoundNumber":23,"DateUtc":"2026-08-06 09:50:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":166,"RoundNumber":23,"DateUtc":"2026-08-07 08:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":167,"RoundNumber":23,"DateUtc":"2026-08-07 10:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":168,"RoundNumber":23,"DateUtc":"2026-08-08 05:00:00Z","Location":"HBF Park","HomeTeam":"Storm","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":169,"RoundNumber":23,"DateUtc":"2026-08-08 07:30:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":170,"RoundNumber":23,"DateUtc":"2026-08-08 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":171,"RoundNumber":23,"DateUtc":"2026-08-09 04:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":172,"RoundNumber":23,"DateUtc":"2026-08-09 06:05:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":173,"RoundNumber":24,"DateUtc":"2026-08-13 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":174,"RoundNumber":24,"DateUtc":"2026-08-14 08:00:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":175,"RoundNumber":24,"DateUtc":"2026-08-14 10:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":176,"RoundNumber":24,"DateUtc":"2026-08-15 05:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":177,"RoundNumber":24,"DateUtc":"2026-08-15 07:30:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":178,"RoundNumber":24,"DateUtc":"2026-08-15 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":179,"RoundNumber":24,"DateUtc":"2026-08-16 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":180,"RoundNumber":24,"DateUtc":"2026-08-16 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":181,"RoundNumber":25,"DateUtc":"2026-08-20 09:50:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":182,"RoundNumber":25,"DateUtc":"2026-08-21 08:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":183,"RoundNumber":25,"DateUtc":"2026-08-21 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":184,"RoundNumber":25,"DateUtc":"2026-08-22 05:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":185,"RoundNumber":25,"DateUtc":"2026-08-22 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":186,"RoundNumber":25,"DateUtc":"2026-08-22 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Dragons","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":187,"RoundNumber":25,"DateUtc":"2026-08-23 04:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":188,"RoundNumber":25,"DateUtc":"2026-08-23 06:05:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":189,"RoundNumber":26,"DateUtc":"2026-08-27 09:50:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":190,"RoundNumber":26,"DateUtc":"2026-08-28 08:00:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":191,"RoundNumber":26,"DateUtc":"2026-08-28 10:00:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":192,"RoundNumber":26,"DateUtc":"2026-08-29 05:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":193,"RoundNumber":26,"DateUtc":"2026-08-29 07:30:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":194,"RoundNumber":26,"DateUtc":"2026-08-29 09:35:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":195,"RoundNumber":26,"DateUtc":"2026-08-30 04:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":196,"RoundNumber":26,"DateUtc":"2026-08-30 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":197,"RoundNumber":27,"DateUtc":"2026-09-03 09:50:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":198,"RoundNumber":27,"DateUtc":"2026-09-04 08:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":199,"RoundNumber":27,"DateUtc":"2026-09-04 10:00:00Z","Location":"Allianz Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":200,"RoundNumber":27,"DateUtc":"2026-09-05 05:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":201,"RoundNumber":27,"DateUtc":"2026-09-05 07:30:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":202,"RoundNumber":27,"DateUtc":"2026-09-05 09:35:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":203,"RoundNumber":27,"DateUtc":"2026-09-06 04:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null},{"MatchNumber":204,"RoundNumber":27,"DateUtc":"2026-09-06 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null}];
+const SNAPSHOT_TAKEN = "2026-07-26";
+  const EMBEDDED_FIXTURES_NRL2026 = [{"MatchNumber":1,"RoundNumber":1,"DateUtc":"2026-03-01 02:15:00Z","Location":"Allegiant Stadium","HomeTeam":"Knights","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":28,"AwayTeamScore":18,"Winner":"Knights"},{"MatchNumber":2,"RoundNumber":1,"DateUtc":"2026-03-01 04:30:00Z","Location":"Allegiant Stadium","HomeTeam":"Bulldogs","AwayTeam":"Dragons","Group":null,"HomeTeamScore":15,"AwayTeamScore":14,"Winner":"Bulldogs"},{"MatchNumber":3,"RoundNumber":1,"DateUtc":"2026-03-05 09:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Eels","Group":null,"HomeTeamScore":52,"AwayTeamScore":4,"Winner":"Storm"},{"MatchNumber":4,"RoundNumber":1,"DateUtc":"2026-03-06 07:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Roosters","Group":null,"HomeTeamScore":42,"AwayTeamScore":18,"Winner":"Warriors"},{"MatchNumber":5,"RoundNumber":1,"DateUtc":"2026-03-06 09:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Panthers","Group":null,"HomeTeamScore":0,"AwayTeamScore":26,"Winner":"Panthers"},{"MatchNumber":6,"RoundNumber":1,"DateUtc":"2026-03-07 06:30:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Titans","Group":null,"HomeTeamScore":50,"AwayTeamScore":10,"Winner":"Sharks"},{"MatchNumber":7,"RoundNumber":1,"DateUtc":"2026-03-07 08:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Raiders","Group":null,"HomeTeamScore":28,"AwayTeamScore":29,"Winner":"Raiders"},{"MatchNumber":8,"RoundNumber":1,"DateUtc":"2026-03-08 05:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":30,"AwayTeamScore":40,"Winner":"Rabbitohs"},{"MatchNumber":9,"RoundNumber":2,"DateUtc":"2026-03-12 09:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Eels","Group":null,"HomeTeamScore":32,"AwayTeamScore":40,"Winner":"Eels"},{"MatchNumber":10,"RoundNumber":2,"DateUtc":"2026-03-13 07:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Raiders","Group":null,"HomeTeamScore":40,"AwayTeamScore":6,"Winner":"Warriors"},{"MatchNumber":11,"RoundNumber":2,"DateUtc":"2026-03-13 09:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":26,"AwayTeamScore":18,"Winner":"Roosters"},{"MatchNumber":12,"RoundNumber":2,"DateUtc":"2026-03-14 04:00:00Z","Location":"Leichhardt Oval","HomeTeam":"Wests Tigers","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":44,"AwayTeamScore":16,"Winner":"Wests Tigers"},{"MatchNumber":13,"RoundNumber":2,"DateUtc":"2026-03-14 06:30:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Storm","Group":null,"HomeTeamScore":20,"AwayTeamScore":46,"Winner":"Storm"},{"MatchNumber":14,"RoundNumber":2,"DateUtc":"2026-03-14 08:35:00Z","Location":"Carrington Park","HomeTeam":"Panthers","AwayTeam":"Sharks","Group":null,"HomeTeamScore":26,"AwayTeamScore":6,"Winner":"Panthers"},{"MatchNumber":15,"RoundNumber":2,"DateUtc":"2026-03-15 05:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Knights","Group":null,"HomeTeamScore":16,"AwayTeamScore":36,"Winner":"Knights"},{"MatchNumber":16,"RoundNumber":2,"DateUtc":"2026-03-15 07:15:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Titans","Group":null,"HomeTeamScore":18,"AwayTeamScore":14,"Winner":"Dolphins"},{"MatchNumber":17,"RoundNumber":3,"DateUtc":"2026-03-19 09:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":10,"AwayTeamScore":14,"Winner":"Bulldogs"},{"MatchNumber":18,"RoundNumber":3,"DateUtc":"2026-03-20 07:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Panthers","Group":null,"HomeTeamScore":4,"AwayTeamScore":40,"Winner":"Panthers"},{"MatchNumber":19,"RoundNumber":3,"DateUtc":"2026-03-20 09:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Broncos","Group":null,"HomeTeamScore":14,"AwayTeamScore":18,"Winner":"Broncos"},{"MatchNumber":20,"RoundNumber":3,"DateUtc":"2026-03-21 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Warriors","Group":null,"HomeTeamScore":12,"AwayTeamScore":38,"Winner":"Warriors"},{"MatchNumber":21,"RoundNumber":3,"DateUtc":"2026-03-21 06:30:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":10,"AwayTeamScore":38,"Winner":"Dolphins"},{"MatchNumber":22,"RoundNumber":3,"DateUtc":"2026-03-21 08:35:00Z","Location":"Polytec Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":20,"AwayTeamScore":16,"Winner":"Rabbitohs"},{"MatchNumber":23,"RoundNumber":3,"DateUtc":"2026-03-22 05:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Dragons","Group":null,"HomeTeamScore":30,"AwayTeamScore":20,"Winner":"Eels"},{"MatchNumber":24,"RoundNumber":3,"DateUtc":"2026-03-22 07:15:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Titans","Group":null,"HomeTeamScore":30,"AwayTeamScore":16,"Winner":"Cowboys"},{"MatchNumber":25,"RoundNumber":4,"DateUtc":"2026-03-26 09:00:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Roosters","Group":null,"HomeTeamScore":16,"AwayTeamScore":33,"Winner":"Roosters"},{"MatchNumber":26,"RoundNumber":4,"DateUtc":"2026-03-27 07:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":14,"AwayTeamScore":32,"Winner":"Wests Tigers"},{"MatchNumber":27,"RoundNumber":4,"DateUtc":"2026-03-27 09:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":26,"AwayTeamScore":12,"Winner":"Broncos"},{"MatchNumber":28,"RoundNumber":4,"DateUtc":"2026-03-28 04:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Knights","Group":null,"HomeTeamScore":16,"AwayTeamScore":24,"Winner":"Knights"},{"MatchNumber":29,"RoundNumber":4,"DateUtc":"2026-03-28 06:30:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Eels","Group":null,"HomeTeamScore":48,"AwayTeamScore":20,"Winner":"Panthers"},{"MatchNumber":30,"RoundNumber":4,"DateUtc":"2026-03-28 08:35:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Storm","Group":null,"HomeTeamScore":28,"AwayTeamScore":24,"Winner":"Cowboys"},{"MatchNumber":31,"RoundNumber":4,"DateUtc":"2026-03-29 05:05:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Sharks","Group":null,"HomeTeamScore":22,"AwayTeamScore":34,"Winner":"Sharks"},{"MatchNumber":32,"RoundNumber":4,"DateUtc":"2026-03-29 07:15:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Dragons","Group":null,"HomeTeamScore":22,"AwayTeamScore":14,"Winner":"Titans"},{"MatchNumber":33,"RoundNumber":5,"DateUtc":"2026-04-02 09:00:00Z","Location":"Kayo Stadium","HomeTeam":"Dolphins","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":18,"AwayTeamScore":52,"Winner":"Sea Eagles"},{"MatchNumber":34,"RoundNumber":5,"DateUtc":"2026-04-03 05:05:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":32,"AwayTeamScore":24,"Winner":"Rabbitohs"},{"MatchNumber":35,"RoundNumber":5,"DateUtc":"2026-04-03 09:00:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Storm","Group":null,"HomeTeamScore":50,"AwayTeamScore":10,"Winner":"Panthers"},{"MatchNumber":36,"RoundNumber":5,"DateUtc":"2026-04-04 06:30:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":0,"AwayTeamScore":32,"Winner":"Cowboys"},{"MatchNumber":37,"RoundNumber":5,"DateUtc":"2026-04-04 08:35:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Broncos","Group":null,"HomeTeamScore":12,"AwayTeamScore":26,"Winner":"Broncos"},{"MatchNumber":38,"RoundNumber":5,"DateUtc":"2026-04-05 04:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Warriors","Group":null,"HomeTeamScore":36,"AwayTeamScore":22,"Winner":"Sharks"},{"MatchNumber":39,"RoundNumber":5,"DateUtc":"2026-04-05 06:05:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Raiders","Group":null,"HomeTeamScore":32,"AwayTeamScore":12,"Winner":"Knights"},{"MatchNumber":40,"RoundNumber":5,"DateUtc":"2026-04-06 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":20,"AwayTeamScore":22,"Winner":"Wests Tigers"},{"MatchNumber":41,"RoundNumber":6,"DateUtc":"2026-04-09 09:50:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Panthers","Group":null,"HomeTeamScore":32,"AwayTeamScore":16,"Winner":"Bulldogs"},{"MatchNumber":42,"RoundNumber":6,"DateUtc":"2026-04-10 08:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":18,"AwayTeamScore":28,"Winner":"Sea Eagles"},{"MatchNumber":43,"RoundNumber":6,"DateUtc":"2026-04-10 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":31,"AwayTeamScore":35,"Winner":"Cowboys"},{"MatchNumber":44,"RoundNumber":6,"DateUtc":"2026-04-11 05:00:00Z","Location":"Optus Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Raiders","Group":null,"HomeTeamScore":34,"AwayTeamScore":36,"Winner":"Raiders"},{"MatchNumber":45,"RoundNumber":6,"DateUtc":"2026-04-11 07:30:00Z","Location":"Optus Stadium","HomeTeam":"Sharks","AwayTeam":"Roosters","Group":null,"HomeTeamScore":22,"AwayTeamScore":34,"Winner":"Roosters"},{"MatchNumber":46,"RoundNumber":6,"DateUtc":"2026-04-11 09:35:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Warriors","Group":null,"HomeTeamScore":14,"AwayTeamScore":38,"Winner":"Warriors"},{"MatchNumber":47,"RoundNumber":6,"DateUtc":"2026-04-12 04:00:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Titans","Group":null,"HomeTeamScore":10,"AwayTeamScore":52,"Winner":"Titans"},{"MatchNumber":48,"RoundNumber":6,"DateUtc":"2026-04-12 06:05:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Knights","Group":null,"HomeTeamScore":42,"AwayTeamScore":22,"Winner":"Wests Tigers"},{"MatchNumber":49,"RoundNumber":7,"DateUtc":"2026-04-16 09:50:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":6,"AwayTeamScore":38,"Winner":"Sea Eagles"},{"MatchNumber":50,"RoundNumber":7,"DateUtc":"2026-04-17 08:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Storm","Group":null,"HomeTeamScore":26,"AwayTeamScore":22,"Winner":"Raiders"},{"MatchNumber":51,"RoundNumber":7,"DateUtc":"2026-04-17 10:00:00Z","Location":"TIO Stadium","HomeTeam":"Dolphins","AwayTeam":"Panthers","Group":null,"HomeTeamScore":22,"AwayTeamScore":23,"Winner":"Panthers"},{"MatchNumber":52,"RoundNumber":7,"DateUtc":"2026-04-18 05:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Titans","Group":null,"HomeTeamScore":28,"AwayTeamScore":20,"Winner":"Warriors"},{"MatchNumber":53,"RoundNumber":7,"DateUtc":"2026-04-18 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Dragons","Group":null,"HomeTeamScore":30,"AwayTeamScore":12,"Winner":"Rabbitohs"},{"MatchNumber":54,"RoundNumber":7,"DateUtc":"2026-04-18 09:35:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Broncos","Group":null,"HomeTeamScore":20,"AwayTeamScore":21,"Winner":"Broncos"},{"MatchNumber":55,"RoundNumber":7,"DateUtc":"2026-04-19 04:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Knights","Group":null,"HomeTeamScore":38,"AwayTeamScore":24,"Winner":"Roosters"},{"MatchNumber":56,"RoundNumber":7,"DateUtc":"2026-04-19 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":38,"AwayTeamScore":20,"Winner":"Eels"},{"MatchNumber":57,"RoundNumber":8,"DateUtc":"2026-04-23 09:50:00Z","Location":"Leichhardt Oval","HomeTeam":"Wests Tigers","AwayTeam":"Raiders","Group":null,"HomeTeamScore":33,"AwayTeamScore":14,"Winner":"Wests Tigers"},{"MatchNumber":58,"RoundNumber":8,"DateUtc":"2026-04-24 08:00:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Sharks","Group":null,"HomeTeamScore":46,"AwayTeamScore":34,"Winner":"Cowboys"},{"MatchNumber":59,"RoundNumber":8,"DateUtc":"2026-04-24 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":32,"AwayTeamScore":12,"Winner":"Broncos"},{"MatchNumber":60,"RoundNumber":8,"DateUtc":"2026-04-25 06:00:00Z","Location":"Allianz Stadium","HomeTeam":"Dragons","AwayTeam":"Roosters","Group":null,"HomeTeamScore":16,"AwayTeamScore":62,"Winner":"Roosters"},{"MatchNumber":61,"RoundNumber":8,"DateUtc":"2026-04-25 08:05:00Z","Location":"Hnry Stadium","HomeTeam":"Warriors","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":20,"AwayTeamScore":18,"Winner":"Warriors"},{"MatchNumber":62,"RoundNumber":8,"DateUtc":"2026-04-25 10:10:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":6,"AwayTeamScore":48,"Winner":"Rabbitohs"},{"MatchNumber":63,"RoundNumber":8,"DateUtc":"2026-04-26 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Panthers","Group":null,"HomeTeamScore":12,"AwayTeamScore":44,"Winner":"Panthers"},{"MatchNumber":64,"RoundNumber":8,"DateUtc":"2026-04-26 06:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Eels","Group":null,"HomeTeamScore":33,"AwayTeamScore":18,"Winner":"Sea Eagles"},{"MatchNumber":65,"RoundNumber":9,"DateUtc":"2026-05-01 08:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":12,"AwayTeamScore":28,"Winner":"Cowboys"},{"MatchNumber":66,"RoundNumber":9,"DateUtc":"2026-05-01 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Storm","Group":null,"HomeTeamScore":28,"AwayTeamScore":10,"Winner":"Dolphins"},{"MatchNumber":67,"RoundNumber":9,"DateUtc":"2026-05-02 05:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Raiders","Group":null,"HomeTeamScore":12,"AwayTeamScore":28,"Winner":"Raiders"},{"MatchNumber":68,"RoundNumber":9,"DateUtc":"2026-05-02 07:30:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Warriors","Group":null,"HomeTeamScore":14,"AwayTeamScore":36,"Winner":"Warriors"},{"MatchNumber":69,"RoundNumber":9,"DateUtc":"2026-05-02 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Broncos","Group":null,"HomeTeamScore":38,"AwayTeamScore":24,"Winner":"Roosters"},{"MatchNumber":70,"RoundNumber":9,"DateUtc":"2026-05-03 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":42,"AwayTeamScore":38,"Winner":"Knights"},{"MatchNumber":71,"RoundNumber":9,"DateUtc":"2026-05-03 06:05:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":52,"AwayTeamScore":10,"Winner":"Sharks"},{"MatchNumber":72,"RoundNumber":9,"DateUtc":"2026-05-03 08:15:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":18,"AwayTeamScore":16,"Winner":"Panthers"},{"MatchNumber":73,"RoundNumber":10,"DateUtc":"2026-05-07 09:50:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":44,"AwayTeamScore":12,"Winner":"Dolphins"},{"MatchNumber":74,"RoundNumber":10,"DateUtc":"2026-05-08 08:00:00Z","Location":"Polytec Stadium","HomeTeam":"Roosters","AwayTeam":"Titans","Group":null,"HomeTeamScore":28,"AwayTeamScore":12,"Winner":"Roosters"},{"MatchNumber":75,"RoundNumber":10,"DateUtc":"2026-05-08 10:00:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Eels","Group":null,"HomeTeamScore":30,"AwayTeamScore":33,"Winner":"Eels"},{"MatchNumber":76,"RoundNumber":10,"DateUtc":"2026-05-09 05:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Knights","Group":null,"HomeTeamScore":10,"AwayTeamScore":44,"Winner":"Knights"},{"MatchNumber":77,"RoundNumber":10,"DateUtc":"2026-05-09 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Sharks","Group":null,"HomeTeamScore":36,"AwayTeamScore":12,"Winner":"Rabbitohs"},{"MatchNumber":78,"RoundNumber":10,"DateUtc":"2026-05-09 09:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Broncos","Group":null,"HomeTeamScore":32,"AwayTeamScore":4,"Winner":"Sea Eagles"},{"MatchNumber":79,"RoundNumber":10,"DateUtc":"2026-05-10 04:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":44,"AwayTeamScore":16,"Winner":"Storm"},{"MatchNumber":80,"RoundNumber":10,"DateUtc":"2026-05-10 06:05:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Panthers","Group":null,"HomeTeamScore":18,"AwayTeamScore":30,"Winner":"Panthers"},{"MatchNumber":81,"RoundNumber":11,"DateUtc":"2026-05-15 08:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Sharks","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":38,"AwayTeamScore":16,"Winner":"Sharks"},{"MatchNumber":82,"RoundNumber":11,"DateUtc":"2026-05-15 10:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":10,"AwayTeamScore":32,"Winner":"Dolphins"},{"MatchNumber":83,"RoundNumber":11,"DateUtc":"2026-05-16 05:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":18,"AwayTeamScore":46,"Winner":"Sea Eagles"},{"MatchNumber":84,"RoundNumber":11,"DateUtc":"2026-05-16 07:30:00Z","Location":"Suncorp Stadium","HomeTeam":"Roosters","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":12,"AwayTeamScore":18,"Winner":"Cowboys"},{"MatchNumber":85,"RoundNumber":11,"DateUtc":"2026-05-16 09:45:00Z","Location":"Suncorp Stadium","HomeTeam":"Eels","AwayTeam":"Storm","Group":null,"HomeTeamScore":8,"AwayTeamScore":34,"Winner":"Storm"},{"MatchNumber":86,"RoundNumber":11,"DateUtc":"2026-05-17 04:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Titans","AwayTeam":"Knights","Group":null,"HomeTeamScore":12,"AwayTeamScore":36,"Winner":"Knights"},{"MatchNumber":87,"RoundNumber":11,"DateUtc":"2026-05-17 06:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Warriors","AwayTeam":"Broncos","Group":null,"HomeTeamScore":42,"AwayTeamScore":12,"Winner":"Warriors"},{"MatchNumber":88,"RoundNumber":11,"DateUtc":"2026-05-17 08:25:00Z","Location":"Suncorp Stadium","HomeTeam":"Panthers","AwayTeam":"Dragons","Group":null,"HomeTeamScore":28,"AwayTeamScore":6,"Winner":"Panthers"},{"MatchNumber":89,"RoundNumber":12,"DateUtc":"2026-05-21 09:50:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":22,"AwayTeamScore":30,"Winner":"Dolphins"},{"MatchNumber":90,"RoundNumber":12,"DateUtc":"2026-05-22 10:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Storm","Group":null,"HomeTeamScore":30,"AwayTeamScore":20,"Winner":"Bulldogs"},{"MatchNumber":91,"RoundNumber":12,"DateUtc":"2026-05-23 07:30:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Warriors","Group":null,"HomeTeamScore":12,"AwayTeamScore":30,"Winner":"Warriors"},{"MatchNumber":92,"RoundNumber":12,"DateUtc":"2026-05-23 09:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Titans","Group":null,"HomeTeamScore":12,"AwayTeamScore":10,"Winner":"Sea Eagles"},{"MatchNumber":93,"RoundNumber":12,"DateUtc":"2026-05-24 06:05:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":30,"AwayTeamScore":18,"Winner":"Cowboys"},{"MatchNumber":94,"RoundNumber":13,"DateUtc":"2026-05-29 10:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":28,"AwayTeamScore":22,"Winner":"Sharks"},{"MatchNumber":95,"RoundNumber":13,"DateUtc":"2026-05-30 05:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Eels","Group":null,"HomeTeamScore":28,"AwayTeamScore":22,"Winner":"Knights"},{"MatchNumber":96,"RoundNumber":13,"DateUtc":"2026-05-30 07:30:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":22,"AwayTeamScore":16,"Winner":"Wests Tigers"},{"MatchNumber":97,"RoundNumber":13,"DateUtc":"2026-05-30 09:35:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Roosters","Group":null,"HomeTeamScore":18,"AwayTeamScore":4,"Winner":"Storm"},{"MatchNumber":98,"RoundNumber":13,"DateUtc":"2026-05-31 04:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Dragons","Group":null,"HomeTeamScore":26,"AwayTeamScore":30,"Winner":"Dragons"},{"MatchNumber":99,"RoundNumber":13,"DateUtc":"2026-05-31 06:05:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":26,"AwayTeamScore":12,"Winner":"Raiders"},{"MatchNumber":100,"RoundNumber":13,"DateUtc":"2026-05-31 08:15:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Warriors","Group":null,"HomeTeamScore":20,"AwayTeamScore":18,"Winner":"Panthers"},{"MatchNumber":101,"RoundNumber":14,"DateUtc":"2026-06-04 09:50:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":28,"AwayTeamScore":14,"Winner":"Sea Eagles"},{"MatchNumber":102,"RoundNumber":14,"DateUtc":"2026-06-05 08:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Knights","Group":null,"HomeTeamScore":32,"AwayTeamScore":30,"Winner":"Storm"},{"MatchNumber":103,"RoundNumber":14,"DateUtc":"2026-06-05 10:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Roosters","Group":null,"HomeTeamScore":0,"AwayTeamScore":26,"Winner":"Roosters"},{"MatchNumber":104,"RoundNumber":14,"DateUtc":"2026-06-06 07:30:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":14,"AwayTeamScore":40,"Winner":"Dolphins"},{"MatchNumber":105,"RoundNumber":14,"DateUtc":"2026-06-06 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Titans","Group":null,"HomeTeamScore":23,"AwayTeamScore":28,"Winner":"Titans"},{"MatchNumber":106,"RoundNumber":14,"DateUtc":"2026-06-07 04:00:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Panthers","Group":null,"HomeTeamScore":0,"AwayTeamScore":68,"Winner":"Panthers"},{"MatchNumber":107,"RoundNumber":14,"DateUtc":"2026-06-07 06:05:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Dragons","Group":null,"HomeTeamScore":34,"AwayTeamScore":12,"Winner":"Sharks"},{"MatchNumber":108,"RoundNumber":14,"DateUtc":"2026-06-08 06:05:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Eels","Group":null,"HomeTeamScore":14,"AwayTeamScore":12,"Winner":"Bulldogs"},{"MatchNumber":109,"RoundNumber":15,"DateUtc":"2026-06-11 09:50:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Broncos","Group":null,"HomeTeamScore":48,"AwayTeamScore":6,"Winner":"Rabbitohs"},{"MatchNumber":110,"RoundNumber":15,"DateUtc":"2026-06-12 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Roosters","Group":null,"HomeTeamScore":48,"AwayTeamScore":10,"Winner":"Dolphins"},{"MatchNumber":111,"RoundNumber":15,"DateUtc":"2026-06-13 07:30:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Sharks","Group":null,"HomeTeamScore":8,"AwayTeamScore":10,"Winner":"Sharks"},{"MatchNumber":112,"RoundNumber":15,"DateUtc":"2026-06-13 09:35:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Raiders","Group":null,"HomeTeamScore":15,"AwayTeamScore":12,"Winner":"Eels"},{"MatchNumber":113,"RoundNumber":15,"DateUtc":"2026-06-14 06:05:00Z","Location":"Leichhardt Oval","HomeTeam":"Wests Tigers","AwayTeam":"Titans","Group":null,"HomeTeamScore":36,"AwayTeamScore":28,"Winner":"Wests Tigers"},{"MatchNumber":114,"RoundNumber":16,"DateUtc":"2026-06-19 10:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Dragons","Group":null,"HomeTeamScore":22,"AwayTeamScore":20,"Winner":"Knights"},{"MatchNumber":115,"RoundNumber":16,"DateUtc":"2026-06-20 05:00:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":22,"AwayTeamScore":36,"Winner":"Dolphins"},{"MatchNumber":116,"RoundNumber":16,"DateUtc":"2026-06-20 07:30:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Panthers","Group":null,"HomeTeamScore":19,"AwayTeamScore":18,"Winner":"Titans"},{"MatchNumber":117,"RoundNumber":16,"DateUtc":"2026-06-20 09:35:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":13,"AwayTeamScore":12,"Winner":"Bulldogs"},{"MatchNumber":118,"RoundNumber":16,"DateUtc":"2026-06-21 04:00:00Z","Location":"One NZ Stadium","HomeTeam":"Warriors","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":38,"AwayTeamScore":20,"Winner":"Warriors"},{"MatchNumber":119,"RoundNumber":16,"DateUtc":"2026-06-21 06:05:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Raiders","Group":null,"HomeTeamScore":42,"AwayTeamScore":20,"Winner":"Storm"},{"MatchNumber":120,"RoundNumber":16,"DateUtc":"2026-06-21 08:15:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Sharks","Group":null,"HomeTeamScore":27,"AwayTeamScore":8,"Winner":"Roosters"},{"MatchNumber":121,"RoundNumber":17,"DateUtc":"2026-06-25 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":12,"AwayTeamScore":32,"Winner":"Rabbitohs"},{"MatchNumber":122,"RoundNumber":17,"DateUtc":"2026-06-26 08:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":12,"AwayTeamScore":30,"Winner":"Bulldogs"},{"MatchNumber":123,"RoundNumber":17,"DateUtc":"2026-06-26 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Roosters","Group":null,"HomeTeamScore":18,"AwayTeamScore":24,"Winner":"Roosters"},{"MatchNumber":124,"RoundNumber":17,"DateUtc":"2026-06-27 05:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Warriors","Group":null,"HomeTeamScore":26,"AwayTeamScore":24,"Winner":"Dolphins"},{"MatchNumber":125,"RoundNumber":17,"DateUtc":"2026-06-27 07:30:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Panthers","Group":null,"HomeTeamScore":26,"AwayTeamScore":12,"Winner":"Cowboys"},{"MatchNumber":126,"RoundNumber":17,"DateUtc":"2026-06-27 09:35:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Storm","Group":null,"HomeTeamScore":30,"AwayTeamScore":4,"Winner":"Sea Eagles"},{"MatchNumber":127,"RoundNumber":17,"DateUtc":"2026-06-28 04:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Dragons","Group":null,"HomeTeamScore":24,"AwayTeamScore":16,"Winner":"Raiders"},{"MatchNumber":128,"RoundNumber":17,"DateUtc":"2026-06-28 06:05:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":12,"AwayTeamScore":6,"Winner":"Knights"},{"MatchNumber":129,"RoundNumber":18,"DateUtc":"2026-07-03 10:00:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":36,"AwayTeamScore":14,"Winner":"Panthers"},{"MatchNumber":130,"RoundNumber":18,"DateUtc":"2026-07-04 07:30:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":24,"AwayTeamScore":10,"Winner":"Dragons"},{"MatchNumber":131,"RoundNumber":18,"DateUtc":"2026-07-04 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Sharks","Group":null,"HomeTeamScore":16,"AwayTeamScore":28,"Winner":"Sharks"},{"MatchNumber":132,"RoundNumber":18,"DateUtc":"2026-07-05 04:00:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":23,"AwayTeamScore":14,"Winner":"Eels"},{"MatchNumber":133,"RoundNumber":18,"DateUtc":"2026-07-05 06:05:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":13,"AwayTeamScore":12,"Winner":"Knights"},{"MatchNumber":134,"RoundNumber":19,"DateUtc":"2026-07-10 10:00:00Z","Location":"Campbelltown Sports Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Warriors","Group":null,"HomeTeamScore":6,"AwayTeamScore":32,"Winner":"Warriors"},{"MatchNumber":135,"RoundNumber":19,"DateUtc":"2026-07-11 05:00:00Z","Location":"Kayo Stadium","HomeTeam":"Dolphins","AwayTeam":"Sharks","Group":null,"HomeTeamScore":0,"AwayTeamScore":66,"Winner":"Sharks"},{"MatchNumber":136,"RoundNumber":19,"DateUtc":"2026-07-11 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Raiders","Group":null,"HomeTeamScore":16,"AwayTeamScore":40,"Winner":"Raiders"},{"MatchNumber":137,"RoundNumber":19,"DateUtc":"2026-07-11 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Eels","Group":null,"HomeTeamScore":28,"AwayTeamScore":12,"Winner":"Roosters"},{"MatchNumber":138,"RoundNumber":19,"DateUtc":"2026-07-12 04:00:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Knights","Group":null,"HomeTeamScore":26,"AwayTeamScore":24,"Winner":"Rabbitohs"},{"MatchNumber":139,"RoundNumber":19,"DateUtc":"2026-07-12 06:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":18,"AwayTeamScore":19,"Winner":"Cowboys"},{"MatchNumber":140,"RoundNumber":19,"DateUtc":"2026-07-12 08:15:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Titans","Group":null,"HomeTeamScore":22,"AwayTeamScore":18,"Winner":"Storm"},{"MatchNumber":141,"RoundNumber":20,"DateUtc":"2026-07-16 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Broncos","Group":null,"HomeTeamScore":12,"AwayTeamScore":14,"Winner":"Broncos"},{"MatchNumber":142,"RoundNumber":20,"DateUtc":"2026-07-17 08:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Knights","Group":null,"HomeTeamScore":20,"AwayTeamScore":18,"Winner":"Sharks"},{"MatchNumber":143,"RoundNumber":20,"DateUtc":"2026-07-17 10:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Storm","Group":null,"HomeTeamScore":14,"AwayTeamScore":6,"Winner":"Roosters"},{"MatchNumber":144,"RoundNumber":20,"DateUtc":"2026-07-18 05:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":34,"AwayTeamScore":24,"Winner":"Raiders"},{"MatchNumber":145,"RoundNumber":20,"DateUtc":"2026-07-18 07:35:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Dragons","Group":null,"HomeTeamScore":20,"AwayTeamScore":12,"Winner":"Warriors"},{"MatchNumber":146,"RoundNumber":20,"DateUtc":"2026-07-18 09:35:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":32,"AwayTeamScore":0,"Winner":"Bulldogs"},{"MatchNumber":147,"RoundNumber":20,"DateUtc":"2026-07-19 04:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":38,"AwayTeamScore":32,"Winner":"Titans"},{"MatchNumber":148,"RoundNumber":20,"DateUtc":"2026-07-19 06:05:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":36,"AwayTeamScore":16,"Winner":"Dolphins"},{"MatchNumber":149,"RoundNumber":21,"DateUtc":"2026-07-23 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Panthers","Group":null,"HomeTeamScore":18,"AwayTeamScore":24,"Winner":"Panthers"},{"MatchNumber":150,"RoundNumber":21,"DateUtc":"2026-07-24 08:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Roosters","Group":null,"HomeTeamScore":22,"AwayTeamScore":23,"Winner":"Roosters"},{"MatchNumber":151,"RoundNumber":21,"DateUtc":"2026-07-24 10:00:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Storm","Group":null,"HomeTeamScore":28,"AwayTeamScore":26,"Winner":"Rabbitohs"},{"MatchNumber":152,"RoundNumber":21,"DateUtc":"2026-07-25 05:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":56,"AwayTeamScore":10,"Winner":"Raiders"},{"MatchNumber":153,"RoundNumber":21,"DateUtc":"2026-07-25 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Warriors","Group":null,"HomeTeamScore":18,"AwayTeamScore":6,"Winner":"Bulldogs"},{"MatchNumber":154,"RoundNumber":21,"DateUtc":"2026-07-25 09:35:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Broncos","Group":null,"HomeTeamScore":18,"AwayTeamScore":10,"Winner":"Cowboys"},{"MatchNumber":155,"RoundNumber":21,"DateUtc":"2026-07-26 04:00:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":156,"RoundNumber":21,"DateUtc":"2026-07-26 06:05:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":157,"RoundNumber":22,"DateUtc":"2026-07-30 09:50:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":158,"RoundNumber":22,"DateUtc":"2026-07-31 08:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":159,"RoundNumber":22,"DateUtc":"2026-07-31 10:00:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":160,"RoundNumber":22,"DateUtc":"2026-08-01 05:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":161,"RoundNumber":22,"DateUtc":"2026-08-01 07:30:00Z","Location":"Glen Willow Oval","HomeTeam":"Panthers","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":162,"RoundNumber":22,"DateUtc":"2026-08-01 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":163,"RoundNumber":22,"DateUtc":"2026-08-02 04:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":164,"RoundNumber":22,"DateUtc":"2026-08-02 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":165,"RoundNumber":23,"DateUtc":"2026-08-06 09:50:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":166,"RoundNumber":23,"DateUtc":"2026-08-07 08:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":167,"RoundNumber":23,"DateUtc":"2026-08-07 10:00:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":168,"RoundNumber":23,"DateUtc":"2026-08-08 05:00:00Z","Location":"HBF Park","HomeTeam":"Storm","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":169,"RoundNumber":23,"DateUtc":"2026-08-08 07:30:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":170,"RoundNumber":23,"DateUtc":"2026-08-08 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":171,"RoundNumber":23,"DateUtc":"2026-08-09 04:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":172,"RoundNumber":23,"DateUtc":"2026-08-09 06:05:00Z","Location":"St George Venues Jubilee Stadium","HomeTeam":"Dragons","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":173,"RoundNumber":24,"DateUtc":"2026-08-13 09:50:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":174,"RoundNumber":24,"DateUtc":"2026-08-14 08:00:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":175,"RoundNumber":24,"DateUtc":"2026-08-14 10:00:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":176,"RoundNumber":24,"DateUtc":"2026-08-15 05:00:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":177,"RoundNumber":24,"DateUtc":"2026-08-15 07:30:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Cowboys","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":178,"RoundNumber":24,"DateUtc":"2026-08-15 09:35:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":179,"RoundNumber":24,"DateUtc":"2026-08-16 04:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Titans","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":180,"RoundNumber":24,"DateUtc":"2026-08-16 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Wests Tigers","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":181,"RoundNumber":25,"DateUtc":"2026-08-20 09:50:00Z","Location":"AAMI Park","HomeTeam":"Storm","AwayTeam":"Panthers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":182,"RoundNumber":25,"DateUtc":"2026-08-21 08:00:00Z","Location":"GIO Stadium","HomeTeam":"Raiders","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":183,"RoundNumber":25,"DateUtc":"2026-08-21 10:00:00Z","Location":"Suncorp Stadium","HomeTeam":"Dolphins","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":184,"RoundNumber":25,"DateUtc":"2026-08-22 05:00:00Z","Location":"McDonald Jones Stadium","HomeTeam":"Knights","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":185,"RoundNumber":25,"DateUtc":"2026-08-22 07:30:00Z","Location":"Accor Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Warriors","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":186,"RoundNumber":25,"DateUtc":"2026-08-22 09:35:00Z","Location":"Allianz Stadium","HomeTeam":"Dragons","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":187,"RoundNumber":25,"DateUtc":"2026-08-23 04:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":188,"RoundNumber":25,"DateUtc":"2026-08-23 06:05:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":189,"RoundNumber":26,"DateUtc":"2026-08-27 09:50:00Z","Location":"Suncorp Stadium","HomeTeam":"Broncos","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":190,"RoundNumber":26,"DateUtc":"2026-08-28 08:00:00Z","Location":"4 Pines Park","HomeTeam":"Sea Eagles","AwayTeam":"Dragons","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":191,"RoundNumber":26,"DateUtc":"2026-08-28 10:00:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Bulldogs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":192,"RoundNumber":26,"DateUtc":"2026-08-29 05:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Rabbitohs","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":193,"RoundNumber":26,"DateUtc":"2026-08-29 07:30:00Z","Location":"Allianz Stadium","HomeTeam":"Roosters","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":194,"RoundNumber":26,"DateUtc":"2026-08-29 09:35:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":195,"RoundNumber":26,"DateUtc":"2026-08-30 04:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Knights","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":196,"RoundNumber":26,"DateUtc":"2026-08-30 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Eels","AwayTeam":"Sharks","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":197,"RoundNumber":27,"DateUtc":"2026-09-03 09:50:00Z","Location":"Accor Stadium","HomeTeam":"Bulldogs","AwayTeam":"Broncos","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":198,"RoundNumber":27,"DateUtc":"2026-09-04 08:00:00Z","Location":"Cbus Super Stadium","HomeTeam":"Titans","AwayTeam":"Dolphins","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":199,"RoundNumber":27,"DateUtc":"2026-09-04 10:00:00Z","Location":"Allianz Stadium","HomeTeam":"Rabbitohs","AwayTeam":"Roosters","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":200,"RoundNumber":27,"DateUtc":"2026-09-05 05:00:00Z","Location":"Go Media Stadium","HomeTeam":"Warriors","AwayTeam":"Sea Eagles","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":201,"RoundNumber":27,"DateUtc":"2026-09-05 07:30:00Z","Location":"Queensland Country Bank Stadium","HomeTeam":"Cowboys","AwayTeam":"Raiders","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":202,"RoundNumber":27,"DateUtc":"2026-09-05 09:35:00Z","Location":"Ocean Protect Stadium","HomeTeam":"Sharks","AwayTeam":"Storm","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":203,"RoundNumber":27,"DateUtc":"2026-09-06 04:00:00Z","Location":"WIN Stadium","HomeTeam":"Dragons","AwayTeam":"Eels","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""},{"MatchNumber":204,"RoundNumber":27,"DateUtc":"2026-09-06 06:05:00Z","Location":"CommBank Stadium","HomeTeam":"Panthers","AwayTeam":"Wests Tigers","Group":null,"HomeTeamScore":null,"AwayTeamScore":null,"Winner":""}];
 
 
 // ========== VENUE GEO LOOKUP (for weather) ==========
@@ -2207,8 +2283,40 @@ function weatherImpact(weather) {
 // Fetches NRL h2h odds from the-odds-api.com using a user-supplied key.
 // Key is hardcoded as ODDS_API_KEY. The UI input allows override (stored in sessionStorage).
 // Called from loadAuxData if a key is present.
-const ODDS_API_KEY = "fd513be1db425a8080f6df2ea6f37568"; // hardcoded key
+// No key is embedded here on purpose. A key committed to a public repository is
+// readable by anyone and its monthly allowance can be spent by strangers, so the
+// key now lives in the ODDS_API_KEY environment variable and is read server side
+// by /api/odds. The input in the Market Odds drawer still lets you paste a key
+// for a one-off session; that value is held in sessionStorage and never committed.
+const ODDS_API_KEY = "";
 let oddsApiStatus = "idle"; // idle | loading | ok | failed
+
+// Nickname → fixture short name. Checked longest-first so that a nickname which
+// is a substring of another cannot win by accident. This is the fallback layer:
+// it survives the bookmaker feed renaming a club, which the exact lookup below
+// does not. "Canterbury Bulldogs" was already slipping through the exact table
+// (which only had the Bankstown variants), so every Bulldogs match silently
+// lost its market price.
+const ODDS_NICKNAMES = [
+  ["sea eagles", "Sea Eagles"],
+  ["wests tigers", "Wests Tigers"],
+  ["rabbitohs", "Rabbitohs"],
+  ["bulldogs", "Bulldogs"],
+  ["panthers", "Panthers"],
+  ["dolphins", "Dolphins"],
+  ["warriors", "Warriors"],
+  ["roosters", "Roosters"],
+  ["broncos", "Broncos"],
+  ["cowboys", "Cowboys"],
+  ["dragons", "Dragons"],
+  ["knights", "Knights"],
+  ["raiders", "Raiders"],
+  ["sharks", "Sharks"],
+  ["titans", "Titans"],
+  ["tigers", "Wests Tigers"],
+  ["storm", "Storm"],
+  ["eels", "Eels"]
+];
 
 function normaliseTeamForOdds(name) {
   // Map every known Odds API full name → fixture short name.
@@ -2238,61 +2346,142 @@ function normaliseTeamForOdds(name) {
     "dolhpins":                    "Dolphins",  // common API typo guard
   };
   const key = (name || "").toLowerCase().trim();
-  return LOOKUP[key] || (name || "").trim();
+  if (LOOKUP[key]) return LOOKUP[key];
+  for (const [nickname, short] of ODDS_NICKNAMES) {
+    if (key.includes(nickname)) return short;
+  }
+  return (name || "").trim();
 }
 
-async function fetchOddsFromAPI(apiKey) {
-  if (!apiKey) return;
+// Odds are cached so that a page reload does not spend another API request.
+// The free tier allows 500 requests a month and a reload was costing one every
+// time. Cached prices older than the TTL are treated as stale and refetched.
+const ODDS_CACHE_KEY = "nrlOracle.odds.v1";
+const ODDS_TTL_MS = 15 * 60 * 1000;
+
+let oddsMeta = { fetchedAt: null, source: null, quotaRemaining: null, matched: 0, events: 0 };
+
+function loadCachedOdds() {
+  try {
+    const raw = localStorage.getItem(ODDS_CACHE_KEY);
+    if (!raw) return null;
+    const cached = JSON.parse(raw);
+    if (!cached || !cached.fetchedAt || !cached.odds) return null;
+    if (Date.now() - cached.fetchedAt > ODDS_TTL_MS) return { ...cached, stale: true };
+    return { ...cached, stale: false };
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveCachedOdds() {
+  try {
+    localStorage.setItem(ODDS_CACHE_KEY, JSON.stringify({
+      fetchedAt: oddsMeta.fetchedAt,
+      quotaRemaining: oddsMeta.quotaRemaining,
+      odds: state.odds
+    }));
+  } catch (e) { /* storage full or blocked: not fatal */ }
+}
+
+// Match an API event to a fixture on team names AND kickoff proximity.
+// Team names alone are ambiguous because two clubs meet twice a season, and the
+// first-match-wins search could file a price against the wrong MatchNumber.
+function findFixtureForEvent(event, homeNorm, awayNorm) {
+  const commence = new Date(event.commence_time).getTime();
+  const candidates = state.fixtures.filter(f => {
+    const fh = normaliseTeamForOdds(f.HomeTeam);
+    const fa = normaliseTeamForOdds(f.AwayTeam);
+    return (fh === homeNorm && fa === awayNorm) || (fh === awayNorm && fa === homeNorm);
+  });
+  if (!candidates.length) return null;
+  if (candidates.length === 1) return candidates[0];
+  // Several meetings: take the one closest to the quoted kickoff.
+  return candidates.reduce((best, f) => {
+    const d = Math.abs(new Date(f.DateUtc).getTime() - commence);
+    const bd = Math.abs(new Date(best.DateUtc).getTime() - commence);
+    return d < bd ? f : best;
+  });
+}
+
+async function fetchOddsFromAPI(apiKey, opts = {}) {
+  const { force = false } = opts;
+  // No early return on a missing key: /api/odds supplies its own.
+
+  // Serve from cache when it is fresh, unless the user explicitly asked to refresh.
+  if (!force) {
+    const cached = loadCachedOdds();
+    if (cached && !cached.stale) {
+      Object.assign(state.odds, cached.odds);
+      oddsMeta.fetchedAt = cached.fetchedAt;
+      oddsMeta.source = "cache";
+      oddsMeta.quotaRemaining = cached.quotaRemaining;
+      oddsMeta.matched = Object.keys(cached.odds).length;
+      oddsApiStatus = "ok";
+      renderOddsApiStatus();
+      return { ok: true, reason: "cache" };
+    }
+  }
+
   oddsApiStatus = "loading";
   renderOddsApiStatus();
   try {
-    const url = `https://api.the-odds-api.com/v4/sports/rugbyleague_nrl/odds?regions=au&markets=h2h&apiKey=${encodeURIComponent(apiKey)}`;
-    const res = await fetch(url);
-    if (!res.ok) {
-      oddsApiStatus = res.status === 401 ? "bad-key" : "failed";
+    // Prefer our own serverless route, which holds the key server side. Fall back
+    // to calling the bookmaker API directly only when the user has pasted their
+    // own key into the drawer, which is the manual override path.
+    const ownRoute = "/api/odds";
+    const directUrl = apiKey
+      ? `https://api.the-odds-api.com/v4/sports/rugbyleague_nrl/odds?regions=au&markets=h2h&oddsFormat=decimal&apiKey=${encodeURIComponent(apiKey)}`
+      : null;
+
+    let res = null;
+    try {
+      const viaOwn = await fetchWithTimeout(ownRoute, 10000);
+      // A 404 means the function is not deployed; anything else is a real answer.
+      if (viaOwn.status !== 404) res = viaOwn;
+    } catch (e) { /* own route unreachable, try the direct call */ }
+
+    if ((!res || !res.ok) && directUrl) {
+      const viaDirect = await fetchWithTimeout(directUrl, 10000);
+      if (!res || viaDirect.ok) res = viaDirect;
+    }
+    if (!res) {
+      oddsApiStatus = "no-key";
       renderOddsApiStatus();
-      return;
+      return { ok: false, reason: "no-source" };
+    }
+
+    oddsMeta.quotaRemaining = res.headers.get("x-requests-remaining");
+    if (!res.ok) {
+      oddsApiStatus = res.status === 401 ? "bad-key" : (res.status === 429 ? "quota" : "failed");
+      renderOddsApiStatus();
+      // Fall back to stale cache rather than showing no market at all.
+      const cached = loadCachedOdds();
+      if (cached) {
+        Object.assign(state.odds, cached.odds);
+        oddsMeta.fetchedAt = cached.fetchedAt;
+        oddsMeta.source = "cache-stale";
+        oddsApiStatus = "stale";
+        renderOddsApiStatus();
+        return { ok: true, reason: "cache-stale" };
+      }
+      return { ok: false, reason: `http-${res.status}` };
     }
     const data = await res.json();
-    // DEBUG: log every event so we can see exact API team name strings
-    const upcomingForDebug = state.fixtures.filter(f => f.HomeTeamScore == null);
-    console.group("[odds] API returned " + data.length + " events");
-    for (const ev of data) {
-      const hn = normaliseTeamForOdds(ev.home_team);
-      const an = normaliseTeamForOdds(ev.away_team);
-      const hit = upcomingForDebug.find(f => {
-        const fh = normaliseTeamForOdds(f.HomeTeam);
-        const fa = normaliseTeamForOdds(f.AwayTeam);
-        return (fh === hn && fa === an) || (fh === an && fa === hn);
-      });
-      console.log((hit ? "MATCH" : "NO MATCH"), "| API raw:", JSON.stringify(ev.home_team), "v", JSON.stringify(ev.away_team), "| normalised:", JSON.stringify(hn), "v", JSON.stringify(an));
-    }
-    console.groupEnd();
+    oddsMeta.events = Array.isArray(data) ? data.length : 0;
+
     let matched = 0;
+    const unmatched = [];
     for (const event of data) {
       const homeNorm = normaliseTeamForOdds(event.home_team);
       const awayNorm = normaliseTeamForOdds(event.away_team);
-      // Prefer unplayed fixtures — the Odds API only returns upcoming games,
-      // so matching against completed fixtures (same teams, earlier round) would
-      // store odds under the wrong MatchNumber and they'd never appear in tips.
-      const upcoming = state.fixtures.filter(f => f.HomeTeamScore == null);
-      let fixture = upcoming.find(f => {
-        const fh = normaliseTeamForOdds(f.HomeTeam);
-        const fa = normaliseTeamForOdds(f.AwayTeam);
-        return (fh === homeNorm && fa === awayNorm) || (fh === awayNorm && fa === homeNorm);
-      });
-      // Fall back to any fixture (shouldn't normally be needed)
+      const fixture = findFixtureForEvent(event, homeNorm, awayNorm);
       if (!fixture) {
-        fixture = state.fixtures.find(f => {
-          const fh = normaliseTeamForOdds(f.HomeTeam);
-          const fa = normaliseTeamForOdds(f.AwayTeam);
-          return (fh === homeNorm && fa === awayNorm) || (fh === awayNorm && fa === homeNorm);
-        });
+        unmatched.push(`${event.home_team} v ${event.away_team}`);
+        continue;
       }
-      if (!fixture) continue;
-      // Average across all bookmakers for best price
+      // Average the decimal price across every bookmaker quoting the market.
       const allPrices = { home: [], away: [] };
-      // Determine if the API event has the same home/away orientation as the fixture
       const fixtureHomeNorm = normaliseTeamForOdds(fixture.HomeTeam);
       const apiSameOrientation = fixtureHomeNorm === homeNorm;
       for (const bm of (event.bookmakers || [])) {
@@ -2300,12 +2489,10 @@ async function fetchOddsFromAPI(apiKey) {
         if (!market) continue;
         for (const outcome of market.outcomes) {
           const norm = normaliseTeamForOdds(outcome.name);
-          // Map to fixture home/away regardless of API orientation
           if (apiSameOrientation) {
             if (norm === homeNorm) allPrices.home.push(outcome.price);
             else if (norm === awayNorm) allPrices.away.push(outcome.price);
           } else {
-            // API has teams swapped relative to fixture — swap prices accordingly
             if (norm === awayNorm) allPrices.home.push(outcome.price);
             else if (norm === homeNorm) allPrices.away.push(outcome.price);
           }
@@ -2315,34 +2502,144 @@ async function fetchOddsFromAPI(apiKey) {
       const homePrice = avg(allPrices.home);
       const awayPrice = avg(allPrices.away);
       if (homePrice && awayPrice) {
-        state.odds[fixture.MatchNumber] = { home: Math.round(homePrice * 100) / 100, away: Math.round(awayPrice * 100) / 100 };
+        state.odds[fixture.MatchNumber] = {
+          home: Math.round(homePrice * 100) / 100,
+          away: Math.round(awayPrice * 100) / 100,
+          books: Math.max(allPrices.home.length, allPrices.away.length)
+        };
         matched++;
       }
     }
+    if (unmatched.length) console.warn("[odds] no fixture found for:", unmatched.join(", "));
+
+    oddsMeta.fetchedAt = Date.now();
+    oddsMeta.source = "live";
+    oddsMeta.matched = matched;
+    saveCachedOdds();
     oddsApiStatus = matched > 0 ? "ok" : "no-matches";
     renderOddsApiStatus();
     renderCurrentView();
-    renderOddsInputs(); // refresh odds input fields to show new values
+    renderOddsInputs();
+    return { ok: true, reason: "live", matched };
   } catch (e) {
     console.warn("[odds]", e.message);
+    const cached = loadCachedOdds();
+    if (cached) {
+      Object.assign(state.odds, cached.odds);
+      oddsMeta.fetchedAt = cached.fetchedAt;
+      oddsMeta.source = "cache-stale";
+      oddsApiStatus = "stale";
+      renderOddsApiStatus();
+      return { ok: true, reason: "cache-stale" };
+    }
     oddsApiStatus = "failed";
     renderOddsApiStatus();
+    return { ok: false, reason: e.message };
   }
+}
+
+// How many of the selected round's matches have a market price?
+//
+// Only matches that have not kicked off are counted. Bookmakers stop quoting a
+// game once it starts, so counting completed matches as "unpriced" would report
+// a problem where none exists: in a part-played round most fixtures legitimately
+// have no market.
+function oddsCoverage() {
+  const now = Date.now();
+  const matches = currentRoundMatches();
+  const pending = matches.filter(m => new Date(m.DateUtc).getTime() + MATCH_DURATION_MS > now);
+  const withOdds = pending.filter(m => {
+    const o = state.odds[m.MatchNumber];
+    return o && o.home > 1 && o.away > 1;
+  });
+  return {
+    total: pending.length,
+    covered: withOdds.length,
+    missing: pending.length - withOdds.length,
+    played: matches.length - pending.length
+  };
+}
+
+// Does this match still need a market price? Used to decide whether the absence
+// of one is worth flagging on the card.
+function matchAwaitingKickoff(match) {
+  return new Date(match.DateUtc).getTime() + MATCH_DURATION_MS > Date.now();
+}
+
+function oddsAgeLabel() {
+  if (!oddsMeta.fetchedAt) return "";
+  const mins = Math.floor((Date.now() - oddsMeta.fetchedAt) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
 }
 
 function renderOddsApiStatus() {
   const el = $("oddsApiStatus");
   if (!el) return;
+  const age = oddsAgeLabel();
   const msgs = {
-    idle: null, loading: ["loading", "Fetching…"],
-    ok: ["ok", "Loaded ✓"], "no-matches": ["ok", "No upcoming ✓"],
-    "bad-key": ["fail", "Bad key"], failed: ["fail", "Error"]
+    idle: null,
+    loading: ["loading", "Fetching market…"],
+    ok: ["ok", `Market ${age}`],
+    stale: ["fail", `Stale ${age}`],
+    "no-matches": ["fail", "No market found"],
+    "no-key": ["fail", "No key"],
+    "bad-key": ["fail", "Bad key"],
+    quota: ["fail", "Quota spent"],
+    failed: ["fail", "Market unavailable"]
   };
   const entry = msgs[oddsApiStatus];
   if (!entry) { el.style.display = "none"; return; }
   el.style.display = "";
   el.className = `odds-api-status ${entry[0]}`;
-  el.textContent = entry[1];
+  const quota = oddsMeta.quotaRemaining != null ? ` · ${oddsMeta.quotaRemaining} left` : "";
+  el.textContent = entry[1] + quota;
+  el.title = oddsMeta.source === "cache" ? "Served from local cache, no API request spent"
+    : oddsMeta.source === "cache-stale" ? "Live request failed, showing last known prices"
+    : "";
+}
+
+// Banner above the tips telling the user exactly what the model is running on.
+function renderMarketBanner() {
+  const el = $("marketBanner");
+  if (!el) return;
+  if (state.oddsPending) {
+    el.className = "market-banner pending";
+    el.innerHTML = `<strong>Waiting on market prices.</strong> Confidence figures below will change once odds load.`;
+    el.style.display = "";
+    return;
+  }
+  const cov = oddsCoverage();
+  // Nothing left to tip in this round.
+  if (cov.total === 0) {
+    if (cov.played > 0) {
+      el.className = "market-banner ok";
+      el.innerHTML = `All ${cov.played} matches in this round have been played`;
+      el.style.display = "";
+    } else {
+      el.style.display = "none";
+    }
+    return;
+  }
+  const playedNote = cov.played > 0 ? ` · ${cov.played} already played` : "";
+  if (cov.covered === 0) {
+    el.className = "market-banner warn";
+    el.innerHTML = `<strong>No market prices for the ${cov.total} match${cov.total === 1 ? "" : "es"} still to come.</strong> Those tips run on form, ladder, home ground and travel only.${cov.played > 0 ? ` The other ${cov.played} have been played.` : ""}`;
+    el.style.display = "";
+    return;
+  }
+  if (cov.missing > 0) {
+    el.className = "market-banner warn";
+    el.innerHTML = `<strong>${cov.covered} of ${cov.total} upcoming matches priced.</strong> The ${cov.missing} without a market are tipped on the other factors alone.${cov.played > 0 ? ` The other ${cov.played} have been played.` : ""}`;
+    el.style.display = "";
+    return;
+  }
+  el.className = "market-banner ok";
+  el.innerHTML = `All ${cov.total} upcoming match${cov.total === 1 ? "" : "es"} priced · market updated ${oddsAgeLabel()}${playedNote}`;
+  el.style.display = "";
 }
 
 // ========== NEWS (multi-source aggregation) ==========
@@ -2483,7 +2780,10 @@ const state = {
   dataSource: "",
   weather: {},   // matchNumber -> {temp, rain, wind, code}
   news: [],      // RSS items from news sources
-  newsStatus: "idle"  // idle | loading | ok | failed
+  newsStatus: "idle",  // idle | loading | ok | failed
+  oddsPending: false,  // true while market prices are still in flight
+  currentRound: null,  // the live round, as distinct from the round being viewed
+  roundPinned: false   // true once the user picks a round by hand
 };
 
 const CLUB_BADGES = {
@@ -2513,28 +2813,72 @@ function badgeImg(team, size) {
 }
 
 // ========== DATA ==========
-const PROXIES = [
-  { name: "allorigins", fn: url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}` },
-  { name: "codetabs", fn: url => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}` },
-  { name: "thingproxy", fn: url => `https://thingproxy.freeboard.io/fetch/${url}` }
+// Fixture sources, tried in order.
+//
+// fixturedownload.com sends no Access-Control-Allow-Origin header, so a browser
+// cannot read it directly and something has to relay the request. The free
+// public relays are unreliable (frequent 5xx and occasional DNS failures), and
+// when they all fail the app silently keeps showing the bundled snapshot. So the
+// first source is our own serverless route, which is under our control. If that
+// route is not deployed it 404s instantly and we fall through to the relays.
+//
+// Each source declares how to unwrap its response, because allorigins /get
+// returns the payload as a string inside a JSON envelope.
+const FIXTURE_SOURCES = [
+  {
+    name: "own",
+    url: season => `/api/fixtures?season=${encodeURIComponent(season)}`,
+    unwrap: text => JSON.parse(text)
+  },
+  {
+    name: "allorigins",
+    url: season => `https://api.allorigins.win/get?url=${encodeURIComponent(`https://fixturedownload.com/feed/json/${season}`)}`,
+    unwrap: text => JSON.parse(JSON.parse(text).contents)
+  },
+  {
+    name: "codetabs",
+    url: season => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(`https://fixturedownload.com/feed/json/${season}`)}`,
+    unwrap: text => JSON.parse(text)
+  },
+  {
+    name: "isomorphic",
+    url: season => `https://api.cors.lol/?url=${encodeURIComponent(`https://fixturedownload.com/feed/json/${season}`)}`,
+    unwrap: text => JSON.parse(text)
+  }
 ];
 
+const FIXTURE_TIMEOUT_MS = 8000;
+
+async function fetchWithTimeout(url, ms) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Guard against a relay returning a valid-looking but wrong payload.
+function looksLikeFixtures(data) {
+  return Array.isArray(data) && data.length > 0 &&
+    data[0] && "RoundNumber" in data[0] && "HomeTeam" in data[0] && "DateUtc" in data[0];
+}
+
 async function fetchFixtures(season) {
-  const directUrl = `https://fixturedownload.com/feed/json/${season}`;
   const errors = [];
-  for (const proxy of PROXIES) {
+  for (const source of FIXTURE_SOURCES) {
     try {
-      const res = await fetch(proxy.fn(directUrl));
-      if (!res.ok) { errors.push(`${proxy.name}:${res.status}`); continue; }
-      const text = await res.text();
-      const data = JSON.parse(text);
-      if (Array.isArray(data) && data.length) {
-        state.dataSource = `live · ${proxy.name}`;
+      const res = await fetchWithTimeout(source.url(season), FIXTURE_TIMEOUT_MS);
+      if (!res.ok) { errors.push(`${source.name}:${res.status}`); continue; }
+      const data = source.unwrap(await res.text());
+      if (looksLikeFixtures(data)) {
+        state.dataSource = `live · ${source.name}`;
         return data;
       }
-      errors.push(`${proxy.name}:empty`);
+      errors.push(`${source.name}:bad-shape`);
     } catch (e) {
-      errors.push(`${proxy.name}:${e.message.slice(0, 20)}`);
+      errors.push(`${source.name}:${(e.name === "AbortError" ? "timeout" : e.message).slice(0, 20)}`);
     }
   }
   throw new Error(errors.join(" | "));
@@ -2702,10 +3046,22 @@ function newsFlags(homeTeam, awayTeam) {
 function renderRoundSelect() {
   const sel = $("roundSelect");
   const rounds = [...new Set(state.fixtures.map(f => f.RoundNumber))].sort((a, b) => a - b);
-  const nextRound = computeNextRound(state.fixtures);
-  sel.innerHTML = rounds.map(r => `<option value="${r}">Round ${r}</option>`).join("");
-  sel.value = state.round || nextRound;
-  state.round = parseInt(sel.value);
+  const currentRound = computeNextRound(state.fixtures);
+  state.currentRound = currentRound;
+  // Once every match in the season is behind us, computeNextRound rests on the
+  // final round. That is the right thing to show, but calling it "now" would be
+  // wrong, so the marker is suppressed.
+  const spans = roundSpans(state.fixtures);
+  const seasonOver = spans.length > 0 &&
+    spans[spans.length - 1].lastTs + MATCH_DURATION_MS <= Date.now();
+  sel.innerHTML = rounds.map(r =>
+    `<option value="${r}">Round ${r}${(r === currentRound && !seasonOver) ? " · now" : ""}</option>`
+  ).join("");
+  // Follow the live round unless the user has deliberately chosen one, and only
+  // honour their choice if it still exists in this fixture set.
+  const wanted = (state.roundPinned && rounds.includes(state.round)) ? state.round : currentRound;
+  sel.value = String(wanted);
+  state.round = parseInt(sel.value, 10);
 }
 
 function renderWeights() {
@@ -2790,10 +3146,13 @@ function confidenceClass(c) {
 
 function formatMatchTime(iso) {
   const date = new Date(iso);
+  // Day, date and time all resolved in the competition's zone. Previously only
+  // the time was, so a viewer outside Australia could see a weekday label that
+  // contradicted the kickoff time beside it.
   return {
-    day: date.toLocaleDateString("en-AU", { weekday: "short" }).toUpperCase(),
-    date: date.toLocaleDateString("en-AU", { day: "numeric", month: "short" }),
-    time: date.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Australia/Sydney" }).replace(" ", "")
+    day: date.toLocaleDateString("en-AU", { weekday: "short", timeZone: COMP_TZ }).toUpperCase(),
+    date: date.toLocaleDateString("en-AU", { day: "numeric", month: "short", timeZone: COMP_TZ }),
+    time: date.toLocaleTimeString("en-AU", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: COMP_TZ }).replace(" ", "")
   };
 }
 
@@ -2823,7 +3182,7 @@ function renderRanked() {
       <article class="match-card">
         <header class="match-card-header">
           <span class="rank">${rankLabel}</span>
-          <span class="venue-line"><span class="venue-text">${p.match.Location || "TBD"}</span>${weatherChip(p.match.MatchNumber)}</span>
+          <span class="venue-line"><span class="venue-text">${p.match.Location || "TBD"}</span>${weatherChip(p.match.MatchNumber)}${(p.factors.odds.edge === null && matchAwaitingKickoff(p.match)) ? `<span class="no-market-flag" title="No bookmaker price available, so this tip excludes the market signal">No market</span>` : ""}</span>
         </header>
         ${(injuryFlagForTeam(p.match.HomeTeam) || injuryFlagForTeam(p.match.AwayTeam)) ? `
         <div class="news-flags-row">${newsFlags(p.match.HomeTeam, p.match.AwayTeam)}</div>
@@ -3054,8 +3413,14 @@ function renderCards() {
 // Components used (all available historically): ladder, form, head-to-head,
 // home advantage. Components excluded (not stored historically): odds, weather,
 // injuries. So this reflects "structural" model accuracy, not live accuracy.
-function runBacktest(customWeights) {
+// opts.evalFrom / opts.evalTo restrict which rounds are SCORED. Every match is
+// still walked in order so that ladder, form and head-to-head build correctly;
+// only the recording of predictions is gated. This is what makes an out-of-sample
+// holdout possible.
+function runBacktest(customWeights, opts = {}) {
   const w = customWeights || state.weights;
+  const evalFrom = opts.evalFrom != null ? opts.evalFrom : -Infinity;
+  const evalTo = opts.evalTo != null ? opts.evalTo : Infinity;
   // Ascending chronological order over completed matches
   const completed = state.fixtures
     .filter(f => f.HomeTeamScore != null && f.AwayTeamScore != null)
@@ -3141,7 +3506,8 @@ function runBacktest(customWeights) {
     const winner = hs > as ? h : (as > hs ? a : null);  // null = draw
     const isDraw = winner === null;
 
-    if (!isDraw) {
+    const inEvalWindow = m.RoundNumber >= evalFrom && m.RoundNumber <= evalTo;
+    if (!isDraw && inEvalWindow) {
       const modelCorrect = modelPick === winner;
       const homeCorrect = homePickAlways === winner;
       const ladderCorrect = ladderPick === winner;
@@ -3221,6 +3587,18 @@ function optimiseWeights() {
     return { ok: false, reason: "not enough data", samplesNeeded: 30, samplesHave: completed.length };
   }
 
+  // Hold out the most recent rounds. Searching 600+ weight combinations against
+  // the same 150-odd matches used to report accuracy guarantees the reported
+  // figure flatters the model: the grid will find whatever combination best fits
+  // the noise in that particular sample. Tuning on the earlier rounds and scoring
+  // on the untouched later ones gives a number that means something.
+  const playedRounds = [...new Set(completed.map(f => f.RoundNumber))].sort((a, b) => a - b);
+  const HOLDOUT_ROUNDS = Math.min(4, Math.max(2, Math.floor(playedRounds.length * 0.2)));
+  const holdoutFrom = playedRounds[playedRounds.length - HOLDOUT_ROUNDS];
+  const trainTo = holdoutFrom - 1;
+  const trainOpts = { evalTo: trainTo };
+  const holdoutOpts = { evalFrom: holdoutFrom };
+
   const formValues = [10, 20, 30, 40, 50];
   const ladderValues = [10, 20, 30, 40, 50];
   const homeValues = [5, 10, 15, 20, 30];
@@ -3240,7 +3618,7 @@ function optimiseWeights() {
               ...state.weights,
               form, ladder, home, h2h, travel
             };
-            const r = runBacktest(candidate);
+            const r = runBacktest(candidate, trainOpts);
             evaluated++;
             if (r.modelPct > best.pct) {
               best = { weights: { form, ladder, home, h2h, travel }, pct: r.modelPct, correct: r.modelCorrect, total: r.total };
@@ -3258,7 +3636,7 @@ function optimiseWeights() {
     for (const delta of [-5, -3, 3, 5]) {
       const v = Math.max(0, center + delta);
       const candidate = { ...state.weights, ...fine, [key]: v };
-      const r = runBacktest(candidate);
+      const r = runBacktest(candidate, trainOpts);
       evaluated++;
       if (r.modelPct > best.pct) {
         best = { weights: { ...fine, [key]: v }, pct: r.modelPct, correct: r.modelCorrect, total: r.total };
@@ -3267,13 +3645,28 @@ function optimiseWeights() {
     fine[key] = best.weights[key];
   }
 
+  // Score the winning weights on the rounds the search never saw, and compare
+  // against the incumbent weights on the same untouched rounds.
+  const tunedOut = runBacktest({ ...state.weights, ...best.weights }, holdoutOpts);
+  const incumbentOut = runBacktest(state.weights, holdoutOpts);
+
   return {
     ok: true,
     weights: best.weights,
-    pct: best.pct,
+    pct: best.pct,              // in-sample, on the training rounds
     correct: best.correct,
     total: best.total,
-    evaluated
+    evaluated,
+    holdout: {
+      fromRound: holdoutFrom,
+      rounds: HOLDOUT_ROUNDS,
+      tunedPct: tunedOut.modelPct,
+      tunedCorrect: tunedOut.modelCorrect,
+      incumbentPct: incumbentOut.modelPct,
+      total: tunedOut.total
+    },
+    // Only worth adopting if it also holds up out of sample.
+    improvesOutOfSample: tunedOut.modelPct >= incumbentOut.modelPct
   };
 }
 
@@ -3320,18 +3713,21 @@ function runAutoTune({ silent }) {
       return;
     }
 
-    const improvement = result.pct - before.modelPct;
-    applyOptimisedWeights(result);
+    const ho = result.holdout;
 
-    if (improvement > 0) {
-      statusEl.innerHTML = `Tuned: <strong>${result.pct}%</strong> accuracy (was ${before.modelPct}%). Tested ${result.evaluated} combinations.`;
+    // Adopt the tuned weights only if they also beat the incumbent on the rounds
+    // the search never looked at. A combination that wins in-sample but loses
+    // out of sample has fitted noise, and adopting it would make the app worse
+    // while reporting a better number.
+    if (result.improvesOutOfSample) {
+      applyOptimisedWeights(result);
+      statusEl.innerHTML = `Tuned on rounds up to ${ho.fromRound - 1}, verified on R${ho.fromRound}+: `
+        + `<strong>${ho.tunedPct}%</strong> out of sample (was ${ho.incumbentPct}%, n=${ho.total}). `
+        + `${result.evaluated} combinations tested.`;
       statusEl.className = "autotune-status success";
-    } else if (improvement === 0) {
-      statusEl.innerHTML = `Already optimal at <strong>${result.pct}%</strong>. No change.`;
-      statusEl.className = "autotune-status";
     } else {
-      // Should not happen since optimiser searches more combinations than current
-      statusEl.innerHTML = `Best found: <strong>${result.pct}%</strong> (current ${before.modelPct}%).`;
+      statusEl.innerHTML = `Kept existing weights. The best in-sample fit (${result.pct}%) `
+        + `did not hold up on the held-out rounds: ${ho.tunedPct}% versus ${ho.incumbentPct}% (n=${ho.total}).`;
       statusEl.className = "autotune-status";
     }
 
@@ -3613,6 +4009,41 @@ function renderCurrentView() {
   $("sectionSub").textContent = subMap[state.view];
   renderHeroMeta();
   renderRoundRecap();
+  renderMarketBanner();
+  renderStaleBanner();
+  // Dim the tips while the market is still loading so nobody copies a pick that
+  // is about to move, and disable export outright.
+  const main = document.querySelector("main.content");
+  if (main) main.classList.toggle("tips-pending", state.oddsPending && state.view !== "backtest");
+  const exportBtn = $("exportBtn");
+  if (exportBtn) {
+    exportBtn.disabled = state.oddsPending;
+    exportBtn.textContent = state.oddsPending ? "Waiting on odds…" : "Copy Tips";
+  }
+}
+
+// Warn when the fixtures on screen are old, which means results, ladder and form
+// are all behind. This is the condition that used to fail silently.
+function renderStaleBanner() {
+  const el = $("staleBanner");
+  if (!el) return;
+  const bundled = /bundled/i.test(state.dataSource || "");
+  const fresh = dataFreshness(state.fixtures);
+  const viewingOld = state.currentRound && state.round < state.currentRound;
+
+  if (viewingOld) {
+    el.innerHTML = `<strong>Viewing a completed round.</strong> Round ${state.currentRound} is the live round.`;
+    el.style.display = "";
+    return;
+  }
+  if (bundled && fresh.days != null && fresh.days > 8) {
+    el.innerHTML = `<strong>Offline snapshot.</strong> Latest result on file is from round ${fresh.lastResultRound}, ${fresh.days} days ago. Ladder and form are out of date. <button type="button" id="staleRetryBtn">Retry live</button>`;
+    el.style.display = "";
+    const btn = $("staleRetryBtn");
+    if (btn) btn.addEventListener("click", refreshLive);
+    return;
+  }
+  el.style.display = "none";
 }
 
 function sharePick(matchNumber, btn) {
@@ -3740,15 +4171,25 @@ function renderBreakingNews() {
 }
 
 async function loadAuxData() {
-  // Two parallel jobs: news (one RSS request) and weather (one batched request for all venues)
+  // The odds request is started FIRST and in parallel with everything else.
+  // It used to be queued behind weather and news, and was not awaited, so the
+  // tips rendered on an incomplete model and the confidence figures then moved
+  // under the user once the market prices arrived. Market price is the single
+  // heaviest input in the model, so picks now wait for it.
   const matches = currentRoundMatches();
   state.newsStatus = "loading";
-  renderBreakingNews();  // show loading state immediately
+  state.oddsPending = true;
+  renderBreakingNews();
+  renderCurrentView();  // paints the pending state on the tips
+
+  const oddsKey = ODDS_API_KEY || sessionStorage.getItem("oddsApiKey") || "";
+  const oddsJob = fetchOddsFromAPI(oddsKey).catch(() => ({ ok: false }));
 
   const weatherJob = fetchWeatherForMatches(matches).then(weatherMap => {
     Object.assign(state.weather, weatherMap);
     renderCurrentView();
-  });
+  }).catch(() => {});
+
   const newsJob = fetchNews().then(items => {
     state.news = items;
     state.newsStatus = items && items.length ? "ok" : "failed";
@@ -3758,10 +4199,15 @@ async function loadAuxData() {
     state.newsStatus = "failed";
     renderBreakingNews();
   });
+
+  // Clear the pending flag as soon as the market resolves, whatever the outcome,
+  // then re-render so the tips reflect the final model.
+  await oddsJob;
+  state.oddsPending = false;
+  renderCurrentView();
+  renderOddsInputs();
+
   await Promise.all([weatherJob, newsJob]);
-  // Odds API — runs after other jobs; key from session input
-  const oddsKey = ODDS_API_KEY || sessionStorage.getItem("oddsApiKey") || "";
-  if (oddsKey) fetchOddsFromAPI(oddsKey);
 }
 
 function applyFixtures(fixtures, sourceLabel) {
@@ -3806,14 +4252,9 @@ async function refreshLiveSilent(haveBundled) {
       const liveCompleted = data.filter(f => f.HomeTeamScore != null).length;
       const currentCompleted = state.fixtures.filter(f => f.HomeTeamScore != null).length;
       if (liveCompleted <= currentCompleted) return;  // nothing newer
-      // Live has more completed matches than bundled — the bundled "next round"
-      // is stale. Clear state.round so applyFixtures picks the new next round.
-      // Only do this if the user hasn't manually navigated to a specific round
-      // (we detect that by checking whether they're still on the originally-loaded next round).
-      const bundledNext = computeNextRound(state.fixtures);
-      if (state.round === bundledNext) {
-        state.round = null;  // let applyFixtures pick the new next-round
-      }
+      // Live data is fresher than the snapshot, so the round we are showing may
+      // be stale. renderRoundSelect re-derives the live round unless the user
+      // pinned one by hand, so nothing more is needed here.
     }
     applyFixtures(data, state.dataSource || "live");
   } catch (e) {
@@ -3825,16 +4266,87 @@ async function refreshLiveSilent(haveBundled) {
   }
 }
 
-// Helper: compute the next round in a fixture array (used in multiple places)
-function computeNextRound(fixtures) {
-  const rounds = [...new Set(fixtures.map(f => f.RoundNumber))].sort((a, b) => a - b);
-  const now = new Date();
-  for (const r of rounds) {
-    const rm = fixtures.filter(f => f.RoundNumber === r);
-    const anyFuture = rm.some(m => new Date(m.DateUtc) > now || m.HomeTeamScore == null);
-    if (anyFuture) return r;
+// Helper: compute the current round in a fixture array (used in multiple places).
+//
+// A round is "current" if it still contains at least one match that has not
+// finished. Resolution is based on KICKOFF TIME, not on whether a score is
+// present. Missing scores are unreliable evidence: a bundled snapshot has null
+// scores for every future match, and a live feed can lag hours behind full-time.
+// Using them made the app open on the first round the snapshot had not yet
+// recorded, which could be many weeks in the past.
+const MATCH_DURATION_MS = 150 * 60 * 1000;  // ~100 min of football plus buffer
+
+// The competition runs on Australian eastern time, so every date boundary is
+// resolved in that zone rather than the viewer's. Without this, someone opening
+// the app from another timezone can be shown the wrong day's round: a Sunday
+// afternoon kickoff in Sydney is still Saturday evening in Los Angeles.
+const COMP_TZ = "Australia/Sydney";
+
+function compDateKey(instant) {
+  // Sortable YYYY-MM-DD for the given moment, as dated in the competition's zone.
+  const d = instant instanceof Date ? instant : new Date(instant);
+  if (!isFinite(d.getTime())) return null;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: COMP_TZ, year: "numeric", month: "2-digit", day: "2-digit"
+  }).formatToParts(d);
+  const get = type => parts.find(p => p.type === type)?.value;
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+
+// Group fixtures into rounds with the date span each round occupies.
+function roundSpans(fixtures) {
+  const spans = new Map();
+  for (const m of fixtures) {
+    const key = compDateKey(m.DateUtc);
+    const ts = new Date(m.DateUtc).getTime();
+    if (!key || !isFinite(ts)) continue;
+    const s = spans.get(m.RoundNumber) || { round: m.RoundNumber, firstKey: key, lastKey: key, firstTs: ts, lastTs: ts };
+    if (key < s.firstKey) s.firstKey = key;
+    if (key > s.lastKey) s.lastKey = key;
+    if (ts < s.firstTs) s.firstTs = ts;
+    if (ts > s.lastTs) s.lastTs = ts;
+    spans.set(m.RoundNumber, s);
   }
-  return rounds[0];
+  return [...spans.values()].sort((a, b) => a.round - b.round);
+}
+
+// Which round is "now"?
+//
+// Anchored to today's date in the competition's timezone, NOT to which matches
+// still lack a result. If today falls inside a round's date span, that is the
+// round, even once every game in it has been played and scored. Only when today
+// sits between rounds do we look forward to the next one.
+//
+// The earlier version returned the first round with a missing score, which meant
+// stale or lagging data silently dragged the app weeks into the past.
+function computeNextRound(fixtures) {
+  if (!fixtures || !fixtures.length) return 1;
+  const spans = roundSpans(fixtures);
+  if (!spans.length) return 1;
+  const today = compDateKey(new Date());
+
+  // 1. Today sits within a round's own dates.
+  const containing = spans.find(s => s.firstKey <= today && today <= s.lastKey);
+  if (containing) return containing.round;
+
+  // 2. Between rounds, or before the season starts: the next round still to come.
+  const now = Date.now();
+  const upcoming = spans.find(s => s.lastTs + MATCH_DURATION_MS > now);
+  if (upcoming) return upcoming.round;
+
+  // 3. Season finished: rest on the final round.
+  return spans[spans.length - 1].round;
+}
+
+// How stale is the data we are showing? Returns days between the newest
+// completed result and now, plus whether the current round looks unresolved.
+function dataFreshness(fixtures) {
+  const completed = fixtures.filter(f => f.HomeTeamScore != null);
+  if (!completed.length) return { days: null, lastResultRound: null };
+  const latest = completed.reduce((acc, m) =>
+    new Date(m.DateUtc) > new Date(acc.DateUtc) ? m : acc, completed[0]);
+  const days = Math.floor((Date.now() - new Date(latest.DateUtc)) / 86400000);
+  return { days, lastResultRound: latest.RoundNumber };
 }
 
 async function refreshLive() {
@@ -3844,13 +4356,6 @@ async function refreshLive() {
   s.textContent = "Fetching live data…";
   try {
     const data = await fetchFixtures(state.season);
-    // Reset round so we pick the actual current next-round from fresh data
-    if (state.fixtures.length) {
-      const oldNext = computeNextRound(state.fixtures);
-      if (state.round === oldNext) state.round = null;
-    } else {
-      state.round = null;
-    }
     applyFixtures(data, state.dataSource);
   } catch (e) {
     s.classList.add("error");
@@ -3863,7 +4368,7 @@ async function refreshLive() {
 
 function init() {
   const now = new Date();
-  $("heroDate").textContent = now.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric" }).toUpperCase();
+  $("heroDate").textContent = now.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric", timeZone: COMP_TZ }).toUpperCase();
   renderWeights();
   load();
 }
@@ -3878,13 +4383,15 @@ document.querySelectorAll(".view-tab").forEach(t => {
   });
 });
 $("roundSelect").addEventListener("change", e => {
-  state.round = parseInt(e.target.value);
+  state.round = parseInt(e.target.value, 10);
+  state.roundPinned = (state.round !== state.currentRound);
   renderOddsInputs();
   renderCurrentView();
 });
 $("seasonSelect").addEventListener("change", e => {
   state.season = e.target.value;
   state.round = null;
+  state.roundPinned = false;
   state.odds = {};
   state.injuries = {};
   load();
@@ -3895,6 +4402,18 @@ $("sortSelect").addEventListener("change", e => {
 });
 $("refreshBtn").addEventListener("click", refreshLive);
 $("navRefresh").addEventListener("click", refreshLive);
+$("refreshOddsBtn").addEventListener("click", async () => {
+  const btn = $("refreshOddsBtn");
+  const key = ODDS_API_KEY || sessionStorage.getItem("oddsApiKey") || "";
+  btn.disabled = true;
+  state.oddsPending = true;
+  renderCurrentView();
+  await fetchOddsFromAPI(key, { force: true });
+  state.oddsPending = false;
+  renderCurrentView();
+  renderOddsInputs();
+  btn.disabled = false;
+});
 $("exportBtn").addEventListener("click", exportTips);
 $("autotuneBtn").addEventListener("click", () => runAutoTune({ silent: false }));
 
@@ -3903,7 +4422,7 @@ document.getElementById("oddsApiKeyInput").addEventListener("change", function(e
   const key = e.target.value.trim();
   if (key) {
     sessionStorage.setItem("oddsApiKey", key);
-    fetchOddsFromAPI(key);
+    fetchOddsFromAPI(key, { force: true });
   } else {
     sessionStorage.removeItem("oddsApiKey");
     oddsApiStatus = "idle";

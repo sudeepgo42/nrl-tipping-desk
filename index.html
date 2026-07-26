@@ -149,6 +149,49 @@
   }
   .nav-btn:hover { color: white; }
 
+  /* PRIMARY REFRESH - the single way to pull fresh data, so it reads as an action
+     rather than a link. Gold to match the accent used for the app's own emphasis. */
+  .nav-updated {
+    font-family: "Roboto Mono", monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-right: 10px;
+    white-space: nowrap;
+  }
+  .nav-refresh {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--gold);
+    color: var(--green-deep);
+    border: none;
+    border-radius: 3px;
+    padding: 8px 14px;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.25);
+  }
+  .nav-refresh:hover { background: #ffe14d; }
+  .nav-refresh:active { transform: translateY(1px); }
+  .nav-refresh:disabled { cursor: default; opacity: 0.75; }
+  .nav-refresh-icon { width: 14px; height: 14px; flex-shrink: 0; }
+  .nav-refresh.working .nav-refresh-icon { animation: nav-spin 0.8s linear infinite; }
+  @keyframes nav-spin { to { transform: rotate(360deg); } }
+  /* Keep the label on wider screens; the icon carries it on small ones. */
+  @media (max-width: 420px) {
+    .nav-refresh-label { display: none; }
+    .nav-refresh { padding: 8px 10px; }
+    .nav-updated { display: none; }
+  }
+
   /* VIEW TABS - under nav, sticky too */
   .view-tabs {
     background: var(--green-darker);
@@ -525,6 +568,50 @@
   .odds-api-status.ok { background: rgba(76,175,80,0.15); color: #2e7d32; }
   .odds-api-status.fail { background: rgba(239,83,80,0.12); color: #c62828; }
   .odds-api-status.loading { background: rgba(0,0,0,0.06); color: var(--g-500); }
+  .autotune-inline {
+    background: none;
+    border: none;
+    color: var(--green);
+    font-family: "Oswald", sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0 0 0 4px;
+  }
+  .odds-key-opts {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: -4px 0 8px;
+  }
+  .odds-key-opts label {
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    color: var(--g-500);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+  .odds-key-opts input[type="checkbox"] { accent-color: var(--green); margin: 0; }
+  #oddsKeyForget {
+    font-family: "Oswald", sans-serif;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--g-300);
+    color: var(--g-500);
+    padding: 3px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  #oddsKeyForget:hover { border-color: var(--live); color: var(--live); }
+
   .odds-api-note {
     font-size: 10px;
     color: var(--g-500);
@@ -539,7 +626,7 @@
     padding: 14px 16px;
     border-bottom: 1px solid var(--g-200);
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 10px;
   }
   .controls > div { display: flex; flex-direction: column; gap: 4px; }
@@ -733,6 +820,187 @@
     padding: 1px 5px;
     white-space: nowrap;
   }
+
+  /* MY TEAM ------------------------------------------------------------ */
+  .myteam-panel {
+    margin: 0 12px 12px;
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-deep) 100%);
+    border-left: 3px solid var(--gold);
+    border-radius: 2px;
+    color: white;
+    overflow: hidden;
+  }
+  .myteam-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(0,0,0,0.22);
+    border-bottom: 1px solid rgba(255,215,0,0.18);
+  }
+  .myteam-badge {
+    width: 30px; height: 30px;
+    background: white;
+    border-radius: 50%;
+    padding: 3px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .myteam-badge img { width: 100%; height: 100%; object-fit: contain; }
+  .myteam-name {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .myteam-form { display: flex; gap: 2px; margin-left: 2px; }
+  .myteam-clear {
+    margin-left: auto;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.6);
+    font-family: "Oswald", sans-serif;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .myteam-clear:hover { color: white; border-color: var(--gold); }
+  .myteam-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 12px 14px;
+  }
+  .myteam-stats { display: flex; gap: 18px; flex-shrink: 0; }
+  .myteam-stat { text-align: center; }
+  .myteam-stat-num {
+    display: block;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1;
+    color: white;
+  }
+  .myteam-stat-num.pos { color: #4caf50; }
+  .myteam-stat-num.neg { color: #ef5350; }
+  .myteam-stat-label {
+    display: block;
+    font-family: "Roboto Mono", monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-top: 3px;
+  }
+  .myteam-fixture {
+    flex: 1 1 240px;
+    min-width: 0;
+    border-left: 1px solid rgba(255,255,255,0.12);
+    padding-left: 14px;
+  }
+  .myteam-fixture-head {
+    font-family: "Oswald", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .myteam-fixture-when {
+    font-family: "Roboto Mono", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-top: 3px;
+  }
+  .myteam-verdict {
+    font-family: "Inter", sans-serif;
+    font-size: 12.5px;
+    margin-top: 7px;
+    color: rgba(255,255,255,0.85);
+  }
+  .myteam-verdict strong { color: white; }
+  .myteam-verdict.for strong { color: #7bd88f; }
+  .myteam-verdict.against strong { color: var(--gold); }
+  .myteam-tipmark {
+    display: inline-block;
+    margin-left: 8px;
+    font-family: "Roboto Mono", monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    padding: 1px 6px;
+  }
+  .myteam-tipmark.hit { color: #7bd88f; border: 1px solid rgba(123,216,143,0.4); }
+  .myteam-tipmark.miss { color: #ff8a85; border: 1px solid rgba(255,138,133,0.4); }
+  .myteam-nomarket {
+    display: inline-block;
+    margin-left: 6px;
+    font-family: "Roboto Mono", monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 2px;
+    padding: 1px 5px;
+  }
+  .myteam-recent {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 14px 12px;
+  }
+  .myteam-recent-item {
+    font-family: "Roboto Mono", monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.65);
+    border-left: 2px solid var(--g-500);
+  }
+  .myteam-recent-item.W { border-left-color: #4caf50; }
+  .myteam-recent-item.L { border-left-color: var(--live); }
+  .myteam-recent-item.D { border-left-color: var(--g-400); }
+
+  /* Favourite highlighting elsewhere */
+  .match-card.is-favourite {
+    border-top-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold-dark) inset;
+  }
+  .fav-tag {
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-dark);
+    background: var(--gold);
+    border-radius: 2px;
+    padding: 2px 7px;
+  }
+  .ladder-row.is-favourite {
+    background: rgba(255,215,0,0.1);
+    border-radius: 2px;
+    box-shadow: inset 2px 0 0 var(--gold);
+    padding-left: 4px;
+  }
+  .ladder-gap {
+    height: 1px;
+    background: rgba(255,255,255,0.14);
+    margin: 4px 0;
+  }
+  table.ladder tr.is-favourite { background: rgba(255,215,0,0.12); }
+  table.ladder tr.is-favourite td:first-child { box-shadow: inset 3px 0 0 var(--gold-dark); }
 
   /* MAIN CONTAINER */
   .content { padding: 0 0 40px; }
@@ -1942,7 +2210,14 @@
       </div>
     </a>
     <div class="nav-spacer"></div>
-    <button class="nav-btn" id="navRefresh">Refresh</button>
+    <span class="nav-updated" id="navUpdated"></span>
+    <button class="nav-refresh" id="navRefresh" title="Fetch the latest results and market prices">
+      <svg class="nav-refresh-icon" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M13.6 8a5.6 5.6 0 1 1-1.64-3.96" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M13.9 1.9v3.1h-3.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="nav-refresh-label">Refresh</span>
+    </button>
   </div>
 </nav>
 
@@ -1991,14 +2266,15 @@
     </select>
   </div>
   <div>
+    <label>My team</label>
+    <select id="teamSelect"></select>
+  </div>
+  <div>
     <label>Sort by</label>
     <select id="sortSelect">
       <option value="confidence" selected>Confidence</option>
       <option value="kickoff">Kick-off time</option>
     </select>
-  </div>
-  <div class="action-row">
-    <button id="refreshBtn" class="btn btn-primary">Refresh Live</button>
   </div>
   <div class="action-row">
     <button id="refreshOddsBtn" class="btn btn-secondary">Refresh Odds</button>
@@ -2017,6 +2293,10 @@
       <label>Odds API Key</label>
       <input type="text" id="oddsApiKeyInput" placeholder="Optional: paste a key to override the server key" autocomplete="off" spellcheck="false" />
       <span class="odds-api-status" id="oddsApiStatus" style="display:none;"></span>
+    </div>
+    <div class="odds-key-opts">
+      <label><input type="checkbox" id="oddsKeyRemember" /> Remember on this device</label>
+      <button type="button" id="oddsKeyForget">Forget key</button>
     </div>
     <p class="odds-api-note">Odds load on startup via <code>/api/odds</code>, which reads the key from the server environment · <a href="https://the-odds-api.com" target="_blank" rel="noopener">the-odds-api.com</a> · 500 requests a month · prices cached locally for 15 minutes so a reload costs nothing.</p>
     <p class="drawer-note">Or paste decimal head-to-head odds manually. Injury impact is 0 (full strength) to 10 (crippling).</p>
@@ -2060,6 +2340,8 @@
   <div class="stale-banner" id="staleBanner" style="display:none;"></div>
   <div class="market-banner" id="marketBanner" style="display:none;"></div>
 </div>
+
+<div class="myteam-panel" id="myTeamPanel" style="display:none;"></div>
 
 <main class="content">
   <section id="viewRanked" class="view"></section>
@@ -2805,9 +3087,189 @@ const state = {
   news: [],      // RSS items from news sources
   newsStatus: "idle",  // idle | loading | ok | failed
   oddsPending: false,  // true while market prices are still in flight
+  lastRefreshed: null, // when fixtures were last applied, for the nav stamp
   currentRound: null,  // the live round, as distinct from the round being viewed
-  roundPinned: false   // true once the user picks a round by hand
+  roundPinned: false,  // true once the user picks a round by hand
+  favouriteTeam: null  // club to highlight; persisted on this device
 };
+
+// ---------- FAVOURITE TEAM ----------
+// Stored per device. This affects presentation ONLY. The confidence model is
+// deliberately untouched: weighting a club up because you support it would make
+// the tips worse at the one thing they exist to do, and you would not be able to
+// tell a genuine edge from wishful thinking.
+const FAV_TEAM_KEY = "nrlOracle.favouriteTeam";
+
+function loadFavouriteTeam() {
+  try { return localStorage.getItem(FAV_TEAM_KEY) || null; } catch (e) { return null; }
+}
+
+function saveFavouriteTeam(team) {
+  try {
+    if (team) localStorage.setItem(FAV_TEAM_KEY, team);
+    else localStorage.removeItem(FAV_TEAM_KEY);
+  } catch (e) { /* storage blocked: the feature degrades to this session only */ }
+}
+
+function isFavourite(team) {
+  return Boolean(state.favouriteTeam) && team === state.favouriteTeam;
+}
+
+function matchInvolvesFavourite(match) {
+  return isFavourite(match.HomeTeam) || isFavourite(match.AwayTeam);
+}
+
+// Every club appearing in the loaded fixtures, alphabetically.
+function allTeams() {
+  return [...new Set(state.fixtures.flatMap(f => [f.HomeTeam, f.AwayTeam]))].sort();
+}
+
+// The favourite's next fixture at or after the round being viewed, used when they
+// have no game in the current round.
+function favouriteNextFixture() {
+  if (!state.favouriteTeam) return null;
+  const now = Date.now();
+  return state.fixtures
+    .filter(f => f.HomeTeam === state.favouriteTeam || f.AwayTeam === state.favouriteTeam)
+    .filter(f => new Date(f.DateUtc).getTime() + MATCH_DURATION_MS > now)
+    .sort((a, b) => new Date(a.DateUtc) - new Date(b.DateUtc))[0] || null;
+}
+
+// Results so far this season for the favourite, most recent first.
+function favouriteRecentResults(limit) {
+  if (!state.favouriteTeam) return [];
+  return state.fixtures
+    .filter(f => (f.HomeTeam === state.favouriteTeam || f.AwayTeam === state.favouriteTeam) && f.HomeTeamScore != null)
+    .sort((a, b) => new Date(b.DateUtc) - new Date(a.DateUtc))
+    .slice(0, limit)
+    .map(f => {
+      const home = f.HomeTeam === state.favouriteTeam;
+      const own = home ? f.HomeTeamScore : f.AwayTeamScore;
+      const opp = home ? f.AwayTeamScore : f.HomeTeamScore;
+      return {
+        round: f.RoundNumber,
+        opponent: home ? f.AwayTeam : f.HomeTeam,
+        homeAway: home ? "H" : "A",
+        own, opp,
+        outcome: own > opp ? "W" : (own < opp ? "L" : "D")
+      };
+    });
+}
+
+function renderTeamSelect() {
+  const sel = $("teamSelect");
+  if (!sel) return;
+  const teams = allTeams();
+  sel.innerHTML = `<option value="">No team</option>`
+    + teams.map(t => `<option value="${t}">${t}</option>`).join("");
+  if (state.favouriteTeam && teams.indexOf(state.favouriteTeam) === -1) {
+    // Club not in this season's fixtures. Keep the preference rather than
+    // silently discarding it, since a different season may be loaded.
+    sel.innerHTML += `<option value="${state.favouriteTeam}">${state.favouriteTeam}</option>`;
+  }
+  sel.value = state.favouriteTeam || "";
+}
+
+function renderMyTeam() {
+  const el = $("myTeamPanel");
+  if (!el) return;
+  const team = state.favouriteTeam;
+  if (!team) { el.style.display = "none"; el.innerHTML = ""; return; }
+
+  const l = state.ladder[team];
+  const form = state.form[team] || [];
+  const thisRound = currentRoundMatches().find(m => matchInvolvesFavourite(m));
+  const results = favouriteRecentResults(3);
+
+  // Fixture block: their game this round, or the next one scheduled.
+  let fixtureBlock;
+  if (thisRound) {
+    const p = { match: thisRound, ...computeConfidence(thisRound) };
+    const t = formatMatchTime(thisRound.DateUtc);
+    const opponent = thisRound.HomeTeam === team ? thisRound.AwayTeam : thisRound.HomeTeam;
+    const atHome = thisRound.HomeTeam === team;
+    const tippedToWin = p.pick === team;
+    const played = thisRound.HomeTeamScore != null && thisRound.AwayTeamScore != null;
+
+    let verdict;
+    if (played) {
+      // The match is over, so report what happened rather than a prediction for a
+      // settled result. Showing whether the model got it right is the honest and
+      // more useful thing here.
+      const own = atHome ? thisRound.HomeTeamScore : thisRound.AwayTeamScore;
+      const opp = atHome ? thisRound.AwayTeamScore : thisRound.HomeTeamScore;
+      const outcome = own > opp ? "won" : (own < opp ? "lost" : "drew");
+      const winner = own > opp ? team : (own < opp ? opponent : null);
+      const modelRight = winner ? p.pick === winner : null;
+      verdict = `<div class="myteam-verdict ${own > opp ? "for" : "against"}">
+        <strong>${team} ${outcome} ${own}-${opp}</strong>
+        ${modelRight === null ? "" :
+          `<span class="myteam-tipmark ${modelRight ? "hit" : "miss"}">model tipped ${p.pick} · ${modelRight ? "correct" : "wrong"}</span>`}
+      </div>`;
+    } else {
+      // Confidence is always the model's confidence in ITS OWN pick. State plainly
+      // whether that pick favours your club, rather than dressing a likely loss up
+      // as a number that looks encouraging.
+      verdict = `<div class="myteam-verdict ${tippedToWin ? "for" : "against"}">
+        ${tippedToWin
+          ? `Model tips <strong>${team}</strong> at <strong>${p.confidence}%</strong>`
+          : `Model tips <strong>${opponent}</strong> at <strong>${p.confidence}%</strong>`}
+        ${p.factors.odds.edge === null ? `<span class="myteam-nomarket">no market price</span>` : ""}
+      </div>`;
+    }
+
+    fixtureBlock = `
+      <div class="myteam-fixture">
+        <div class="myteam-fixture-head">Round ${thisRound.RoundNumber} · ${atHome ? "Home" : "Away"} v ${opponent}${played ? " · Full time" : ""}</div>
+        <div class="myteam-fixture-when">${t.day} ${t.date} · ${t.time} · ${thisRound.Location || "TBD"}</div>
+        ${verdict}
+      </div>`;
+  } else {
+    const next = favouriteNextFixture();
+    if (next) {
+      const t = formatMatchTime(next.DateUtc);
+      const opponent = next.HomeTeam === team ? next.AwayTeam : next.HomeTeam;
+      fixtureBlock = `
+        <div class="myteam-fixture">
+          <div class="myteam-fixture-head">No game in round ${state.round}</div>
+          <div class="myteam-fixture-when">Next: round ${next.RoundNumber} ${next.HomeTeam === team ? "v" : "away to"} ${opponent} · ${t.day} ${t.date} ${t.time}</div>
+        </div>`;
+    } else {
+      fixtureBlock = `<div class="myteam-fixture"><div class="myteam-fixture-head">No further fixtures</div></div>`;
+    }
+  }
+
+  const ladderBlock = l ? `
+    <div class="myteam-stat"><span class="myteam-stat-num">${l.rank}</span><span class="myteam-stat-label">Ladder</span></div>
+    <div class="myteam-stat"><span class="myteam-stat-num">${l.pts}</span><span class="myteam-stat-label">Points</span></div>
+    <div class="myteam-stat"><span class="myteam-stat-num">${l.wins}-${l.losses}${l.draws ? "-" + l.draws : ""}</span><span class="myteam-stat-label">Record</span></div>
+    <div class="myteam-stat"><span class="myteam-stat-num ${l.diff >= 0 ? "pos" : "neg"}">${l.diff >= 0 ? "+" : ""}${l.diff}</span><span class="myteam-stat-label">Diff</span></div>
+  ` : `<div class="myteam-stat"><span class="myteam-stat-label">No results yet</span></div>`;
+
+  el.innerHTML = `
+    <div class="myteam-head">
+      <span class="myteam-badge">${badgeImg(team)}</span>
+      <span class="myteam-name">${team}</span>
+      <span class="myteam-form">${form.map(r => `<span class="form-pill ${r}">${r}</span>`).join("")}</span>
+      <button type="button" class="myteam-clear" id="myTeamClear" title="Stop highlighting this club">Clear</button>
+    </div>
+    <div class="myteam-body">
+      <div class="myteam-stats">${ladderBlock}</div>
+      ${fixtureBlock}
+    </div>
+    ${results.length ? `<div class="myteam-recent">${results.map(r =>
+      `<span class="myteam-recent-item ${r.outcome}">R${r.round} ${r.outcome} ${r.own}-${r.opp} ${r.homeAway === "H" ? "v" : "@"} ${r.opponent}</span>`
+    ).join("")}</div>` : ""}
+  `;
+  el.style.display = "";
+  const clear = $("myTeamClear");
+  if (clear) clear.addEventListener("click", () => {
+    state.favouriteTeam = null;
+    saveFavouriteTeam(null);
+    renderTeamSelect();
+    renderCurrentView();
+  });
+}
 
 const CLUB_BADGES = {
   "Broncos": "https://www.nrl.com/.theme/broncos/badge-basic24.svg",
@@ -3196,6 +3658,11 @@ function renderRanked() {
   [...picks].sort((a, b) => b.confidence - a.confidence).forEach((p, i) => {
     confidenceRank[p.match.MatchNumber] = i + 1;
   });
+  // Pin the favourite's match to the top. The card still shows its true
+  // confidence rank, so promoting it for convenience never disguises where the
+  // model actually places it.
+  const favIndex = picks.findIndex(p => matchInvolvesFavourite(p.match));
+  if (favIndex > 0) picks.unshift(picks.splice(favIndex, 1)[0]);
   $("viewRanked").innerHTML = `<div class="match-list">${picks.map((p, i) => {
     const t = formatMatchTime(p.match.DateUtc);
     const homePicked = p.pick === p.match.HomeTeam;
@@ -3203,10 +3670,12 @@ function renderRanked() {
     const barCls = confCls;
     const rankNum = state.sortBy === "kickoff" ? confidenceRank[p.match.MatchNumber] : i + 1;
     const rankLabel = state.sortBy === "kickoff" ? `Rank ${String(rankNum).padStart(2, "0")}` : `Pick ${String(i + 1).padStart(2, "0")}`;
+    const isFav = matchInvolvesFavourite(p.match);
     return `
-      <article class="match-card">
+      <article class="match-card${isFav ? " is-favourite" : ""}">
         <header class="match-card-header">
-          <span class="rank">${rankLabel}</span>
+          <span class="rank">${isFav ? `Rank ${String(confidenceRank[p.match.MatchNumber]).padStart(2, "0")}` : rankLabel}</span>
+          ${isFav ? `<span class="fav-tag">${state.favouriteTeam}</span>` : ""}
           <span class="venue-line"><span class="venue-text">${p.match.Location || "TBD"}</span>${weatherChip(p.match.MatchNumber)}${(p.factors.odds.edge === null && matchAwaitingKickoff(p.match)) ? `<span class="no-market-flag" title="No bookmaker price available, so this tip excludes the market signal">No market</span>` : ""}</span>
         </header>
         ${(injuryFlagForTeam(p.match.HomeTeam) || injuryFlagForTeam(p.match.AwayTeam)) ? `
@@ -3376,7 +3845,7 @@ function renderTable() {
           ${picks.map(p => {
             const f = p.factors;
             return `
-              <tr>
+              <tr class="${matchInvolvesFavourite(p.match) ? "is-favourite" : ""}">
                 <td class="fixture">${badgeImg(p.match.HomeTeam)}${p.match.HomeTeam}<span class="vs">v</span>${badgeImg(p.match.AwayTeam)}${p.match.AwayTeam}</td>
                 <td class="pick">${p.pick}</td>
                 <td class="num">${p.homeForm.join("") || "—"}/${p.awayForm.join("") || "—"}</td>
@@ -3695,6 +4164,41 @@ function optimiseWeights() {
   };
 }
 
+// ---------- TUNED WEIGHT CACHE ----------
+// optimiseWeights() runs 600+ backtests and blocks the main thread for over ten
+// seconds on a full season. It used to run on every applyFixtures call, which
+// meant the app froze on each load and each refresh, twice over when the bundled
+// snapshot was replaced by live data.
+//
+// The output only changes when the results it is fitted to change, so it is
+// cached against a fingerprint of those results and recomputed only when new
+// matches have been played.
+const TUNE_CACHE_KEY = "nrlOracle.tunedWeights.v1";
+
+function resultsFingerprint() {
+  const completed = state.fixtures.filter(f => f.HomeTeamScore != null && f.AwayTeamScore != null);
+  if (!completed.length) return null;
+  const maxRound = Math.max(...completed.map(f => f.RoundNumber));
+  // Count plus furthest round is enough: a new result always moves one of them.
+  return `${state.season}:${completed.length}:${maxRound}`;
+}
+
+function loadTunedWeights() {
+  try {
+    const raw = localStorage.getItem(TUNE_CACHE_KEY);
+    if (!raw) return null;
+    const c = JSON.parse(raw);
+    if (!c || !c.fingerprint || !c.weights) return null;
+    return c;
+  } catch (e) { return null; }
+}
+
+function saveTunedWeights(fingerprint, weights, holdout) {
+  try {
+    localStorage.setItem(TUNE_CACHE_KEY, JSON.stringify({ fingerprint, weights, holdout }));
+  } catch (e) { /* not fatal */ }
+}
+
 // Apply tuned weights to live state and re-render
 function applyOptimisedWeights(result) {
   if (!result.ok) return;
@@ -3713,10 +4217,39 @@ function applyOptimisedWeights(result) {
 
 // Wrapper that runs the optimiser, updates the UI, and shows feedback.
 // silent=true means run on load without flashing the user.
-function runAutoTune({ silent }) {
+function runAutoTune({ silent, force }) {
   const btn = document.getElementById("autotuneBtn");
   const statusEl = document.getElementById("autotuneStatus");
   if (!btn || !statusEl) return;
+
+  const fingerprint = resultsFingerprint();
+
+  // Reuse a previous tune when the underlying results have not moved. This is
+  // what keeps load and refresh responsive instead of freezing for ten seconds.
+  if (!force && fingerprint) {
+    const cached = loadTunedWeights();
+    if (cached && cached.fingerprint === fingerprint) {
+      state.weights = { ...state.weights, ...cached.weights };
+      invalidateBacktest();
+      for (const key of ["form", "ladder", "home", "h2h", "travel"]) {
+        const slider = document.getElementById(`w-${key}`);
+        const valSpan = document.getElementById(`w-${key}-val`);
+        if (slider) slider.value = state.weights[key];
+        if (valSpan) valSpan.textContent = state.weights[key];
+      }
+      if (typeof updateWeightTotal === "function") updateWeightTotal();
+      const ho = cached.holdout;
+      statusEl.innerHTML = ho
+        ? `Tuned earlier on these results: <strong>${ho.tunedPct}%</strong> out of sample on R${ho.fromRound}+ (n=${ho.total}). <button type="button" id="autotuneAgain" class="autotune-inline">Re-tune</button>`
+        : `Using previously tuned weights. <button type="button" id="autotuneAgain" class="autotune-inline">Re-tune</button>`;
+      statusEl.className = "autotune-status";
+      const again = document.getElementById("autotuneAgain");
+      if (again) again.addEventListener("click", () => runAutoTune({ silent: false, force: true }));
+      if (!silent) { btn.classList.remove("running"); btn.textContent = "Re-tune"; }
+      renderCurrentView();
+      return;
+    }
+  }
 
   if (!silent) {
     btn.classList.add("running");
@@ -3746,11 +4279,13 @@ function runAutoTune({ silent }) {
     // while reporting a better number.
     if (result.improvesOutOfSample) {
       applyOptimisedWeights(result);
+      if (fingerprint) saveTunedWeights(fingerprint, result.weights, ho);
       statusEl.innerHTML = `Tuned on rounds up to ${ho.fromRound - 1}, verified on R${ho.fromRound}+: `
         + `<strong>${ho.tunedPct}%</strong> out of sample (was ${ho.incumbentPct}%, n=${ho.total}). `
         + `${result.evaluated} combinations tested.`;
       statusEl.className = "autotune-status success";
     } else {
+      if (fingerprint) saveTunedWeights(fingerprint, state.weights, ho);
       statusEl.innerHTML = `Kept existing weights. The best in-sample fit (${result.pct}%) `
         + `did not hold up on the held-out rounds: ${ho.tunedPct}% versus ${ho.incumbentPct}% (n=${ho.total}).`;
       statusEl.className = "autotune-status";
@@ -3899,15 +4434,23 @@ function renderLadderSnapshot() {
     return;
   }
 
-  list.innerHTML = ranked.map(t => `
-    <div class="ladder-row">
+  const row = t => `
+    <div class="ladder-row${isFavourite(t.team) ? " is-favourite" : ""}">
       <span class="pos">${t.rank}</span>
       <span class="badge-mini">${badgeImg(t.team)}</span>
       <span class="team">${t.team}</span>
       <span class="record">${t.wins}-${t.losses}${t.draws ? "-" + t.draws : ""}</span>
       <span class="pts">${t.pts}</span>
-    </div>
-  `).join("");
+    </div>`;
+
+  let html = ranked.map(row).join("");
+  // If the favourite sits outside the top four, append it so their position is
+  // always visible rather than requiring a switch to the full ladder.
+  const fav = state.favouriteTeam ? state.ladder[state.favouriteTeam] : null;
+  if (fav && fav.rank && !ranked.some(t => t.team === fav.team)) {
+    html += `<div class="ladder-gap"></div>` + row(fav);
+  }
+  list.innerHTML = html;
 
   const acc = computeSeasonAccuracy();
   if (acc.total > 0) {
@@ -4036,6 +4579,8 @@ function renderCurrentView() {
   renderRoundRecap();
   renderMarketBanner();
   renderStaleBanner();
+  renderMyTeam();
+  renderLastUpdated();
   // Dim the tips while the market is still loading so nobody copies a pick that
   // is about to move, and disable export outright.
   const main = document.querySelector("main.content");
@@ -4065,7 +4610,7 @@ function renderStaleBanner() {
     el.innerHTML = `<strong>Offline snapshot.</strong> Latest result on file is from round ${fresh.lastResultRound}, ${fresh.days} days ago. Ladder and form are out of date. <button type="button" id="staleRetryBtn">Retry live</button>`;
     el.style.display = "";
     const btn = $("staleRetryBtn");
-    if (btn) btn.addEventListener("click", refreshLive);
+    if (btn) btn.addEventListener("click", refreshAll);
     return;
   }
   el.style.display = "none";
@@ -4207,7 +4752,7 @@ async function loadAuxData() {
   renderBreakingNews();
   renderCurrentView();  // paints the pending state on the tips
 
-  const oddsKey = ODDS_API_KEY || sessionStorage.getItem("oddsApiKey") || "";
+  const oddsKey = ODDS_API_KEY || storedOddsKey();
   const oddsJob = fetchOddsFromAPI(oddsKey).catch(() => ({ ok: false }));
 
   const weatherJob = fetchWeatherForMatches(matches).then(weatherMap => {
@@ -4237,6 +4782,7 @@ async function loadAuxData() {
 
 function applyFixtures(fixtures, sourceLabel) {
   state.fixtures = fixtures;
+  state.lastRefreshed = Date.now();
   invalidateBacktest();
   const stats = computeLadderAndForm(fixtures);
   state.ladder = stats.ladder;
@@ -4247,6 +4793,7 @@ function applyFixtures(fixtures, sourceLabel) {
   s.classList.remove("error");
   s.textContent = `${fixtures.length} matches · ${completedCount} completed · ${sourceLabel}`;
   renderRoundSelect();
+  renderTeamSelect();
   renderOddsInputs();
   renderCurrentView();
   loadAuxData();  // fetch weather + news in background, re-render when ready
@@ -4374,6 +4921,44 @@ function dataFreshness(fixtures) {
   return { days, lastResultRound: latest.RoundNumber };
 }
 
+// Single refresh action behind the nav button.
+//
+// With the separate "Refresh Live" control gone, one obvious refresh should mean
+// "get me current data", so this pulls fixtures AND market prices rather than
+// leaving odds to a second click. The odds-only button in the controls remains
+// for when you want fresh prices without re-fetching the whole fixture list.
+let refreshing = false;
+
+async function refreshAll() {
+  if (refreshing) return;              // ignore repeat clicks mid-flight
+  refreshing = true;
+  const btn = $("navRefresh");
+  if (btn) { btn.classList.add("working"); btn.disabled = true; }
+  try {
+    await refreshLive();
+    const key = ODDS_API_KEY || storedOddsKey();
+    state.oddsPending = true;
+    renderCurrentView();
+    await fetchOddsFromAPI(key, { force: true }).catch(() => {});
+    state.oddsPending = false;
+    renderOddsInputs();
+    renderCurrentView();
+  } finally {
+    refreshing = false;
+    if (btn) { btn.classList.remove("working"); btn.disabled = false; }
+  }
+}
+
+// When the data on screen was last successfully loaded.
+function renderLastUpdated() {
+  const el = $("navUpdated");
+  if (!el) return;
+  if (!state.lastRefreshed) { el.textContent = ""; return; }
+  const mins = Math.floor((Date.now() - state.lastRefreshed) / 60000);
+  const label = mins < 1 ? "just now" : mins < 60 ? `${mins}m ago` : `${Math.floor(mins / 60)}h ago`;
+  el.textContent = `Updated ${label}`;
+}
+
 async function refreshLive() {
   // Manual refresh button — this one IS visible
   const s = $("status");
@@ -4392,6 +4977,7 @@ async function refreshLive() {
 }
 
 function init() {
+  state.favouriteTeam = loadFavouriteTeam();
   const now = new Date();
   $("heroDate").textContent = now.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric", timeZone: COMP_TZ }).toUpperCase();
   renderWeights();
@@ -4421,15 +5007,19 @@ $("seasonSelect").addEventListener("change", e => {
   state.injuries = {};
   load();
 });
+$("teamSelect").addEventListener("change", e => {
+  state.favouriteTeam = e.target.value || null;
+  saveFavouriteTeam(state.favouriteTeam);
+  renderCurrentView();
+});
 $("sortSelect").addEventListener("change", e => {
   state.sortBy = e.target.value;
   renderCurrentView();
 });
-$("refreshBtn").addEventListener("click", refreshLive);
-$("navRefresh").addEventListener("click", refreshLive);
+$("navRefresh").addEventListener("click", refreshAll);
 $("refreshOddsBtn").addEventListener("click", async () => {
   const btn = $("refreshOddsBtn");
-  const key = ODDS_API_KEY || sessionStorage.getItem("oddsApiKey") || "";
+  const key = ODDS_API_KEY || storedOddsKey();
   btn.disabled = true;
   state.oddsPending = true;
   renderCurrentView();
@@ -4440,26 +5030,68 @@ $("refreshOddsBtn").addEventListener("click", async () => {
   btn.disabled = false;
 });
 $("exportBtn").addEventListener("click", exportTips);
-$("autotuneBtn").addEventListener("click", () => runAutoTune({ silent: false }));
+$("autotuneBtn").addEventListener("click", () => runAutoTune({ silent: false, force: true }));
 
 // Odds API key input — save to sessionStorage and auto-fetch when key is entered
+// Where an override key is kept.
+//
+// The right home for the key is the ODDS_API_KEY environment variable on the
+// server, read by /api/odds, so that it never reaches a browser at all. This
+// override exists for two cases: the server route is unavailable, or you are
+// running the file locally with no functions.
+//
+// "Remember on this device" moves it from sessionStorage (cleared when the tab
+// closes) to localStorage (survives restarts). Either way it lives only in this
+// browser. It is never committed, never compiled into the page, and never served
+// to anyone else. Do not tick it on a shared or public machine, because anything
+// running on this page can read localStorage.
+const ODDS_KEY_NAME = "oddsApiKey";
+
+function storedOddsKey() {
+  return localStorage.getItem(ODDS_KEY_NAME) || sessionStorage.getItem(ODDS_KEY_NAME) || "";
+}
+
+function storeOddsKey(key, remember) {
+  sessionStorage.removeItem(ODDS_KEY_NAME);
+  localStorage.removeItem(ODDS_KEY_NAME);
+  if (!key) return;
+  (remember ? localStorage : sessionStorage).setItem(ODDS_KEY_NAME, key);
+}
+
 document.getElementById("oddsApiKeyInput").addEventListener("change", function(e) {
   const key = e.target.value.trim();
+  const remember = document.getElementById("oddsKeyRemember")?.checked;
   if (key) {
-    sessionStorage.setItem("oddsApiKey", key);
+    storeOddsKey(key, remember);
     fetchOddsFromAPI(key, { force: true });
   } else {
-    sessionStorage.removeItem("oddsApiKey");
+    storeOddsKey("", false);
     oddsApiStatus = "idle";
     renderOddsApiStatus();
   }
 });
 
+document.getElementById("oddsKeyRemember").addEventListener("change", function(e) {
+  // Move an already-entered key between the two stores without refetching.
+  const key = document.getElementById("oddsApiKeyInput").value.trim();
+  if (key) storeOddsKey(key, e.target.checked);
+});
+
+document.getElementById("oddsKeyForget").addEventListener("click", function() {
+  storeOddsKey("", false);
+  document.getElementById("oddsApiKeyInput").value = "";
+  document.getElementById("oddsKeyRemember").checked = false;
+  oddsApiStatus = "idle";
+  renderOddsApiStatus();
+});
+
 // Restore saved key from session on load (without re-fetching — loadAuxData handles that)
 (function restoreOddsKey() {
-  const saved = sessionStorage.getItem("oddsApiKey");
+  const saved = storedOddsKey();
   const inp = document.getElementById("oddsApiKeyInput");
+  const remember = document.getElementById("oddsKeyRemember");
   if (saved && inp) inp.value = saved;
+  if (remember) remember.checked = Boolean(localStorage.getItem(ODDS_KEY_NAME));
 })();
 
 init();

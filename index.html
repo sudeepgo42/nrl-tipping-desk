@@ -3370,12 +3370,27 @@ async function fetchFixtures(season) {
 }
 
 // ========== STATS ==========
+// Competition points for a bye. The NRL awards these, and with 17 clubs every
+// side takes three across a season, so ignoring them does not merely shift
+// everyone equally: teams that have already had more byes than their rivals are
+// understated. Omitting them put South Sydney 8th when the official ladder had
+// them 6th, because the Knights and Cowboys immediately above them had taken one
+// fewer bye each.
+//
+// This is not cosmetic. Ladder rank feeds computeConfidence() with a weight of
+// 20, so a wrong ladder produced wrong tips.
+const BYE_POINTS = 2;
+
 function computeLadderAndForm(fixtures) {
   const ladder = {}, form = {}, h2h = {};
   const ensure = t => {
-    if (!ladder[t]) ladder[t] = { team: t, played: 0, wins: 0, losses: 0, draws: 0, for: 0, against: 0, pts: 0 };
+    if (!ladder[t]) ladder[t] = { team: t, played: 0, wins: 0, losses: 0, draws: 0, for: 0, against: 0, byes: 0, pts: 0 };
     if (!form[t]) form[t] = [];
   };
+  // Every club in the season's draw, not just those with a completed match, so a
+  // team is not credited with a bye simply because its data is missing.
+  const allTeams = [...new Set(fixtures.flatMap(f => [f.HomeTeam, f.AwayTeam]))];
+  allTeams.forEach(ensure);
   const completed = fixtures
     .filter(f => f.HomeTeamScore != null && f.AwayTeamScore != null)
     .sort((a, b) => new Date(a.DateUtc) - new Date(b.DateUtc));
@@ -3396,9 +3411,21 @@ function computeLadderAndForm(fixtures) {
     h2h[key][h] = (h2h[key][h] || 0) + (hs > as ? 1 : 0);
     h2h[key][a] = (h2h[key][a] || 0) + (as > hs ? 1 : 0);
   }
+  // Count byes for every round that has begun. A club with no fixture in a
+  // scheduled round has the bye for that round and banks the points.
+  const startedRounds = [...new Set(completed.map(m => m.RoundNumber))];
+  for (const r of startedRounds) {
+    const playing = new Set(
+      fixtures.filter(f => f.RoundNumber === r).flatMap(f => [f.HomeTeam, f.AwayTeam])
+    );
+    for (const t of allTeams) {
+      if (!playing.has(t)) ladder[t].byes++;
+    }
+  }
+
   for (const t in ladder) {
     const l = ladder[t];
-    l.pts = l.wins * 2 + l.draws;
+    l.pts = l.wins * 2 + l.draws + l.byes * BYE_POINTS;
     l.diff = l.for - l.against;
   }
   const sorted = Object.values(ladder).sort((x, y) => y.pts - x.pts || y.diff - x.diff || y.for - x.for);
@@ -3924,12 +3951,41 @@ function runBacktest(customWeights, opts = {}) {
   // Rolling state we rebuild as we walk forward
   const ladder = {}, form = {}, h2h = {};
   const ensure = t => {
-    if (!ladder[t]) ladder[t] = { team: t, played: 0, wins: 0, losses: 0, draws: 0, for: 0, against: 0, pts: 0, diff: 0, rank: 0 };
+    if (!ladder[t]) ladder[t] = { team: t, played: 0, wins: 0, losses: 0, draws: 0, for: 0, against: 0, byes: 0, pts: 0, diff: 0, rank: 0 };
     if (!form[t]) form[t] = [];
   };
   const reRank = () => {
     const sorted = Object.values(ladder).sort((x, y) => y.pts - x.pts || y.diff - x.diff || y.for - x.for);
     sorted.forEach((t, i) => ladder[t.team].rank = i + 1);
+  };
+
+  // Bye points, credited round by round as the walk advances.
+  //
+  // The live ladder awards these, so the backtest must too or it evaluates a
+  // different model from the one that produces the tips. Byes are only credited
+  // for rounds STRICTLY BEFORE the match being predicted: crediting the current
+  // round's byes first would leak information from the round into its own
+  // predictions.
+  const allTeams = [...new Set(state.fixtures.flatMap(f => [f.HomeTeam, f.AwayTeam]))];
+  const roundTeams = {};
+  for (const f of state.fixtures) {
+    (roundTeams[f.RoundNumber] = roundTeams[f.RoundNumber] || new Set()).add(f.HomeTeam);
+    roundTeams[f.RoundNumber].add(f.AwayTeam);
+  }
+  let byesAwardedThrough = 0;
+  const awardByesBefore = round => {
+    for (let r = byesAwardedThrough + 1; r < round; r++) {
+      const playing = roundTeams[r];
+      if (!playing) continue;
+      for (const t of allTeams) {
+        if (!playing.has(t)) { ensure(t); ladder[t].byes++; }
+      }
+      byesAwardedThrough = r;
+    }
+  };
+  const recomputePts = t => {
+    ladder[t].pts = ladder[t].wins * 2 + ladder[t].draws + ladder[t].byes * BYE_POINTS;
+    ladder[t].diff = ladder[t].for - ladder[t].against;
   };
 
   // Per-match prediction record
@@ -3943,6 +3999,15 @@ function runBacktest(customWeights, opts = {}) {
   for (const m of completed) {
     const h = m.HomeTeam, a = m.AwayTeam;
     ensure(h); ensure(a);
+
+    // Credit any byes from rounds already finished, then re-rank, so the ladder
+    // used for this prediction matches what the live model would have seen.
+    const byesBefore = byesAwardedThrough;
+    awardByesBefore(m.RoundNumber);
+    if (byesAwardedThrough !== byesBefore) {
+      for (const t of allTeams) { ensure(t); recomputePts(t); }
+      reRank();
+    }
 
     // PREDICT using current rolling state (all data BEFORE this match)
     const fh = form[h] || [], fa = form[a] || [];
@@ -4040,10 +4105,8 @@ function runBacktest(customWeights, opts = {}) {
     h2h[key][h] = (h2h[key][h] || 0) + (hs > as ? 1 : 0);
     h2h[key][a] = (h2h[key][a] || 0) + (as > hs ? 1 : 0);
 
-    ladder[h].pts = ladder[h].wins * 2 + ladder[h].draws;
-    ladder[h].diff = ladder[h].for - ladder[h].against;
-    ladder[a].pts = ladder[a].wins * 2 + ladder[a].draws;
-    ladder[a].diff = ladder[a].for - ladder[a].against;
+    recomputePts(h);
+    recomputePts(a);
     reRank();
   }
 
@@ -4173,7 +4236,9 @@ function optimiseWeights() {
 // The output only changes when the results it is fitted to change, so it is
 // cached against a fingerprint of those results and recomputed only when new
 // matches have been played.
-const TUNE_CACHE_KEY = "nrlOracle.tunedWeights.v1";
+// v2: the ladder now includes bye points, so any tune cached under v1 was fitted
+// to incorrect ladder ranks and must not be reused.
+const TUNE_CACHE_KEY = "nrlOracle.tunedWeights.v2";
 
 function resultsFingerprint() {
   const completed = state.fixtures.filter(f => f.HomeTeamScore != null && f.AwayTeamScore != null);

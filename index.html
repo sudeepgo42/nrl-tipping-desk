@@ -4666,6 +4666,21 @@ function renderStaleBanner() {
   const fresh = dataFreshness(state.fixtures);
   const viewingOld = state.currentRound && state.round < state.currentRound;
 
+  // Staleness is judged on the data itself, not on which source delivered it.
+  // A "live" feed serving old results is just as wrong as an offline snapshot,
+  // and tying the warning to the source label is what let this go unnoticed.
+  if (fresh.days != null && fresh.days > 8) {
+    const weeks = Math.floor(fresh.days / 7);
+    const age = fresh.days > 13 ? `${weeks} weeks` : `${fresh.days} days`;
+    el.innerHTML = `<strong>Results are ${age} out of date.</strong> `
+      + `The newest result on file is from round ${fresh.lastResultRound}. `
+      + `${bundled ? "The live feed could not be reached, so this is the offline snapshot." : "The feed is returning old data."} `
+      + `Ladder, form and tips are all affected. <button type="button" id="staleRetryBtn">Retry now</button>`;
+    el.style.display = "";
+    const btn = $("staleRetryBtn");
+    if (btn) btn.addEventListener("click", refreshAll);
+    return;
+  }
   if (viewingOld) {
     el.innerHTML = `<strong>Viewing a completed round.</strong> Round ${state.currentRound} is the live round.`;
     el.style.display = "";
@@ -4847,6 +4862,10 @@ async function loadAuxData() {
 
 function applyFixtures(fixtures, sourceLabel) {
   state.fixtures = fixtures;
+  // This assignment was missing, so state.dataSource stayed "" on the bundled
+  // path and the stale-data warning could never fire. The app sat on a
+  // two-month-old snapshot in production without saying a word.
+  state.dataSource = sourceLabel || state.dataSource || "";
   state.lastRefreshed = Date.now();
   invalidateBacktest();
   const stats = computeLadderAndForm(fixtures);
@@ -5014,6 +5033,41 @@ async function refreshAll() {
   }
 }
 
+// Periodic background refresh.
+//
+// The app previously loaded once and never updated, so a tab left open during a
+// round showed the same data hours later. This polls quietly: more often while
+// matches are in progress, rarely otherwise, and never while the tab is hidden
+// so a backgrounded tab does not burn the odds quota.
+const POLL_LIVE_MS = 3 * 60 * 1000;    // a match is on right now
+const POLL_IDLE_MS = 30 * 60 * 1000;   // nothing in progress
+
+function matchInProgress() {
+  const now = Date.now();
+  return state.fixtures.some(f => {
+    const k = new Date(f.DateUtc).getTime();
+    return k <= now && k + MATCH_DURATION_MS > now;
+  });
+}
+
+function startAutoRefresh() {
+  let lastPoll = Date.now();
+  setInterval(() => {
+    if (document.hidden) return;              // invisible tab: do nothing
+    if (refreshing) return;                   // a manual refresh is running
+    const gap = matchInProgress() ? POLL_LIVE_MS : POLL_IDLE_MS;
+    if (Date.now() - lastPoll < gap) return;
+    lastPoll = Date.now();
+    refreshAll();
+  }, 30000);
+
+  // Coming back to a tab left open for a while should feel current.
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden || refreshing) return;
+    if (Date.now() - lastPoll > POLL_LIVE_MS) { lastPoll = Date.now(); refreshAll(); }
+  });
+}
+
 // When the data on screen was last successfully loaded.
 function renderLastUpdated() {
   const el = $("navUpdated");
@@ -5044,6 +5098,7 @@ async function refreshLive() {
 function init() {
   state.favouriteTeam = loadFavouriteTeam();
   const now = new Date();
+  startAutoRefresh();
   $("heroDate").textContent = now.toLocaleDateString("en-AU", { day: "numeric", month: "short", year: "numeric", timeZone: COMP_TZ }).toUpperCase();
   renderWeights();
   load();
